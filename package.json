@@ -1,0 +1,55 @@
+{
+    "org": "mina",
+    "name": "user",
+    "version": "1.0.0",
+    "cname": "MINA 用户",
+    "image": {
+        "color":"/static/icons/app-color.svg",
+        "dark":"/static/icons/app-dark.svg",
+        "light":"/static/icons/app-light.svg"
+    },
+    "icontype": "img",
+    "intro": "MINA Pages 基础用户平台。",
+    "detail": "@readme.md",
+    "document": "@document.md",
+    "author": "北京云道天成科技有限公司",
+    "homepage": "https://www.minapages.com",
+    "menu":[{
+        "slug":"mina/user/group",
+        "group":"MINA 用户"
+    },{
+        "slug":"mina/user/user/index",
+        "name":"用户",
+        "index": true,
+        "icon":{
+            "default":"/static/icons/user.svg"
+        },
+        "icontype": "img",
+        "linktype":"i",
+        "link":"{user,index}",
+        "permission": "boss,admin,manager,user",
+        "order":9999
+    }],
+    "dependencies": [],
+    "injections": [],
+    "api": [],
+    "register_api": [],
+    "setup": {
+        "install": {
+            "controller": "setup",
+            "action": "install"
+        },
+        "upgrade": {
+            "controller": "setup",
+            "action": "upgrade"
+        },
+        "uninstall": {
+            "controller": "setup",
+            "action": "uninstall"
+        },
+        "repair": {
+            "controller": "setup",
+            "action": "repair"
+        }
+    }
+}
