@@ -55,8 +55,8 @@ class User extends Model {
 			 ->putColumn( 'tag', $this->type('text',  ['json'=>true]) )  // 用户标签
 
 			// 身份校验
-			 ->putColumn( 'mobile_verified', $this->type('integer',  ['length'=>1, 'default'=>0]) )  // 手机号是否通过校验
-			 ->putColumn( 'email_verified', $this->type('integer',  ['length'=>1, 'default'=>0]) )   // 电邮地址是否通过校验
+			 ->putColumn( 'mobile_verified', $this->type('boolean',  ['default'=>"0"]) )  // 手机号是否通过校验
+			 ->putColumn( 'email_verified', $this->type('boolean',  ['default'=>"0"]) )   // 电邮地址是否通过校验
 			
 			// 用户状态 on/off/lock
 			 ->putColumn( 'status', $this->type('string', ['length'=>10,'index'=>true, 'default'=>'on']) )

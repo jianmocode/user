@@ -68,86 +68,8 @@ class User extends Api {
 	 */
 	protected function search( $query=[] ) {
 
-		$select = empty($query['select']) ? 'name' : $query['select'];
-		$select = is_array($select) ? $select : explode(',', $select);
-
-		// 验证 Select 参数
-		$allowFields = ["*","tag_id","name","param"];
-
-		foreach ($select as $idx => $field) {
-			if ( !in_array($field, $allowFields)){
-				throw new Excp(" select 参数错误 ($field 非法字段)", 400, ['query'=>$query]);
-			}
-		}
-
-	
-		// Order 默认参数
-		$query['order'] = !empty($query['order']) ? $query['order'] : 'tag_id';
-		$allowOrder = ["updated_at", "tag_id"];
-		$orderList = explode(',', $query['order']);
-
-
-		// 分页参数
-		$query['page'] = !empty($query['page']) ? intval($query['page']) : 1;
-		$query['perpage'] = !empty($query['perpage']) ? intval($query['perpage']) : 50;
-
-
-
-		// 查询数据表
-		$t = new \Mina\Pages\Model\Tag;
-		$qb = $t->query();
-
-		// 设定查询条件
-		$this->qb( $qb, 'name', 'name', $query, ["and", "or", "in"] );
-		$this->qb( $qb, 'tag_id', 'tagId', $query, ["and", "or", "in"] );
-		$this->qb( $qb, 'param', 'param', $query, ['and', 'or'], 'like');
-
-		// 处理排序
-		foreach ($orderList as $order) {
-			$order = trim($order);
-			$orderArr = preg_split('/[ ]+/', $order );
-			$orderArr[1] = !empty($orderArr[1]) ? $orderArr[1] : 'desc';
-
-			if ( !in_array($orderArr[0], $allowOrder)) {
-				throw new Excp(" order 参数错误 ({$orderArr[0]} 非法字段)", 400, ['query'=>$query]);
-			}
-
-			$qb->orderBy($orderArr[0],$orderArr[1]);
-		}
-		
-		// 查询数据
-		$qb->select( $select );
-		$result = $qb ->paginate($query['perpage'],['tag_id'], 'page', $query['page'] );
-		$resultData = $result->toArray();
-		
-
-		// 处理结果集
-		$data = $resultData['data'];
-
-		$resp['curr'] = $resultData['current_page'];
-		$resp['perpage'] = $resultData['per_page'];
-		
-		$resp['next'] = ( $resultData['next_page_url'] === null ) ? false : intval( str_replace('/?page=', '',$resultData['next_page_url']));
-		$resp['prev'] = ( $resultData['prev_page_url'] === null ) ? false : intval( str_replace('/?page=', '',$resultData['prev_page_url']));
-
-		$resp['from'] = $resultData['from'];
-		$resp['to'] = $resultData['to'];
-		
-		$resp['last'] = $resultData['last_page'];
-		$resp['total'] = $resultData['total'];
-		$resp['data'] = $data;
-
-		if ( empty($data) ) {
-			return $resp;
-		}
-
-		if ( count(end($data)) == 1) {
-			foreach ($data as $idx=>$rs ) {
-				$resp['data'][$idx] = current($rs);
-			}
-		}
-		
-		return $resp;
+		$this->authVcode();
+		return $query;
 
 	}
 
