@@ -12,14 +12,14 @@ use \Endroid\QrCode\ErrorCorrectionLevel;
 
 
 
-class UserController extends \Tuanduimao\Loader\Controller {
+class GroupController extends \Tuanduimao\Loader\Controller {
 	
 	function __construct() {
 	}
 
-	// 用户列表
+	// 分组列表
 	function index() {
-		echo "<div class='content'>init index</div>";
+		echo "<div class='content'>init Group</div>";
 	}
 
 }

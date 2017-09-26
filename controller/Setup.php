@@ -11,7 +11,8 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 	function __construct() {
 
 		$this->models = [
-			'\\Mina\\User\\Model\\User'
+			'\\Mina\\User\\Model\\User',
+			'\\Mina\\User\\Model\\Group'
 		];
 	}
 	
