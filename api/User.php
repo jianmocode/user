@@ -6,6 +6,8 @@ use \Tuanduimao\Loader\App;
 use \Tuanduimao\Excp;
 use \Tuanduimao\Utils;
 use \Tuanduimao\Api;
+use \Tuanduimao\Option;
+use \Mina\User\Model\User as UserModel;
 
 
 /**
@@ -37,6 +39,106 @@ class User extends Api {
 		     	'page','perpage'
 		     ]);
 	}
+
+
+
+	/**
+	 * 读取用户配置信息
+	 * @return
+	 */
+	protected function option( $query=[] ) {
+
+		$opt =  new Option("mina/user");
+		$options = $opt->getAll();
+
+		$map = $options['map'];
+		unset($map["user/sms/vcode"]);
+
+		$newmap = [];
+		foreach ($map as $key => $val) {
+			$newkey = str_replace("/", "_", $key);
+			$newmap[$newkey] = $val;
+		}
+
+		return $newmap;
+	}
+
+
+
+	/**
+	 * 创建一个新用户
+	 * @param  array  $query [description]
+	 * @param  [type] $data  [description]
+	 * @return [type]        [description]
+	 */
+	protected function create( $query=[], $data=[] ) {
+
+		$opt =  new Option("mina/user");
+		$options = $opt->getAll();
+		$map = $options['map'];
+
+	}
+
+
+
+	/**
+	 * 校验手机短信验证码
+	 * @param  array  $query [description]
+	 * @param  array  $data  [description]
+	 * @return [type]        [description]
+	 */
+	protected function verify_sms_vcode( $query=[], $data=[] ) {
+
+	}
+
+
+
+	/**
+	 * 读取手机短信验证码
+	 * @param  array $query [description]
+	 * @return [type]        [description]
+	 */
+	protected function getSMSCode( $query = [] ) {
+
+		$this->authVcodeOnly();
+
+		// 是否开启验证码
+		$opt =  new Option("mina/user");
+		$options = $opt->getAll();
+		$map = $options['map'];
+
+		if( $map['user/sms/on'] != 1) {
+			throw new Excp("非法请求 未开启短信验证码", 401, ['query'=>$query]);
+		}
+
+		// 提交信息校验
+		if ( empty($query['mobile']) ) {
+			throw new Excp("非法请求 未知手机号码", 401, ['query'=>$query]);
+		}
+
+		$now = time();
+		$lock_time = 60;
+		$locked_at = intval($_SESSION['SMSCODE:locked_at']);
+
+		if ( ( $now - $locked_at ) < $lock_time ) {
+			throw new Excp("非法请求 请求过于频繁", 403, ['locked_at'=>$locked_at]);
+		}
+
+
+		// 发送短信验证码
+		$u = new UserModel();
+		$nation = !empty($query['nation']) ? $query['nation'] : '86';
+		$u->SMSCode( $query['mobile'], $nation );
+
+		// 锁定
+		$_SESSION['SMSCODE:locked_at'] = $now;
+		return ["message"=>"发送成功", "code"=>0 ];
+
+	}
+
+
+
+
 
 
 	/**

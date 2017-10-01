@@ -32,6 +32,7 @@ class Group extends Model {
 	function __schema() {
 		
 		$this->putColumn( 'group_id', $this->type('string', ['length'=>128, 'unique'=>1]) )    // 用户组ID 
+			 ->putColumn( 'slug', $this->type('string',  ['length'=>128, 'unique'=>1]) )  // 用户组别名
 			 ->putColumn( 'name', $this->type('string',  ['length'=>256]) )  // 用户组名称
 			 ->putColumn( 'remark', $this->type('string',  ['length'=>256]) )  // 用户组备注
 			 ->putColumn( 'tag', $this->type('text',  ['json'=>true]) )  // 用户组标签
@@ -41,10 +42,36 @@ class Group extends Model {
 		;
 	}
 
+
+	function getBySlug( $slug, $status=null ) {
+		$qb = $this->query()
+					->where("slug", "=", $slug);
+		if ( $status !== null ) {
+			$qb->where("status", "=", $status);
+		}					
+
+		$rs = $qb->limit(1)
+		   ->select('group_id', 'slug', 'name', "remark", 'tag','status')
+		   ->get();
+
+		   
+		if ( empty($rs) ) {
+			return [];
+		}
+
+		return current($rs);
+	}
+
+
+
 	function create( $data ) {
 		$data['group_id'] = $this->genGroupId();
+		if (empty($data['slug']) ) {
+			$data['slug'] = $data['group_id'];
+		}
 		return parent::create( $data );
 	}
+
 
 	function genGroupId() {
 		return time() . rand(10000,99999);

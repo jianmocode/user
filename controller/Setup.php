@@ -4,6 +4,7 @@ use \Tuanduimao\Utils as Utils;
 use \Tuanduimao\Tuan as Tuan;
 use \Tuanduimao\Excp as Excp;
 use \Tuanduimao\Conf as Conf;
+use \Tuanduimao\Option as Option;
 
 
 class SetupController extends \Tuanduimao\Loader\Controller {
@@ -15,7 +16,112 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 			'\\Mina\\User\\Model\\Group'
 		];
 	}
+
+
+	/**
+	 * 初始化用户相关配置项
+	 * @return 
+	 */
+	private function init_option() {
+
+		$opt = new Option('mina/user');
+
+		// 短信验证码
+		$sms_vcode = $opt->get("user/sms/vcode");
+		if ( empty($sms_vcode) ) {
+			$opt->register(
+				"短信验证码配置", 
+				"user/sms/vcode", 
+				[
+					"type" => "qcloud",
+					"option"=>[
+						"appid" => "<your appid>",
+						"appkey" => "<your appkey>",
+						"sign" => "您的签名",
+						"message" => "您的短信验证码为 {1} , 打死不要告诉别人！" 
+					]
+				],
+				90
+			);
+		}
+
+
+		// 是否开启短信验证码登录
+		$sms_on = $opt->get("user/sms/on");
+		if ( empty($sms_on) ) {
+			$opt->register(
+				"开启短信验证码", 
+				"user/sms/on", 
+				1,
+				89
+			);
+		}
+
+
+		// 是否开启手机号密码登录
+		$mobile_on = $opt->get('user/mobile/on');
+		if ( empty($mobile_on) ) {
+			$opt->register(
+				"开启手机号登录", 
+				"user/mobile/on", 
+				1,
+				1
+			);
+		}
+
+
+		// 是否开启微信登录
+		$wechat_on = $opt->get('user/wechat/on');
+		if ( empty($wechat_on) ) {
+			$opt->register(
+				"开启微信登录", 
+				"user/wechat/on", 
+				1,
+				2
+			);
+		}
+
+
+		// 是否开启手机号注册
+		$mobile_signup_on = $opt->get("user/mobile/signup/on");
+		if ( empty($mobile_signup_on) ) {
+			$opt->register(
+				"开放手机号注册", 
+				"user/mobile/signup/on", 
+				1,
+				3
+			);
+		}
+
+
+		// 默认用户分组名称
+		$default_group = $opt->get("user/default/group");
+		if ( empty($default_group) ) {
+			$opt->register(
+				"默认分组", 
+				"user/default/group", 
+				"default",
+				4
+			);
+		}
+	}
+
+
+	private  function remove_option(){
+		$opt = new Option('mina/user');
+		$opt->unregister();
+	}
+
 	
+	private  function init_group() {
+		
+		$g = new \Mina\User\Model\Group;
+		$default = $g->getBySlug('default');
+		if ( empty($default) ) {
+			$g->create(['slug'=>"default", 'name'=>'默认分组']);
+		}
+	}
+
 
 	function install() {
 
@@ -29,6 +135,21 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 			try { $inst->__clear(); } catch( Excp $e) {echo $e->toJSON(); return;}
 			try { $inst->__schema(); } catch( Excp $e) {echo $e->toJSON(); return;}
 		}
+
+		// 创建配置项
+		try {
+			$this->init_option();
+		} catch( Excp $e ){
+			echo $e->toJSON(); return;
+		}
+
+		// 创建默认分组
+		try {
+			$this->init_group();
+		} catch( Excp $e ){
+			echo $e->toJSON(); return;
+		}
+
 		echo json_encode('ok');
 	}
 
@@ -48,6 +169,21 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 		foreach ($insts as $inst ) {
 			try { $inst->__schema(); } catch( Excp $e) {echo $e->toJSON(); return;}
 		}
+
+		// 创建配置项
+		try {
+			$this->init_option();
+		} catch( Excp $e ){
+			echo $e->toJSON(); return;
+		}
+
+		// 创建默认分组
+		try {
+			$this->init_group();
+		} catch( Excp $e ){
+			echo $e->toJSON(); return;
+		}
+
 		echo json_encode('ok');		
 	}
 
@@ -64,6 +200,15 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 		foreach ($insts as $inst ) {
 			try { $inst->__clear(); } catch( Excp $e) {echo $e->toJSON(); return;}
 		}
+
+
+		// 移除配置项
+		try {
+			$this->remove_option();
+		} catch( Excp $e ){
+			echo $e->toJSON(); return;
+		}
+
 		echo json_encode('ok');		
 	}
 }

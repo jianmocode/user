@@ -64,6 +64,33 @@ class User extends Model {
 	}
 
 
+	/**
+	 * 发送短信验证码
+	 * @param [type]  $mobile     [description]
+	 * @param integer $nationcode [description]
+	 */
+	function SMSCode( $mobile, $nationcode=86 ) {
+
+		$opt =  new \Tuanduimao\Option("mina/user");
+		$options = $opt->getAll();
+		$c = $options['map'];
+
+		if ( !is_array($c["user/sms/vcode"]) || !is_array($c["user/sms/vcode"]['option']) ) {
+			throw new Excp("短信网关配置信息错误", 500, ["c"=>$c["user/sms/vcode"]]);
+		}
+
+		@session_start();
+		$code = rand(1000,9999);
+		$_SESSION['SMSCODE:code'] = $code;
+
+		$sms = $c["user/sms/vcode"];
+		$sms['option']['mobile'] = $mobile;
+		$sms['option']['nationcode'] = $nationcode;
+
+		return Utils::SendSMS($sms, [$code] );
+	}
+
+
 
 	function create( $data ) {
 		$data['user_id'] = $this->genUserId();
