@@ -47,6 +47,7 @@ class User extends Model {
 
 			 // 常用字段
 			 ->putColumn( 'mobile', $this->type('string',  ['length'=>40, 'unique'=>true]) )  // 手机号
+			 ->putColumn( 'mobile_nation', $this->type('string',  ['length'=>40, 'unique'=>true]) )  // 手机号
 			 ->putColumn( 'email', $this->type('string',  ['length'=>128, 'unique'=>true]) )  // 电邮地址
 			 
 			 ->putColumn( 'zip', $this->type('string',  ['length'=>40]) )  // 邮编
@@ -58,6 +59,12 @@ class User extends Model {
 			 ->putColumn( 'mobile_verified', $this->type('boolean',  ['default'=>"0"]) )  // 手机号是否通过校验
 			 ->putColumn( 'email_verified', $this->type('boolean',  ['default'=>"0"]) )   // 电邮地址是否通过校验
 			
+			// 登录密码
+			->putColumn( 'password', $this->type('string', ['length'=>128] ) )
+
+			// 支付密码
+			->putColumn( 'payPassword', $this->type('string', ['length'=>128] ) )
+
 			// 用户状态 on/off/lock
 			 ->putColumn( 'status', $this->type('string', ['length'=>10,'index'=>true, 'default'=>'on']) )
 		;
@@ -81,7 +88,7 @@ class User extends Model {
 
 		@session_start();
 		$code = rand(1000,9999);
-		$_SESSION['SMSCODE:code'] = $code;
+		$_SESSION['SMSCODE:code'] = $nationcode.$mobile.$code;
 
 		$sms = $c["user/sms/vcode"];
 		$sms['option']['mobile'] = $mobile;
@@ -91,11 +98,59 @@ class User extends Model {
 	}
 
 
+	/**
+	 * 校验短信验证码
+	 * @param  [type]  $mobile     [description]
+	 * @param  [type]  $smscode    [description]
+	 * @param  integer $nationcode [description]
+	 * @return [type]              [description]
+	 */
+	function verifySMSCode( $mobile,  $code, $nationcode = "86" ){
+		$code = $nationcode.$mobile.$code;
+		@session_start();
+		// throw new Excp("短信验证码不正确", 402, ['code'=>$code, 'session'=>$_SESSION['SMSCODE:code']]);
+		return ( $_SESSION['SMSCODE:code'] == $code );
+	}
+
+
+	/**
+	 * 校验用户密码是否正确 
+	 * @param  [type] $password [description]
+	 * @param  [type] $hash     [description]
+	 * @return [type]           [description]
+	 */
+	function checkPassword( $password, $hash ) {
+		return password_verify($password, $hash);
+	}
+
+
+	/**
+	 * Password Hash
+	 * @param  [type] $password [description]
+	 * @return [type]           [description]
+	 */
+	function hashPassowrd( $password ) {
+		return password_hash( $password, PASSWORD_BCRYPT, ['cost'=>12] );
+	}
+
+
 
 	function create( $data ) {
+
 		$data['user_id'] = $this->genUserId();
+		if (array_key_exists('password', $data) ) {
+			$data['password'] = $this->hashPassowrd($data['password']);
+		}
+
+		if (array_key_exists('payPassword', $data) ) {
+			$data['payPassword'] = $this->hashPassowrd($data['payPassword']);
+		}
+		
 		return parent::create( $data );
 	}
+
+
+
 
 	function genUserId() {
 		return time() . rand(10000,99999);

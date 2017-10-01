@@ -73,10 +73,47 @@ class User extends Api {
 	 */
 	protected function create( $query=[], $data=[] ) {
 
+		$this->authVcode();
+
 		$opt =  new Option("mina/user");
 		$options = $opt->getAll();
-		$map = $options['map'];
+		$map = $options['map'];		
 
+		// 校验手机号码
+		if ( empty($data['mobile']) ) {
+			throw new Excp("手机号码格式不正确", 402, ['data'=>$data]);
+		}
+
+		// 校验短信验证码
+		if( $map['user/sms/on'] == 1) {
+			$data['mobile_verified'] = true;
+			$data['mobile_nation'] = !empty($data['nation']) ? $data['nation'] : '86';
+			if ( $this->verifySMSCode($query, $data) === false) {
+				throw new Excp("短信验证码不正确", 402, ['data'=>$data]);
+			}
+		}
+
+
+		// 检查密码
+		if ( isset($data['repassword']) ) { 
+			if ( $data['password'] != $data['repassword'] ) {
+				throw new Excp("两次输入的密码不一致", 402, ['data'=>$data]);
+			}
+		}
+
+
+		// 数据入库
+		$u = new UserModel();
+		try {
+			$u->create($data);
+		} catch(Excp $e ){
+			if ( $e->getCode() == '1062') {
+				throw new Excp("手机号 {$data['mobile']} 已被注册", 402, ['data'=>$data]);	
+			}
+			throw $e;
+		}
+
+		return ["message"=>"注册成功", "code"=>0 ];
 	}
 
 
@@ -87,10 +124,13 @@ class User extends Api {
 	 * @param  array  $data  [description]
 	 * @return [type]        [description]
 	 */
-	protected function verify_sms_vcode( $query=[], $data=[] ) {
-
+	protected function verifySMSCode( $query=[], $data=[] ) {
+		$u = new UserModel();
+		$mobile = $data['mobile'];
+		$nation  = !empty($data['nation']) ? $data['nation'] : '86';
+		$smscode = $data['smscode'];
+		return $u->verifySMSCode($mobile, $smscode, $nation);
 	}
-
 
 
 	/**
