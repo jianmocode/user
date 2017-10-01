@@ -52,7 +52,7 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 			$opt->register(
 				"开启短信验证码", 
 				"user/sms/on", 
-				1,
+				0,
 				89
 			);
 		}
