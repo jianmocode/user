@@ -52,14 +52,16 @@ class Group extends Model {
 
 		$rs = $qb->limit(1)
 		   ->select('group_id', 'slug', 'name', "remark", 'tag','status')
-		   ->get();
+		   ->get()
+		   ->toArray();
 
-		   
 		if ( empty($rs) ) {
 			return [];
 		}
 
-		return current($rs);
+		$row = end($rs);
+
+		return $row;
 	}
 
 

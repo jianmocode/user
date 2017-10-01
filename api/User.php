@@ -8,10 +8,11 @@ use \Tuanduimao\Utils;
 use \Tuanduimao\Api;
 use \Tuanduimao\Option;
 use \Mina\User\Model\User as UserModel;
+use \Mina\User\Model\Group as GroupModel;
 
 
 /**
- * 标签API接口
+ * 用户API接口
  */
 class User extends Api {
 
@@ -100,6 +101,13 @@ class User extends Api {
 				throw new Excp("两次输入的密码不一致", 402, ['data'=>$data]);
 			}
 		}
+
+
+		// Group
+		$slug = $map['user/default/group'];
+		$g = new GroupModel();
+		$rs = $g->getBySlug($slug);
+		$data['group_id'] = $rs['group_id'];
 
 
 		// 数据入库
