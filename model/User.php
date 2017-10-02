@@ -72,6 +72,10 @@ class User extends Model {
 
 
 
+	/**
+	 * 读取用户信息
+	 * @return [type] [description]
+	 */
 	function getUserInfo() {
 
 		@session_start();
@@ -81,6 +85,17 @@ class User extends Model {
 		}
 
 		return $rs;
+	}
+
+
+	/**
+	 * 退出登录
+	 * @return [type] [description]
+	 */
+	function logout() {
+		@session_start();
+		unset($_SESSION['USER:info']);
+		return $this;
 	}
 
 

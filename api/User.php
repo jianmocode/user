@@ -88,6 +88,17 @@ class User extends Api {
 
 
 	/**
+	 * 退出登录 (注销)
+	 * @return [type] [description]
+	 */
+	protected function logout() {
+		$u = new UserModel();
+		$u->logout();
+		return ['code'=>0, "message"=>"注销成功"];
+	}
+
+
+	/**
 	 * 读取用户会话信息
 	 * @param  array  $query [description]
 	 * @param  array  $data  [description]
@@ -98,7 +109,7 @@ class User extends Api {
 		return $u->getUserInfo();
 	}
 
-	
+
 
 
 	/**
