@@ -71,6 +71,67 @@ class User extends Model {
 	}
 
 
+
+	function getUserInfo() {
+
+		@session_start();
+		$rs = $_SESSION['USER:info'];
+		if ( empty($rs) ) {
+			return [];
+		}
+
+		return $rs;
+	}
+
+
+	/**
+	 * 用户登录
+	 */
+	function login( $mobile, $password = null ) {
+
+		$rows = $this->query()
+				->leftJoin("group", 'group.group_id', "=", "user.group_id" )
+				->where('mobile', '=', $mobile)
+				->limit(1)
+				->select(
+					"user_id", "user.group_id as group_id", "openId", "unionId", 
+					"nickName", "gender", "city", "province", "country","avatarUrl", "language",
+					"mobile", "mobile_nation", "mobile_verified",
+					"email", "email_verified",
+					"zip", "address", "user.remark as remark", "user.tag as tag",
+					"password", "payPassword",
+					"user.status as status",
+					"group.name as group_name",
+					"group.slug as group_slug",
+					"group.remark as group_remark",
+					"group.tag as group_tag",
+					"group.status as group_status"
+				)
+				->get()
+				->toArray();
+
+		if ( empty($rows) ) {
+			throw new Excp( "用户不存在", 404, ['data'=>$data, 'query'=>$query]);
+		}
+
+		$rs = current($rows);
+
+		if ( $password != null ) {
+			if ( $this->checkPassword($password, $rs['password']) === false ) {
+				throw new Excp( "密码错误", 404, ['data'=>$data, 'query'=>$query]);
+			}
+		}
+
+		@session_start();
+
+		$userinfo = $rs;
+		unset($userinfo['password']);
+		unset($userinfo['payPassword']);
+		$_SESSION['USER:info'] = $userinfo;
+		return $rs;
+	}
+
+
 	/**
 	 * 发送短信验证码
 	 * @param [type]  $mobile     [description]

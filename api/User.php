@@ -67,6 +67,41 @@ class User extends Api {
 
 
 	/**
+	 * 用户登录 
+	 * @param  array  $query [description]
+	 * @param  array  $data  [description]
+	 * @return [type]        [description]
+	 */
+	protected function login( $query=[], $data=[] ) {
+		$this->authVcode();
+		$u = new UserModel();
+		$mobile = $data['mobile'];
+
+		if ( empty($mobile) ) {
+			throw new Excp("未知手机号码", 404, ['data'=>$data, 'query'=>$query]);
+		}
+
+		$u->login($mobile, $data['password']);
+		return ['code'=>0, "message"=>"登录成功"];
+
+	}
+
+
+	/**
+	 * 读取用户会话信息
+	 * @param  array  $query [description]
+	 * @param  array  $data  [description]
+	 * @return [type]        [description]
+	 */
+	protected function getUserInfo( $query=[], $data=[] ) {
+		$u = new UserModel();
+		return $u->getUserInfo();
+	}
+
+	
+
+
+	/**
 	 * 创建一个新用户
 	 * @param  array  $query [description]
 	 * @param  [type] $data  [description]
