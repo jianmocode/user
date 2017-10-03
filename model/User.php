@@ -18,7 +18,13 @@ use \Tuanduimao\Option as Option;
 class User extends Model {
 
 	private $user_wechat = null;
+	private $cfg = null;
 	public $userinfo = [];
+	public $appid = null;
+	public $openid = null;
+	public $unionid = null;
+	public $user_id = null;
+	public $wechat_id = null;
 
 	/**
 	 * 初始化
@@ -162,6 +168,34 @@ class User extends Model {
 	}
 
 
+	/**
+	 * 向用户回复文本消息
+	 * @param  [type] $message [description]
+	 * @return [type]          [description]
+	 */
+	function replyText(  $message, $wechat_id=null, $openid=null,  $appid=null ) {
+		
+		$openid = !empty($openid) ? $openid : $this->openid;
+		$appid = !empty($appid) ? $appid : $this->appid;
+		$wechat_id = !empty($wechat_id) ? $wechat_id : $this->wechat_id;
+
+		$cfg = $this->cfg;
+		$this->wechat_id = $wechat_id;
+
+		if ( $cfg == null || ($this->cfg['appid'] != $appid ) ) {
+			$conf = Utils::getConf();
+			$cfg = $conf["_map"][$appid];
+			if ( empty($cfg) ) {
+				throw new Excp( "未找到配置信息($appid)", 404, ['openid'=>$openid, 'appid'=>$appid]);
+			}
+			$this->cfg = $cfg;
+		}
+
+		
+		$wechat = new Wechat( $cfg );
+		return $wechat->replyText($wechat_id, $openid, $message );
+	}
+
 
 	/**
 	 * 退出登录
@@ -202,6 +236,8 @@ class User extends Model {
 		if ( empty($cfg) ) {
 			throw new Excp( "未找到配置信息($appid)", 404, ['openid'=>$openid, 'appid'=>$appid]);
 		}
+
+
 
 		$wechat = new Wechat( $cfg );
 		$u = $wechat->getUser( $openid );
@@ -245,7 +281,7 @@ class User extends Model {
 					  ->toArray();
 		
 		unset($u['remark']);
-		
+
 		if ( empty($uinfo) ) {
 
 			// Group 信息
@@ -263,6 +299,10 @@ class User extends Model {
 			$this->updateBy("user_id", $u);
 		}
 
+		$this->appid = $appid;
+		$this->openid = $openid;
+		$this->unionid = $u['unionid'];
+		$this->cfg = $cfg;
 		return $user_id;
 	}
 
@@ -348,6 +388,7 @@ class User extends Model {
 		unset($userinfo['pay_password']);
 		$_SESSION['USER:info'] = $userinfo;
 		$this->userinfo = $userinfo;
+		$this->user_id = $userinfo['user_id']; 
 		return $this;
 	}
 

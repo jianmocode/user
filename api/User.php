@@ -47,7 +47,7 @@ class User extends Api {
 		}
 
 		if ( $message['MsgType'] != 'event' ) {
-			return "忽略";
+			return ["code"=>0, "result"=>"忽略", "message"=>null];
 		}
 
 		// 扫描带参二维码
@@ -57,15 +57,15 @@ class User extends Api {
 			$ss = $u->extractWechatScanEvent($message);
 
 			if ( $ss === null ) {
-				return '忽略';
+				return ["code"=>0, "result"=>"忽略", "message"=>null];
 			}
 
-			$u->loginByOpenId($appid, $ss['openid'], $ss['sid']);
-			return "成功";
+			$message = $u->loginByOpenId($appid, $ss['openid'], $ss['sid'])
+					 ->replyText("登录成功 \n@".date('Y年m月d日 h:i:s'), $message["ToUserName"]);
+			return ["code"=>0, "result"=>"成功", "message"=>$message];
 		}
 
-		// $log->info("微信推送消息 {$param['nonce']}{$param['timestamp']}" , [$message, $param] );
-		return "忽略";
+		return ["code"=>0, "result"=>"忽略", "message"=>null];
 	}
 
 
@@ -75,7 +75,10 @@ class User extends Api {
 		// $user_id = $u->updateWechatUser("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g");
 		// return $user_id;
 
-		$resp = $u->loginByOpenId("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g", "j0d2vq39eh86hdjjcvud43t3g4");
+		$resp = $u->loginByOpenId("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g", "j0d2vq39eh86hdjjcvud43t3g4")
+			 ->replyText( "登录成功", "gh_da2c392b7342")
+		;
+
 
 // 		$option =  new Option("mina/user");
 // 		$appid = $option->get("user/wechat/login/appid");
