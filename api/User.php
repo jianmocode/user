@@ -7,6 +7,7 @@ use \Tuanduimao\Excp;
 use \Tuanduimao\Utils;
 use \Tuanduimao\Api;
 use \Tuanduimao\Option;
+use \Tuanduimao\Wechat;
 use \Mina\User\Model\User as UserModel;
 use \Mina\User\Model\Group as GroupModel;
 
@@ -23,24 +24,129 @@ class User extends Api {
 	function __construct() {
 
 		parent::__construct();
-		$this->allowMethod('get', ["PHP",'GET'])
-		     ->allowQuery('get',  ['tagId', 'select'])
-		     ->allowMethod('search', ["PHP",'GET'])
-		     ->allowQuery('search',  [
-		     	"select",
-		     	'name','orName','inName',
-		     	'fullname','orFullname','inFullname',
-		     	'categoryId','orcategoryId','incategoryId',
-		     	'parentId','orParentId','inParentId',
-		     	'children',
-		     	'hidden', 'orHidden',
-		     	'status', 'orStatus',
-		     	'praram','orParam',
-		     	'order',
-		     	'page','perpage'
-		     ]);
+		$this->forbidden(['wechatRouter']);
 	}
 
+
+	/**
+	 * 微信推送-消息接收器 (禁止直接调用)
+	 * @param $query['query']    微信 GET参数
+	 *        $query['message']  解密后消息正文
+	 * @return 
+	 */
+	protected function wechatRouter( $query ) {
+
+		$log = new \Tuanduimao\Log("Wechat");
+
+		$message = $query['message'];
+		$param =  $query['query'];
+		$appid = $param['appid'];
+
+		if ( empty($appid) ){
+			throw new Excp("未知请求来源 ($appid)", 404, ["appid"=>$appid, "param"=>$param, "message"=>$message]);
+		}
+
+		if ( $message['MsgType'] != 'event' ) {
+			return "忽略";
+		}
+
+		// 扫描带参二维码
+		if ( $message['Event'] == 'SCAN' || $message['Event'] == 'subscribe' ) {
+
+			$u = new UserModel();
+			$ss = $u->extractWechatScanEvent($message);
+
+			if ( $ss === null ) {
+				return '忽略';
+			}
+
+			$u->loginByOpenId($appid, $ss['openid'], $ss['sid']);
+			return "成功";
+		}
+
+		// $log->info("微信推送消息 {$param['nonce']}{$param['timestamp']}" , [$message, $param] );
+		return "忽略";
+	}
+
+
+	protected function test() {
+
+		$u = new UserModel();
+		// $user_id = $u->updateWechatUser("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g");
+		// return $user_id;
+
+		$resp = $u->loginByOpenId("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g", "j0d2vq39eh86hdjjcvud43t3g4");
+
+// 		$option =  new Option("mina/user");
+// 		$appid = $option->get("user/wechat/login/appid");
+// 		$conf = Utils::getConf();
+
+// 		if ( $appid !== null ){
+// 			$cfg = $conf['_map'][$appid]; 
+// 		} else if ( is_array($conf['_type']['1'])) {
+			
+// 			$cfg = current($conf['_type']['1']);
+// 		}
+
+// 		$wechat = new Wechat( $cfg );
+
+
+// 		$xml = '<xml><ToUserName><![CDATA[gh_da2c392b7342]]></ToUserName>
+// <FromUserName><![CDATA[o2ylUw_SyKDaSW3OE71JkEJ7N36g]]></FromUserName>
+// <CreateTime>1507023717</CreateTime>
+// <MsgType><![CDATA[event]]></MsgType>
+// <Event><![CDATA[SCAN]]></Event>
+// <EventKey><![CDATA[signin]]></EventKey>
+// <Ticket><![CDATA[gQH87jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAySmVZNmN3ckZkazMxU3FyajFwY2UAAgReW9NZAwQ8AAAA]]></Ticket>
+// </xml>';
+
+// 		$resp = $wechat->messageToArray( $xml );
+
+		return $resp;
+	}
+
+
+
+
+	/**
+	 * 用户登录二维码
+	 * @return [type] [description]
+	 */
+	protected function wechatSigninQrcode() {
+
+		$option =  new Option("mina/user");
+		$appid = $option->get("user/wechat/login/appid");
+		$conf = Utils::getConf();
+
+		if ( $appid !== null ){
+			$cfg = $conf['_map'][$appid]; 
+		} else if ( is_array($conf['_type']['1'])) {
+			
+			$cfg = current($conf['_type']['1']);
+		}
+
+		if ( empty($cfg) ) {
+			throw new Excp("未找到有效的微信公众号配置", 404);
+		}
+
+
+		$session_id = session_id();
+		$wechat = new Wechat( $cfg );
+
+		$resp = $wechat->getQrcodeURL([
+			'action_info'=>[
+				"scene"=>[
+					"scene_str"=>"<s>".session_id()."</s>"
+				]
+			]
+		]);
+
+		return [
+			"name" => $cfg['name'],
+			"url" => $resp['showqrcode'],
+			"expire_seconds" => $resp['expire_seconds']
+		];
+	}
 
 
 	/**

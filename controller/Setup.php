@@ -5,6 +5,7 @@ use \Tuanduimao\Tuan as Tuan;
 use \Tuanduimao\Excp as Excp;
 use \Tuanduimao\Conf as Conf;
 use \Tuanduimao\Option as Option;
+use \Tuanduimao\Wechat as Wechat;
 
 
 class SetupController extends \Tuanduimao\Loader\Controller {
@@ -24,11 +25,14 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 	 */
 	private function init_option() {
 
+		// 注册微信消息处理器
+		Wechat::bind("mina/user", "user/wechatRouter");
+
 		$opt = new Option('mina/user');
 
 		// 短信验证码
 		$sms_vcode = $opt->get("user/sms/vcode");
-		if ( empty($sms_vcode) ) {
+		if ( $sms_vcode === null ) {
 			$opt->register(
 				"短信验证码配置", 
 				"user/sms/vcode", 
@@ -47,8 +51,8 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 
 
 		// 是否开启短信验证码登录
-		$sms_on = $opt->get("user/sms/on");
-		if ( empty($sms_on) ) {
+		$sms_on = $opt->get("user/sms/on");		
+		if ( $sms_on === null ) {
 			$opt->register(
 				"开启短信验证码", 
 				"user/sms/on", 
@@ -60,7 +64,7 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 
 		// 是否开启手机号密码登录
 		$mobile_on = $opt->get('user/mobile/on');
-		if ( empty($mobile_on) ) {
+		if ( $mobile_on === null ) {
 			$opt->register(
 				"开启手机号登录", 
 				"user/mobile/on", 
@@ -72,7 +76,7 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 
 		// 是否开启微信登录
 		$wechat_on = $opt->get('user/wechat/on');
-		if ( empty($wechat_on) ) {
+		if ( $wechat_on === null ) {
 			$opt->register(
 				"开启微信登录", 
 				"user/wechat/on", 
@@ -84,7 +88,7 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 
 		// 是否开启手机号注册
 		$mobile_signup_on = $opt->get("user/mobile/signup/on");
-		if ( empty($mobile_signup_on) ) {
+		if ( $mobile_signup_on === null ) {
 			$opt->register(
 				"开放手机号注册", 
 				"user/mobile/signup/on", 
@@ -96,7 +100,7 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 
 		// 默认用户分组名称
 		$default_group = $opt->get("user/default/group");
-		if ( empty($default_group) ) {
+		if ($default_group === null ) {
 			$opt->register(
 				"默认分组", 
 				"user/default/group", 
@@ -110,6 +114,9 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 	private  function remove_option(){
 		$opt = new Option('mina/user');
 		$opt->unregister();
+
+		// 解绑微信处理器
+		Wechat::unbind("mina/user");
 	}
 
 	
@@ -208,6 +215,8 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 		} catch( Excp $e ){
 			echo $e->toJSON(); return;
 		}
+
+
 
 		echo json_encode('ok');		
 	}
