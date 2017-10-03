@@ -105,6 +105,9 @@ class User extends Model {
 			// 微信应用 id
 			->putColumn( 'appid',  $this->type('string', ['length'=>128, 'index'=>true]) )
 
+			// 用户备注
+			->putColumn( 'remark', $this->type('string',  ['length'=>256]) )  
+
 			// 微信应用 SLUG
 			->putColumn( 'appid_openid',  $this->type('string', ['length'=>128, 'unique'=>true]) )
 		;
@@ -241,6 +244,8 @@ class User extends Model {
 					  ->get()
 					  ->toArray();
 		
+		unset($u['remark']);
+		
 		if ( empty($uinfo) ) {
 
 			// Group 信息
@@ -252,8 +257,8 @@ class User extends Model {
 			$g = new Group();
 			$rs = $g->getBySlug($slug);
 			$u['group_id'] = $rs['group_id'];
-			Utils::out( $u);
 			$this->create( $u );
+
 		} else {
 			$this->updateBy("user_id", $u);
 		}
