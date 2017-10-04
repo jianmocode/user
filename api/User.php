@@ -71,13 +71,13 @@ class User extends Api {
 
 	protected function test() {
 
-		$u = new UserModel();
-		// $user_id = $u->updateWechatUser("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g");
-		// return $user_id;
+		// $u = new UserModel();
+		// // $user_id = $u->updateWechatUser("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g");
+		// // return $user_id;
 
-		$resp = $u->loginByOpenId("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g", "j0d2vq39eh86hdjjcvud43t3g4")
-			 ->replyText( "登录成功", "gh_da2c392b7342")
-		;
+		// $resp = $u->loginByOpenId("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g", "j0d2vq39eh86hdjjcvud43t3g4")
+		// 	 ->replyText( "登录成功", "gh_da2c392b7342")
+		// ;
 
 
 // 		$option =  new Option("mina/user");
