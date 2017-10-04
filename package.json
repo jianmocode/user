@@ -9,7 +9,7 @@
         "light":"/static/icons/app-light.svg"
     },
     "icontype": "img",
-    "intro": "MINA Pages 用户、用户组平台。",
+    "intro": "MINA 用户系统。支持用户分组，微信登录、手机短信验证等特性的用户系统。",
     "detail": "@readme.md",
     "document": "@document.md",
     "author": "北京云道天成科技有限公司",
