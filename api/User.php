@@ -69,6 +69,10 @@ class User extends Api {
 	}
 
 
+
+
+
+
 	protected function test() {
 
 		// $u = new UserModel();
@@ -150,6 +154,82 @@ class User extends Api {
 			"expire_seconds" => $resp['expire_seconds']
 		];
 	}
+
+
+	/**
+	 * 微信授权登录
+	 */
+	protected function wechatAuthUrl( $query ) {
+
+		$option =  new Option("mina/user");
+		$appid = $option->get("user/wechat/login/appid");
+		$conf = Utils::getConf();
+
+		if ( $appid !== null ){
+			$cfg = $conf['_map'][$appid]; 
+		} else if ( is_array($conf['_type']['1'])) {
+			$cfg = current($conf['_type']['1']);
+		}
+
+		if ( empty($cfg) ) {
+			throw new Excp("未找到有效的微信公众号配置", 404);
+		}
+
+		$back = !empty($query['back']) ? $query['back'] : "/";
+		$back = urlencode($back);
+
+		$authback = Utils::getHomeLink() . "/_api/mina/user/user/wechatAuthBack?back={$back}";
+
+		$wechat = new Wechat( $cfg );
+		$url = $wechat->authUrl($authback);
+		if (  $query['debug'] == 1 ) {
+ 			echo $url;
+ 			return;
+ 		}
+
+ 		// 转向微信授权页面
+ 		header('HTTP/1.1 301 Moved Permanently');
+		header('Location: ' .  $url );
+		
+	}
+
+
+	/**
+	 * 微信授权登录成功
+	 * @param  [type] $query [description]
+	 * @return [type]        [description]
+	 */
+	protected function wechatAuthBack( $query ){
+
+		$option =  new Option("mina/user");
+		$appid = $option->get("user/wechat/login/appid");
+		$conf = Utils::getConf();
+
+		if ( $appid !== null ){
+			$cfg = $conf['_map'][$appid]; 
+		} else if ( is_array($conf['_type']['1'])) {
+			$cfg = current($conf['_type']['1']);
+		}
+
+		if ( empty($cfg) ) {
+			throw new Excp("未找到有效的微信公众号配置", 404);
+		}
+
+		$wechat = new Wechat( $cfg );
+		$back = !empty($query['back']) ? $query['back'] : "/";
+		$back = urldecode($back);
+		$userInfo = $wechat->getAuthUser($_GET['code'], $_GET['state']);
+
+		$u = new UserModel();
+		$u->loginByOpenId($cfg['appid'], $userInfo['openid'], session_id() );
+
+		// 转向微信授权页面
+ 		header('HTTP/1.1 301 Moved Permanently');
+		header('Location: ' .  $back );
+
+	}
+
+
 
 
 	/**
