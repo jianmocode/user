@@ -19,7 +19,43 @@ class UserController extends \Tuanduimao\Loader\Controller {
 
 	// 用户列表
 	function index() {
-		echo "<div class='content'>init index</div>";
+
+		$query = $_GET;
+		$query['order'] = !empty($query['order']) ? trim($query['order']) : 'created_at desc';
+
+		$u = new \Mina\User\Model\User;
+		$g = new \Mina\User\Model\Group;
+
+		$data = [
+			'users' => $u->search($_GET),
+			"groups" => $g->search(),
+			"query" => $query
+		];
+
+		App::render($data,'user','search.index');
+		
+		return [
+			'js' => [
+		 			"js/plugins/select2/select2.full.min.js",
+		 			"js/plugins/jquery-validation/jquery.validate.min.js",
+		 			"js/plugins/dropzonejs/dropzone.min.js",
+		 			"js/plugins/cropper/cropper.min.js",
+		 			'js/plugins/masked-inputs/jquery.maskedinput.min.js',
+		 			'js/plugins/jquery-tags-input/jquery.tagsinput.min.js',
+			 		"js/plugins/dropzonejs/dropzone.min.js",
+			 		"js/plugins/cropper/cropper.min.js",
+		    		'js/plugins/jquery-ui/jquery-ui.min.js',
+	        		'js/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js',
+				],
+			'css'=>[
+	 			"js/plugins/select2/select2.min.css",
+	 			"js/plugins/select2/select2-bootstrap.min.css"
+	 		],
+			'crumb' => [
+	                 "用户" => APP::R('user','index'),
+	                 "用户列表" =>'',
+	        ]
+		];
 	}
 
 }

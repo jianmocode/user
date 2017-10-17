@@ -65,6 +65,10 @@ class Group extends Model {
 	}
 
 
+	function search( $query = [] ) {
+		return $this->query()->get()->toArray();
+	}
+
 
 	function create( $data ) {
 		$data['group_id'] = $this->genGroupId();

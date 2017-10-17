@@ -479,6 +479,173 @@ class User extends Model {
 	}
 
 
+	/**
+	 * 用户检索
+	 * @param  [type] $query [description]
+	 * @return [type]        [description]
+	 */
+	function search( $query=[] ) {
+
+		$qb = $this->query();
+
+		// 按关键词查找 (昵称/手机号/邮箱)
+		if ( array_key_exists('keyword', $query) && !empty($query['keyword']) ) {
+			$qb->where(function ( $qb ) use($query) {
+			   	$qb->where("nickname", "like", "%{$query['keyword']}%");
+				$qb->orWhere("mobile","like", "%{$query['keyword']}%");
+				$qb->orWhere('email', 'like', "%{$query['keyword']}%");
+				$qb->orWhere('city', 'like', "%{$query['keyword']}%");
+				$qb->orWhere('province', 'like', "%{$query['keyword']}%");
+				$qb->orWhere('country', 'like', "%{$query['keyword']}%");
+			})
+			;
+		}
+
+		// 按性别查找
+		if ( array_key_exists('sex', $query)  ) {
+			$qb->where("sex", "=", "{$query['sex']}");
+		}
+
+		// 按状态查找
+		if ( array_key_exists('status', $query)  ) {
+			$qb->where("status", "=", "{$query['status']}");
+		}
+
+		// 按用户组查找
+		if ( array_key_exists('group_id', $query)  ) {
+			$qb->where("group_id", "=", "{$query['group_id']}");
+		}
+
+		// 按城市查找
+		if ( array_key_exists('city', $query)  ) {
+			$qb->where("city", "=", "{$query['city']}");
+		}
+
+		// 按省份
+		if ( array_key_exists('province', $query)  ) {
+			$qb->where("province", "=", "{$query['province']}");
+		}
+
+		// 按国家
+		if ( array_key_exists('country', $query)  ) {
+			$qb->where("country", "=", "{$query['country']}");
+		}
+
+		// 排序: 最新注册
+		if ( array_key_exists('order', $query)  ) {
+
+			$order = explode(' ', $query['order']);
+			$order[1] = !empty($order[1]) ? $order[1] : 'asc';
+			$qb->orderBy($order[0], $order[1] );
+		}
+		
+		// 页码
+		$page = array_key_exists('page', $query) ?  intval( $query['page']) : 1;
+		$perpage = array_key_exists('perpage', $query) ?  intval( $query['perpage']) : 20;
+
+		// 查询用户信息
+		$users = $qb->select("*")->pgArray($perpage, ['_id'], 'page', $page);
+		$this->formatUsers($users['data']);
+
+		// echo $qb->getSql();
+		// Utils::out($query);
+
+		return $users;
+
+	}
+
+
+	/**
+	 * 处理用户呈现的字段信息
+	 * @param  [type] $users [description]
+	 * @return [type]        [description]
+	 */
+	function formatUsers( & $users  ) {
+
+		if ( empty($users) ) {
+			return;
+		}
+
+		$upad = Utils::pad( $users, 'user_id' );
+		$uids = $upad['data'];
+
+		$gpad = Utils::pad( $users, 'group_id');
+		$gids = $gpad['data'];
+
+		$userWechats = []; $userGroups = [];
+
+		// 读取微信授权信息
+		$conf = Utils::getConf();  
+		$wemap = $conf['_map'];
+		$wechats = $this->user_wechat->query()->whereIn("user_id", $uids)->get()->toArray();
+		
+		foreach ($wechats as $we ) {
+
+			$appid = $we['appid'];
+			$name = "{$appid}";
+
+			if ( is_array($wemap[$appid]) ) {
+				$name = $wemap[$appid]['name'];
+			}
+
+			$we['name'] = $name;
+			$user_id = $we['user_id'];
+			if ( !is_array($userWechats[$user_id])) {
+				$userWechats[$user_id]  = [];
+			}
+			$userWechats[$user_id][] = $we;
+		}
+
+		// 读取分组信息
+		$g = new Group;
+		$groups = $g->query()->whereIn("group_id", $gids)->get()->toArray();
+		foreach ($groups as $group ) {
+			$group_id = $group['group_id'];
+
+			// 下一版支持1个用户 多个分组
+			$userGroups[$group_id] = [$group];
+		}
+
+
+		// 增添微信授权信息和分组信息 &  删除密码信息
+		foreach ($users as $idx=>$user ) {
+
+			$uid = $user['user_id'];
+			$gid = $user['group_id'];
+
+
+			if ( !is_array($userWechats[$uid]) ) {
+				$userWechats[$uid] = [];
+			}
+
+			if ( !is_array($userGroups[$gid]) ) {
+				$userGroups[$gid] = [];
+			}
+
+			// 默认分组名称
+			$defaultGroup = current($userGroups[$gid]);
+			if ( !is_array($defaultGroup) ) {
+				$group_name = '未知分组';
+			} else {
+				$group_name = $defaultGroup['name'];
+			}
+
+
+			$users[$idx]['group_name'] = $group_name;
+			$users[$idx]['groups']= $userGroups[$gid] ;
+			$users[$idx]['wechats']=$userWechats[$uid] ;
+			
+			unset($users[$idx]["pay_password"]);
+			unset($users[$idx]["password"]);
+		}
+
+
+		// Utils::out( $userGroups, $userWechats );
+
+
+	}
+
+
 
 
 	function genUserId() {

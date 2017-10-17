@@ -1,0 +1,317 @@
+
+<?php 
+use \Tuanduimao\Loader\App as App; 
+use \Tuanduimao\Utils as Utils;
+?>
+<div class="content">
+
+	<!-- Search Section -->
+	<div class="block block-transparent">
+		<div class="row" >
+			<div  class="col-lg-8 col-md-8 col-sm-8">
+				<div class="input-group input-group-lg">
+					<div class="input-group-addon font-w300"> 用户检索 </div> 
+					<input class="js-icon-search form-control keyword" type="text" placeholder="输入关键词" value="<?=$query['keyword']?>">
+					<span class="input-group-btn">
+						<button class="btn btn-primary font-w300 search" type="button"><i class=" si si-magnifier"></i> 搜索 </button>
+					</span>
+				</div>
+			</div>
+
+			<div class="col-lg-4 col-md-4  col-sm-4">
+				<a 
+					href="<?=App::R('article','editor')?>" 
+					class="btn btn-primary btn-lg font-w300 pull-right push-15-l" 
+					><i class="fa fa-plus"></i> 添加用户</a>
+
+			</div>
+		</div>
+	</div> <!-- END Search Section -->
+
+	<div class="block-group">
+		<div class="block">
+			<ul class="nav nav-tabs nav-tabs-alt" data-toggle="tabs">
+				<li class="active"> 
+					<a id="tabs-document" href="#tabs-status-0"  class="font-w300 tabs-menu"> 
+					   <i class="fa  fa-th-list push-5-r"></i> 用户列表
+					</a>
+				</li> 
+				<li class="pull-right">
+					<a href="#" type="button" class="except" data-toggle="block-option" data-action="fullscreen_toggle"></a>
+				</li> 
+			</ul>
+
+			<div class="block-content tab-content">
+				 <div class="tab-pane hide" id="tab-pane-error" >
+					<div class="alert alert-danger push-50-l push-50-r push-20-t ">
+						<h3 class="font-w300 push-15">载入失败</h3>
+						<p>{HTML}</p>
+					</div>
+					<div class="row"  style="min-height:300px;" ></div>
+				</div>
+
+				<div class="tab-pane active" id="tabs-status-0"  style="min-height:500px;" >
+					
+					
+
+					<!-- 信息过滤(高级搜索)栏位 -->
+					<div class="row items-push remove-margin">
+						
+						<div class="col-xs-5">
+							<span class="text-muted">共找到 <?=$users['total']?> 位符合条件的用户</span>
+						</div> <!-- END col-xs-5 -->
+						
+						<div class="col-xs-7">
+
+							<!-- 批量管理链接 -->
+							<a class="btn btn-default btn-xs pull-right  push-20-l hidden" type="button">
+								<i class="glyphicon glyphicon-list-alt"></i> 批量修改 
+							</a> <!-- END 批量管理链接 -->
+			
+							<!-- 结果集排序 -->
+							<div class="btn-group pull-right push-20-l" role="group">  
+								<button class="btn btn-default btn-xs dropdown-toggle" 
+										type="button" data-toggle="dropdown" > 
+									<i class="glyphicon glyphicon-list-alt"></i> 
+
+									<?php if ( $query['order'] == 'created_at desc' ) :?>
+										最新注册
+									<?php elseif ( $query['order'] == 'updated_at desc' ) :?>
+										最近登录
+									<?php else: ?>
+										最新注册
+									<?php endif;?>
+
+									<span class="caret"></span> 
+								</button>
+								<ul class="dropdown-menu dropdown-menu-right" style="min-width: 87px;">
+									<li class="dropdown-header"> 排序方式</li>
+									<li>
+										<a href="javascript:search('order','updated_at desc')">
+										   最近登录
+										</a>
+									</li>
+									<li>
+										<a href="javascript:search('order','created_at desc')">
+										   最新注册
+										</a>
+									</li>
+								</ul>
+							</div> <!-- END 结果集排序 -->
+
+							<!-- 文章状态过滤 -->
+							<div class="btn-group pull-right push-20-l" role="group">  
+								<button class="btn btn-default btn-xs dropdown-toggle" 
+										type="button" data-toggle="dropdown" >
+									<i class="glyphicon glyphicon-list-alt"></i> 
+
+									<?php if ( $query['status'] == 'on' ) :?>
+										正常
+									<?php elseif ( $query['status'] == 'off' ) :?>
+										已封禁
+									<?php elseif ( $query['status'] == 'lock' ) :?>
+										已锁定
+									<?php else  :?> 
+										全部状态
+									<?php endif;?>
+
+									<span class="caret"></span> 
+								</button>
+
+								<ul class="dropdown-menu dropdown-menu-right"  style="min-width: 87px;">
+									<li class="dropdown-header"> 文章状态</li>
+									<li>
+										<a href="javascript:search('status','')">
+										   全部状态
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('status','on')">
+										   正常
+										</a>
+									</li>
+									<li>
+										<a href="javascript:search('status','off')">
+										   已封禁
+										</a>
+									</li>
+									<li>
+										<a href="javascript:search('status','lock')">
+										   已锁定
+										</a>
+									</li>
+								</ul>
+							</div> <!-- END 文章状态过滤 -->
+
+
+							<!-- 分类状态过滤 -->
+							<div class="btn-group pull-right" role="group">  
+								<button class="btn btn-default btn-xs dropdown-toggle" 
+										type="button" data-toggle="dropdown" >
+									<i class="glyphicon glyphicon-list-alt"></i> <span class="currCate">所有分组</span> <span class="caret"></span> 
+								</button>
+
+								<ul class="dropdown-menu dropdown-menu-right" style="min-width: 87px;">
+									<li class="dropdown-header"> 用户分组</li>
+									<li >
+										<a href="javascript:search('group_id','')">
+										   所有分组
+										</a>
+									</li>
+
+									<?php 
+										if ( !empty($groups)) :
+										foreach($groups as $group): ?>
+									<li >
+										<a href="javascript:search('group_id','<?=$group['group_id']?>')">
+										   <?=$group['name']?>
+										</a>
+									</li>
+
+									<?php 
+										endforeach; 
+										endif;
+									?>
+								</ul>
+							</div> <!-- END 文章状态过滤 -->
+
+						</div><!-- END col-xs-7 -->
+
+					</div> <!-- END 信息过滤(高级搜索)栏位 -->
+					
+					<!-- 文章列表 -->
+					<?php if($users['total'] > 0 ): // 如果没有数据则不显示 ?>
+					<table class="js-table-checkable table table-hover remove-margin">
+
+						<thead>
+							<tr>
+								<th class="font-w300" style="width:5%;max-width:120px;"> 编号</th>
+								<th class="font-w300" style="width:8%;">昵称</th>
+								<th class="font-w300" style="width:8%;">手机号</th>
+								<th class="font-w300" style="width:8%;">性别</th>
+								<th class="font-w300" style="width:10%;">城市</th>
+								<th class="font-w300" style="width:10%;">
+
+								<?php if ( $query['order'] == 'created_at desc' ) :?>
+									注册时间
+								<?php elseif ( $query['order'] == 'updated_at desc' ) :?>
+									登录时间
+								<?php endif;?>
+
+								</th>
+								<th class="font-w300" style="width:5%;">状态</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<?php
+							$status_map = [
+								'on'=>['name'=>'正常', 'class'=>'text-success'],
+								'off'=>['name'=>'已封禁', 'class'=>'text-danger'],
+								'lock'=>['name'=>'已锁定', 'class'=>'text-warning']
+							];
+							foreach ($users['data'] as $rs) :
+								$s = $status_map[$rs['status']];
+							?>
+							<tr data-toggle="block-group" 
+								onclick="window.location='<?=App::R('user', 'modify', ['id'=>$rs['user_id']])?>'" >
+								<td 
+								style="min-height: 65px;height: 65px;"><?=$rs['user_id']?></td>
+								<td> 
+									<?=$rs['nickname']?>
+								</td>
+								<td> <?=$rs['mobile']?> </td>
+								<td> <?=($rs['sex'] == 1) ? '男' : '女'?> </td>
+								<td><?=$rs['province']?> <?=$rs['city']?></td>
+								<td> 
+								<?php if ( $query['order'] == 'created_at desc' ) :?>
+									<?=$rs['created_at']?> 
+								<?php elseif ( $query['order'] == 'updated_at desc' ) :?>
+									<?=$rs['updated_at']?> 
+								<?php endif;?>
+
+								</td>
+								<td> <span class="<?=$s['class']?>"><?=$s['name']?></span></td>
+							</tr>
+							<?php endforeach;?>
+						</tbody>
+
+						<tfoot>
+							<tr><td colspan="7"> <nav class="pull-right">
+
+								<ul class="pagination">
+									<?php if ($users['prev'] !== false): ?>
+									<li>
+										<a href="javascript:search('page', '<?=$users['prev']?>' )">
+											<i class="fa fa-angle-double-left"></i>
+										</a>
+									</li>
+									<?php endif;?>
+
+									<?php for( $i=1; $i<=$users['last']; $i++) :?>
+									<li class="<?=($i==$users['curr'])? 'active': ''?>" >
+										<a href="javascript:search('page', '<?=$i?>' )"><?=$i?></a>
+									</li>
+									<?php endfor; ?>
+
+									<?php if ($users['next'] !== false): ?>
+									<li>
+										<a href="javascript:search('page', '<?=$users['next']?>' )">
+											<i class="fa fa-angle-double-right"></i>
+										</a>
+									</li>
+									<?php endif;?>
+
+								</ul>
+							</nav></td></tr>
+						</tfoot>
+
+					</table><!-- END 文章列表 -->
+					<?php else: // 无数据时呈现 ?>
+					<span class="push-15-l"> 
+						<a href="<?=App::R('article', 'editor')?>"> 添加用户 </a>
+					</span>
+					<?php endif; // 如果没有数据则不显示 ?>
+			
+				</div> <!-- END Tab-pane -->
+
+			</div>
+		</div> <!-- END Block -->
+	</div> <!-- END block-group -->
+</div> <!-- END Pagecontent -->
+
+<script type="text/javascript">
+var $_GET = <?=json_encode($query)?>;
+var $_HOME ='<?=App::R("user", "index")?>';
+if (  $_GET !== null ) {
+	delete $_GET['select'];
+}
+
+function search( key, value ) {
+
+	if ( key !== undefined ) {
+		$_GET[key] = value;
+
+		if ( value == undefined  || value == '') {
+			delete $_GET[key];
+		}
+
+		if ( key != 'page' ) {
+			$_GET['page'] = 1;
+		}
+	}
+
+	var url =  $_HOME + '?' + $.param($_GET);
+	window.location = url;
+
+}
+$(function() {
+	App.initHelpers(['datepicker','select2', 'masked-inputs','tags-inputs', 'slimscroll', 'ajax-confirm']);
+	$('.search').click(function(){
+		var keyword = $('.keyword').val();
+		search('keyword', keyword);
+	});
+
+});
+
+</script>
