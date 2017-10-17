@@ -186,9 +186,9 @@ use \Tuanduimao\Utils as Utils;
 						<thead>
 							<tr>
 								<th class="font-w300" style="width:5%;max-width:120px;"> 编号</th>
-								<th class="font-w300" style="width:8%;">昵称</th>
-								<th class="font-w300" style="width:8%;">手机号</th>
-								<th class="font-w300" style="width:8%;">性别</th>
+								<th class="font-w300" style="width:12%;">昵称</th>
+								<th class="font-w300" style="width:12%;">手机号</th>
+								<th class="font-w300" style="width:5%;">性别</th>
 								<th class="font-w300" style="width:10%;">城市</th>
 								<th class="font-w300" style="width:10%;">
 
@@ -220,7 +220,11 @@ use \Tuanduimao\Utils as Utils;
 								<td> 
 									<?=$rs['nickname']?>
 								</td>
-								<td> <?=$rs['mobile']?> </td>
+								<td> 
+									<?=!empty($rs['mobile_nation']) ? $rs['mobile_nation']: '+86'?>
+									<?=$rs['mobile']?> 
+									<?=($rs['mobile_verified'] == 1 )? '（已验证）': ''?>
+								</td>
 								<td> <?=($rs['sex'] == 1) ? '男' : '女'?> </td>
 								<td><?=$rs['province']?> <?=$rs['city']?></td>
 								<td> 
