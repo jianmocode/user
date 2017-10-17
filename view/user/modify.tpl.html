@@ -1,0 +1,339 @@
+<?php
+	use \Tuanduimao\Loader\App as App;
+?>
+<script type="text/javascript">
+	DEBUG_ON = true;
+</script>
+<!-- Page Content -->
+<div class="content "> 
+
+	<div class="block block-bordered webeditor " >
+		<div class="block-header remove-margin" >
+			<ul class="block-options" >
+				<li>
+					<a type="button"	href="#" data-toggle="block-option" data-action="fullscreen_toggle"></a>
+				</li>
+			</ul>
+
+			<h3 class="block-title" >
+				<a href="<?=App::R('user', 'index')?>" class="text-default">
+					<i class="fa fa-arrow-circle-o-left"></i> 
+					用户列表 
+				</a> / 编辑用户
+				<!-- <i class="fa fa-lock push-5-l  lock_status text-muted" style="width:18px;"></i> -->
+				<!-- <span class="text-danger status push-10-l font-s13"></span> -->
+			</h3>
+			
+		</div> <!-- END block-header -->
+
+		<div class="block-content" style="padding:40px;padding-top:20px;" >
+			<form class="form-horizontal push-10-t" action="base_forms_elements_modern.html" method="post" onsubmit="return false;">
+				
+				<div class="form-group">
+					<div class="col-xs-12 push-10">
+						<h5 class="font-w400">账号密码</h5>
+					</div>
+				</div>
+
+				<div class="form-group">
+					
+					<div class="col-xs-6">
+						<div class="form-material">
+							<select class="js-select2 form-control" id="status" name="status" 
+								style="width: 100%;" data-placeholder="请选择状态...">
+								<option></option>
+								<option value="on" selected>正常</option>
+								<option value="off">封禁</option>
+								<option value="lock">锁定</option>
+							</select>
+							<label for="status">状态</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+
+					<div class="col-xs-6">
+						<div class="form-material">
+							<select class="js-select2 form-control" id="group_id" name="group_id" 
+								style="width: 100%;" data-placeholder="请选择组...">
+								<option></option>
+								<option value="1">分组1</option>
+								<option value="2">分组2</option>
+							</select>
+							<label for="group_id">用户组</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="form-group">
+
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="text" id="mobile" name="mobile" 
+									  placeholder="填写手机号">
+							<label for="mobile">手机号</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="text" id="email" name="email" 
+									  placeholder="">
+							<label for="email">邮箱</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="password" id="password" name="password" 
+									  placeholder="">
+							<label for="password">登录密码</label>
+							<div class="help-block text-right">用于账号登录鉴权。不想修改，请留空。</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="password" id="pay_password" name="pay_password" 
+									  placeholder="">
+							<label for="pay_password">支付密码</label>
+							<div class="help-block text-right">用于余额支付鉴权。不想修改，请留空。</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-12 push-10">
+						<h5 class="font-w400">标签认证</h5>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-12">
+						<div class="form-material">
+							 <input class="form-control" type="text" id="verify" name="verify" 
+							 value=""
+							 placeholder="请填写用户身份信息">
+							<label for="verify">身份认证</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-12">
+						<div class="form-material">
+							 <input class="js-tags-input form-control" type="text" id="tag" name="tag" value="">
+							<label for="tag">标签</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-12">
+						<div class="form-material">
+							<textarea class="form-control" id="remark" name="remark" rows="3" placeholder="填写备注信息"></textarea>
+							<label for="remark">备注</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-6">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="mobile_verified" ><span></span> 已校验手机号码
+							</label>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="email_verified" ><span></span> 已校验邮箱地址
+							</label>
+						</div>
+						
+					</div>
+				</div>
+				
+				
+
+				<div class="form-group">
+					<div class="col-xs-12 push-15-t">
+						<h5 class="font-w400">详细档案</h5>
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<div class="col-xs-6">
+						<label for="material-gridl2"> 头像 </label>
+						<div class="form-material">
+							<div id="headimg" name="headimg" class="file-uploader rounded rounded-4"
+								 data-api = '/upload.php'
+								 data-title='图片控'
+								 data-previews="64|32|24"
+								 data-width="128px"
+								 data-height="128px"
+								 data-icon="fa fa-image" 
+								 data-placeholder="点击或拖入图片" 
+								 data-allow-types="image/png,image/jpg,image/jpeg"
+								 data-maxsize="400"
+								 data-progress="yes"
+								 data-draggable="yes"
+								 data-src=""
+								 data-path=""
+								 "
+								 ></div>
+						</div>
+					</div>
+
+
+					<div class="col-xs-6 push-20-t">
+						<div class="form-material">
+							<input class="form-control" type="text" id="nickname" name="nickname" 
+									  placeholder="填写用户昵称">
+							<label for="nickname">昵称</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+
+					<div class="col-xs-6 push-20-t">
+						<div class="form-material">
+							<div>
+								<label class="css-input css-radio css-radio-primary push-10-r">
+									<input type="radio" name="sex" value="1"  > <span></span> 男
+								</label>
+								<label class="css-input css-radio css-radio-primary">
+									<input type="radio" name="sex" value="0" checked ><span></span> 女
+								</label>
+							</div>
+							<label for="sex">性别</label>
+						</div>
+					</div>
+
+					<div class="col-xs-6 push-20-t">
+						<div class="form-material">
+							 <input class="js-datepicker form-control" type="text" id="birthday" name="birthday" data-date-format="yyyy年mm月dd日" placeholder="请选择出生日期..">
+							<label for="birthday">生日</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class="form-group">
+					
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="city" name="city" 
+									  placeholder="">
+							<label for="city">城市</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="province" name="province" 
+									  placeholder="">
+							<label for="province">省份</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="country" name="country" 
+									  placeholder="">
+							<label for="country">国家</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-8">
+						<div class="form-material">
+							<input class="form-control" type="text" id="address" name="address" 
+									  placeholder="">
+							<label for="address">收货地址</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="zip" name="zip" 
+									  placeholder="">
+							<label for="zip">邮编</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+				</div>
+				
+				<!--  提交按钮 -->
+				<div class="block block-quickpanel">
+					 <div class="block-quickpanel-content  " >
+						<div class="form-group">
+						  <!--	按钮组 (btngroup)-->
+						  <div class="col-xs-9 push-20-t text-right">
+							
+
+							 <button  
+								 type="button" 
+								 class="btn btn-primary font-w300 btn-minw  push-20-r">
+									 <i class="fa fa-save push-5-r"></i> 
+									 保存资料
+								</button>
+
+							 <button  
+								 type="button" 
+								 class="btn btn-primary font-w300 btn-minw push-20-r">
+									 <i class="fa fa-angle-double-left push-5-r"></i> 
+									 返回列表
+								</button>
+
+						  </div>
+						  <div class="col-xs-3 push-20-t text-right">
+						  	<button  
+								 type="button" 
+								 class="btn btn-danger font-w300 btn-minw push-50-r">
+									 <i class="fa fa-minus-circle push-5-r"></i> 
+									 删除用户
+								</button>
+		
+						  </div>
+
+						</div>
+						<div class="bg-primary text-white text-center bottom-line"></div>	
+					 </div>
+				</div> <!-- END 提交按钮 -->
+			</form>
+		</div> <!-- END block-content -->
+	</div> <!-- END block -->
+
+
+</div> <!-- END content -->
+
+
+
+<script type="text/javascript">
+$(function(){
+	App.initHelpers(['datepicker','select2', 'tags-inputs']);
+	App.initHelpers('file-uploader', {
+		'home':'http://ui.chuanbolian.cn/upload',
+		'handler':'div[name="headimg"]'
+	});
+})
+</script>

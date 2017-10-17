@@ -494,9 +494,6 @@ class User extends Model {
 			   	$qb->where("nickname", "like", "%{$query['keyword']}%");
 				$qb->orWhere("mobile","like", "%{$query['keyword']}%");
 				$qb->orWhere('email', 'like', "%{$query['keyword']}%");
-				$qb->orWhere('city', 'like', "%{$query['keyword']}%");
-				$qb->orWhere('province', 'like', "%{$query['keyword']}%");
-				$qb->orWhere('country', 'like', "%{$query['keyword']}%");
 			})
 			;
 		}
@@ -546,6 +543,7 @@ class User extends Model {
 		// 查询用户信息
 		$users = $qb->select("*")->pgArray($perpage, ['_id'], 'page', $page);
 		$this->formatUsers($users['data']);
+
 
 		// echo $qb->getSql();
 		// Utils::out($query);
