@@ -87,7 +87,7 @@ class UserController extends \Tuanduimao\Loader\Controller {
 			'crumb' => [
 	            "用户" => APP::R('user','index'),
 	            "用户列表" => APP::R('user','index'),
-	            "编辑用户" => '',
+	            "管理用户" => '',
 	        ],
 
 	        'active'=> [
