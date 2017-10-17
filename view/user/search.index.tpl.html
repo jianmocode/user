@@ -186,12 +186,12 @@ use \Tuanduimao\Utils as Utils;
 						<thead>
 							<tr>
 								<th class="font-w300" style="width:5%;max-width:120px;"> 编号</th>
-								<th class="font-w300" style="width:12%;">昵称</th>
+								<th class="font-w300" style="width:5%;">用户组</th>
+								<th class="font-w300" style="width:10%;">昵称</th>
 								<th class="font-w300" style="width:12%;">手机号</th>
 								<th class="font-w300" style="width:5%;">性别</th>
-								<th class="font-w300" style="width:10%;">城市</th>
+								<th class="font-w300" style="width:8%;">城市</th>
 								<th class="font-w300" style="width:10%;">
-
 								<?php if ( $query['order'] == 'created_at desc' ) :?>
 									注册时间
 								<?php elseif ( $query['order'] == 'updated_at desc' ) :?>
@@ -217,6 +217,8 @@ use \Tuanduimao\Utils as Utils;
 								onclick="window.location='<?=App::R('user', 'modify', ['id'=>$rs['user_id']])?>'" >
 								<td 
 								style="min-height: 65px;height: 65px;"><?=$rs['user_id']?></td>
+
+								<td><?=$rs['group_name']?></td>
 								<td> 
 									<?=$rs['nickname']?>
 								</td>
@@ -241,7 +243,7 @@ use \Tuanduimao\Utils as Utils;
 						</tbody>
 
 						<tfoot>
-							<tr><td colspan="7"> <nav class="pull-right">
+							<tr><td colspan="8"> <nav class="pull-right">
 
 								<ul class="pagination">
 									<?php if ($users['prev'] !== false): ?>
