@@ -36,7 +36,7 @@
 					<div class="col-xs-12 push-10">
 						<h5 class="font-w400">
 							账号信息
-							<span class="text-muted font-s14"> ( <?=$user['user_id']?> ) </span>
+							<span class="text-muted font-s14"> ( ID:<?=$user['user_id']?> ) </span>
 						</h5> 
 					</div>
 				</div>
@@ -132,43 +132,77 @@
 				<div class="form-group">
 					<div class="col-xs-12 push-10 push-15-t">
 						<h5 class="font-w400">
-							标签认证
-							<span class="text-muted font-s14"> ( 核验用户身份、手机号、邮箱) </span>
+							身份认证
+							<span class="text-muted font-s14"> ( 用户实名、身份认证 ) </span>
 						</h5>
 
 					</div>
 				</div>
 
 				<div class="form-group">
-					<div class="col-xs-4">
-						<div>
-							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="mobile_verified" value="1"
-								<?=($user['mobile_verified'] ) ? 'checked' : '' ?>
-								><span></span> 手机号已验证
-							</label>
+
+					<div class="col-xs-3">
+						<div class="form-material">
+							<select class="js-select2 form-control" id="iddoc" name="iddoc" 
+								style="width: 100%;" data-placeholder="请有效证件...">
+								<option></option>
+								<option value="1" 
+									<?=($user['iddoc'] == '1' || empty($user['iddoc'])) ? 'selected' : '' ?>
+								> 居民身份证</option>
+
+								<option value="6"
+									<?=($user['iddoc'] == '6') ? 'selected' : '' ?>
+								>护照</option>
+
+								<option value="2"
+									<?=($user['iddoc'] == '2') ? 'selected' : '' ?>
+								>军人身份证件</option>
+
+								<option value="3"
+									<?=($user['iddoc'] == '3') ? 'selected' : '' ?>
+								>武装警察身份证</option>
+
+								<option value="4"
+									<?=($user['iddoc'] == '4') ? 'selected' : '' ?>
+								>港澳通行证</option>
+
+								<option value="5"
+									<?=($user['iddoc'] == '5') ? 'selected' : '' ?>
+								>台胞证</option>
+
+								<option value="7"
+									<?=($user['iddoc'] == '7') ? 'selected' : '' ?>
+								>其他</option>
+
+							</select>
+							<label for="iddoc">有效身份证件</label>
+							<div class="help-block text-right"></div>
 						</div>
 					</div>
-					<div class="col-xs-4">
-						<div>
-							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="user_verified"  value="1"
-								<?=($user['user_verified'] ) ? 'checked' : '' ?>
-								><span></span> 用户身份信息已核验
-							</label>
+
+					<div class="col-xs-3">
+						<div class="form-material">
+							<input class="form-control" type="text" id="name" name="name" 
+								value="<?=$user['name']?>" 
+								placeholder="填写真实姓名，与身份证一致">
+							<label for="name">真实姓名</label>
+							<div class="help-block text-right"></div>
 						</div>
 					</div>
-					<div class="col-xs-4">
-						<div>
-							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="email_verified"  value="1"
-								<?=($user['email_verified'] ) ? 'checked' : '' ?>
-								><span></span> 邮箱地址已验证
-							</label>
+					
+					
+
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="text" id="idno" name="idno" 
+								value="<?=$user['idno']?>" 
+								placeholder="填写所选证件号码">
+							<label for="idno">证件号码</label>
+							<div class="help-block text-right"></div>
 						</div>
 					</div>
 				</div>
-
+				
 				<div class="form-group">
 					<div class="col-xs-12">
 						<div class="form-material">
@@ -177,6 +211,49 @@
 							 placeholder="请填写用户身份信息">
 							<label for="verify">身份信息</label>
 							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="form-group">
+					<div class="col-xs-3 push-10">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="mobile_verified" value="1"
+								<?=($user['mobile_verified'] ) ? 'checked' : '' ?>
+								><span></span> 手机号已核验
+							</label>
+						</div>
+					</div>
+
+					<div class="col-xs-3">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="name_verified"  value="1"
+								<?=($user['name_verified'] ) ? 'checked' : '' ?>
+								><span></span> 实名信息已核验
+							</label>
+						</div>
+					</div>
+
+
+					<div class="col-xs-3">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="user_verified"  value="1"
+								<?=($user['user_verified'] ) ? 'checked' : '' ?>
+								><span></span> 身份信息已核验
+							</label>
+						</div>
+					</div>
+					<div class="col-xs-3">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="email_verified"  value="1"
+								<?=($user['email_verified'] ) ? 'checked' : '' ?>
+								><span></span> 邮箱地址已核验
+							</label>
 						</div>
 					</div>
 				</div>

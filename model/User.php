@@ -50,6 +50,9 @@ class User extends Model {
 			 ->putColumn( 'group_id', $this->type('string',  ['length'=>128, 'index'=>true]) )   // 用户组
 
 			 // 用户资料
+			 ->putColumn( 'name', $this->type('string',  ['length'=>256]) )  // 真实姓名
+			 ->putColumn( 'idno', $this->type('string',  ['length'=>256]) )  // 身份证件号码
+			 ->putColumn( 'iddoc', $this->type('string',  ['length'=>256]) )  // 身份证件类型 1 身份证 2 军人身份证 3 警察身份证  4 港澳通行证  5 台胞证  6 护照  7 其他
 			 ->putColumn( 'nickname', $this->type('string',  ['length'=>256]) )  // 用户名称
 			 ->putColumn( 'sex', $this->type('integer',  ['length'=>1,  "index"=>true]) )  // 用户性别
 			 ->putColumn( 'city', $this->type('string',  ['length'=>100,  "index"=>true]) )  // 所在城市
@@ -76,11 +79,13 @@ class User extends Model {
 
 			// 身份校验
 			 ->putColumn( 'user_verified', $this->type('boolean',  ['default'=>"0"]) )    // 用户是否通过身份认证
+			 ->putColumn( 'name_verified', $this->type('boolean',  ['default'=>"0"]) )    // 用户是否通过实名认证
 			 ->putColumn( 'verify', $this->type('string',  ['length'=>128]) )    	      // 用户身份信息
 			 ->putColumn( 'verify_data', $this->type('text',  ['json'=>true]) )  		  // 用户认证证明材料
 			 ->putColumn( 'mobile_verified', $this->type('boolean',  ['default'=>"0"]) )  // 手机号是否通过校验
 			 ->putColumn( 'email_verified', $this->type('boolean',  ['default'=>"0"]) )   // 电邮地址是否通过校验
 			
+
 			// 登录密码
 			->putColumn( 'password', $this->type('string', ['length'=>128] ) )
 
