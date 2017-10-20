@@ -608,6 +608,22 @@ function done() {
 		.removeAttr('disabled');
 }
 
+
+function autoComplete() {
+	if ( $('.user-form [name=contact_name]').val() == '' ) {
+		$('.user-form [name=name]').keyup(function(key){
+			$('.user-form [name=contact_name]').val( $(this).val() );
+		});
+	}
+
+	if ( $('.user-form [name=contact_tel]').val() == '' ) {
+		$('.user-form [name=mobile]').keyup(function(key){
+			$('.user-form [name=contact_tel]').val( $(this).val() );
+		});
+	}
+}
+
+
 function getData( form, validation ) {
 
 	var data = {};
@@ -635,12 +651,31 @@ function getData( form, validation ) {
 		data["user_verified"] = "0";
 	}
 
+	if ( typeof data["name_verified"] == 'undefined' ) {
+		data["name_verified"] = "0";
+	}
+
 
 	// 特殊数值校验
 	
 	// 身份信息 (标记为已核验，但身份信息为空)
 	if ( data["user_verified"] == "1" && typeof data["verify"] == 'undefined' ) {
-		failure({verify:'身份信息不能为空'}, validation );
+		failure({verify:'请填写身份信息'}, validation );
+	}
+
+	// 实名信息 (标记为已核验，但真实姓名和身份证号为空)
+	if ( data["name_verified"] == "1") {
+
+		var error = {};
+
+		if ( typeof data["name"] == 'undefined' ) {
+			error['name'] = "请填写真实姓名"
+		}
+
+		if ( typeof data["idno"] == 'undefined' ) {
+			error['idno'] = "请填写证件号码"
+		}
+		failure(error, validation );
 	}
 
 
@@ -678,9 +713,13 @@ $(function(){
 	App.initHelpers('file-uploader', {'handler':'div[name="headimg"]'});
 	App.initHelpers(['datepicker','select2', 'image-crop', 'tags-inputs']);
 
+	// 保存数据按钮
 	$('.user-save').click(function(event) {
 		$('.user-form').submit();
 	});
+
+	// 自动填写信息联动
+	autoComplete();
 
 
 	// 表单验证
