@@ -27,16 +27,45 @@
 		</div> <!-- END block-header -->
 
 		<div class="block-content" style="padding:40px;padding-top:20px;" >
-			<form class="form-horizontal push-10-t" action="base_forms_elements_modern.html" method="post" onsubmit="return false;">
-				
+			<form class="user-form form-horizontal push-10-t" action="<?=APP::NR('user', 'save')?>" 
+				method="post" >
 				<!-- 用户ID  -->
 				<input type="hidden" name="user_id" id="user_id" value="<?=$user['user_id']?>">
 				
 				<div class="form-group">
 					<div class="col-xs-12 push-10">
-						<h5 class="font-w400">账号密码</h5>
+						<h5 class="font-w400">
+							账号信息
+							<span class="text-muted font-s14"> ( <?=$user['user_id']?> ) </span>
+						</h5> 
 					</div>
 				</div>
+
+				<div class="form-group">
+
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="text" id="mobile" name="mobile" 
+								value="<?=$user['mobile']?>" 
+								placeholder="填写手机号">
+							<label for="mobile">手机号</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="text" id="email" name="email" 
+								value="<?=$user['email']?>"
+								placeholder="填写电子邮箱">
+							<label for="email">邮箱</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+				</div>
+
 
 				<div class="form-group">
 					
@@ -81,36 +110,11 @@
 				</div>
 
 
-				<div class="form-group">
-
-					<div class="col-xs-6">
-						<div class="form-material">
-							<input class="form-control" type="text" id="mobile" name="mobile" 
-								value="<?=$user['mobile']?>" 
-								placeholder="填写手机号">
-							<label for="mobile">手机号</label>
-							<div class="help-block text-right"></div>
-						</div>
-					</div>
-
-
-					<div class="col-xs-6">
-						<div class="form-material">
-							<input class="form-control" type="text" id="email" name="email" 
-								value="<?=$user['email']?>"
-								placeholder="填写电子邮箱">
-							<label for="email">邮箱</label>
-							<div class="help-block text-right"></div>
-						</div>
-					</div>
-					
-				</div>
-
-				<div class="form-group">
+				<div class="form-group hidden">
 					<div class="col-xs-6">
 						<div class="form-material">
 							<input class="form-control" type="password" id="password" name="password" 
-									  placeholder="">
+							placeholder="">
 							<label for="password">登录密码</label>
 							<div class="help-block text-right">用于账号登录鉴权。不想修改，请留空。</div>
 						</div>
@@ -126,8 +130,12 @@
 				</div>
 
 				<div class="form-group">
-					<div class="col-xs-12 push-10">
-						<h5 class="font-w400">标签认证</h5>
+					<div class="col-xs-12 push-10 push-15-t">
+						<h5 class="font-w400">
+							标签认证
+							<span class="text-muted font-s14"> ( 核验用户身份、手机号、邮箱) </span>
+						</h5>
+
 					</div>
 				</div>
 
@@ -135,7 +143,7 @@
 					<div class="col-xs-4">
 						<div>
 							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="mobile_verified" 
+								<input type="checkbox" name="mobile_verified" value="1"
 								<?=($user['mobile_verified'] ) ? 'checked' : '' ?>
 								><span></span> 手机号已验证
 							</label>
@@ -144,7 +152,7 @@
 					<div class="col-xs-4">
 						<div>
 							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="user_verified" 
+								<input type="checkbox" name="user_verified"  value="1"
 								<?=($user['user_verified'] ) ? 'checked' : '' ?>
 								><span></span> 用户身份信息已核验
 							</label>
@@ -153,7 +161,7 @@
 					<div class="col-xs-4">
 						<div>
 							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="email_verified" 
+								<input type="checkbox" name="email_verified"  value="1"
 								<?=($user['email_verified'] ) ? 'checked' : '' ?>
 								><span></span> 邮箱地址已验证
 							</label>
@@ -199,7 +207,10 @@
 				
 				<div class="form-group">
 					<div class="col-xs-12 push-15-t">
-						<h5 class="font-w400">详细档案</h5>
+						<h5 class="font-w400">
+							详细档案
+							<span class="text-muted font-s14"> ( 用户头像、昵称等档案资料 ) </span>
+						</h5>
 					</div>
 				</div>
 			
@@ -208,9 +219,9 @@
 						<label for="material-gridl2"> 头像 </label>
 						<div class="form-material">
 							<div id="headimg" name="headimg" class="file-uploader rounded rounded-4"
-								 data-api = '/upload.php'
+								 data-api = '<?=App::URI("core-storage", "public", "upload")?>'
 								 data-title='图片控'
-								 data-previews="64|32|24"
+								 data-previews="64,64|32,32|24,24"
 								 data-width="128px"
 								 data-height="128px"
 								 data-icon="fa fa-image" 
@@ -221,7 +232,6 @@
 								 data-draggable="yes"
 								 data-src="<?=$user['headimg_url']?>"
 								 data-path="<?=$user['headimg_path']?>"
-								 "
 								 ></div>
 						</div>
 					</div>
@@ -271,7 +281,10 @@
 				
 				<div class="form-group">
 					<div class="col-xs-12 push-15-t push-10">
-						<h5 class="font-w400">收货信息</h5>
+						<h5 class="font-w400">
+							收货信息
+							<span class="text-muted font-s14"> ( 地址联系等信息 ) </span>
+						</h5>
 					</div>
 				</div>
 
@@ -382,7 +395,10 @@
 				<?php if (is_array($user['wechats']) && !empty($user['wechats'])) : ?>
 				<div class="form-group">
 					<div class="col-xs-12 push-15-t">
-						<h5 class="font-w400">微信授权</h5>
+						<h5 class="font-w400">
+							微信授权
+							<span class="text-muted font-s14"> ( 已绑定的微信公众号 ) </span>
+						</h5>
 					</div>
 
 					<div class="col-xs-12">
@@ -427,23 +443,41 @@
 
 							 <button  
 								 type="button" 
-								 class="btn btn-primary font-w300 btn-minw  push-20-r">
+								 class="btn btn-primary font-w300 btn-minw  push-20-r user-action user-save ">
 									 <i class="fa fa-save push-5-r"></i> 
-									 保存信息
+									 保存数据
 								</button>
 
 							 <button  
 								 type="button" 
-								 class="btn btn-primary font-w300 btn-minw push-20-r">
+								 class="btn btn-primary font-w300 btn-minw push-50-r user-action user-back" >
 									 <i class="fa fa-angle-double-left push-5-r"></i> 
 									 返回列表
 								</button>
 
 						  	<button  
 								 type="button" 
-								 class="btn btn-danger font-w300 btn-minw push-50-r">
+								 class="btn btn-danger font-w300 btn-minw push-20-r user-action user-remove">
 									 <i class="fa fa-minus-circle push-5-r"></i> 
 									 删除用户
+								</button>
+
+							<button  
+								 type="button" 
+								 class="btn btn-danger font-w300 btn-minw push-20-r 
+								 hidden
+								 user-action user-resetpass">
+									 <i class="fa fa-lock push-5-r"></i> 
+									 重置登录密码
+								</button>
+
+							<button  
+								 type="button" 
+								 class="btn btn-danger font-w300 btn-minw push-20-r 
+								 hidden
+								 user-action user-resetpass">
+									 <i class="fa fa-lock push-5-r"></i> 
+									 重置支付密码
 								</button>
 		
 						  </div>
@@ -462,11 +496,154 @@
 
 
 <script type="text/javascript">
+
+function pending( message ) {
+	$('.user-action')
+		.addClass('disabled')
+		.attr('disabled', 'disabled');
+
+	App.loading({message:message}).show();
+}
+
+
+function success( message ) {
+	App.notify( message );
+}
+
+function failure( message,  validation ) {
+	validation = validation  || null;
+	message = message || null;
+
+	if ( typeof message == 'object' ) {
+		validation.showErrors(message);
+		return;
+	}
+
+	if ( message != null ) {
+		App.notify( message, 'fa fa-times', 'danger' );
+	}
+}
+
+function done() {
+	App.loading().hide();
+	$('.user-action')
+		.removeClass('disabled')
+		.removeAttr('disabled');
+}
+
+function getData( form, validation ) {
+
+	var data = {};
+	var formData =  $(form).serializeArray();
+
+	for( var i=0; i<formData.length; i++ ) {
+		var name = formData[i]['name'];
+		var value = formData[i]['value'];
+
+		if (value !== "") {
+			data[name] = value;
+		}
+	}
+
+	// 特殊数值处理
+	if ( typeof data["mobile_verified"] == 'undefined' ) {
+		data["mobile_verified"] = "0";
+	}
+
+	if ( typeof data["email_verified"] == 'undefined' ) {
+		data["email_verified"] = "0";
+	}
+
+	if ( typeof data["user_verified"] == 'undefined' ) {
+		data["user_verified"] = "0";
+	}
+
+
+	// 特殊数值校验
+	
+	// 身份信息 (标记为已核验，但身份信息为空)
+	if ( data["user_verified"] == "1" && typeof data["verify"] == 'undefined' ) {
+		failure({verify:'身份信息不能为空'}, validation );
+	}
+
+
+	// 验证支付密码
+
+
+
+	data = jQuery.extend(data, {});
+
+	return data;
+}
+
+
+function saveUser( form, validation ) {
+
+	var data = getData( form, validation );
+
+	console.log(data);
+
+	// failure({mobile:'手机号已被注册'}, validation );
+
+	// pending('保存中, 请稍候...');
+
+
+	// setTimeout(function(){
+	// 	failure('保存失败');
+	// 	success('保存成功');
+	// 	done();}, 500);
+	
+	// console.log( form );
+}
+
+
 $(function(){
-	App.initHelpers(['datepicker','select2', 'tags-inputs']);
-	App.initHelpers('file-uploader', {
-		'home':'http://ui.chuanbolian.cn/upload',
-		'handler':'div[name="headimg"]'
+	App.initHelpers('file-uploader', {'handler':'div[name="headimg"]'});
+	App.initHelpers(['datepicker','select2', 'image-crop', 'tags-inputs']);
+
+	$('.user-save').click(function(event) {
+		$('.user-form').submit();
+	});
+
+
+	// 表单验证
+	$('.user-form').validate({
+		errorClass: 'help-block text-right animated fadeInDown',
+		errorElement: 'div',
+		errorPlacement: function(error, e) {				
+			jQuery(e).parents('.form-group .form-material').append(error);
+		},
+		highlight: function(e) {
+			jQuery(e).closest('.form-group .form-material').parent().removeClass('has-error').addClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+		unhighlight:function(e){
+			jQuery(e).closest('.form-group .form-material').parent().removeClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+		success: function(e) {
+			jQuery(e).closest('.form-group .form-material').parent().removeClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+
+		submitHandler: function(form) {
+			saveUser( form, this );
+			return false;
+		},
+		rules: {
+			mobile: {
+				required: true,
+				minlength: 2,
+				maxlength: 20,
+			}
+		},
+		messages: {
+			mobile: {
+				required: '手机号码不能为空',
+				minlength: '手机号码格式不正确',
+				maxlength: '手机号码格式不正确',
+			}
+		}
 	});
 })
 </script>

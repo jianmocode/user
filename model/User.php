@@ -278,6 +278,10 @@ class User extends Model {
 
 		$u['user_id'] = $user_id;
 
+		// 处理微信用户头像信息
+		$u['headimgurl'] = str_replace("http:", "", $u['headimgurl']);
+		$u['headimgurl'] = str_replace("https:", "", $u['headimgurl']);
+
 		// 从未注册 生成 UserID
 		$this->user_wechat->createOrUpdate($u);
 
