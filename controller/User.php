@@ -62,8 +62,20 @@ class UserController extends \Tuanduimao\Loader\Controller {
 	// 修改/创建用户表单
 	function modify(){
 
+		$u = new \Mina\User\Model\User;
+		$g = new \Mina\User\Model\Group;
+
+		$id = $_GET['id'];
+
+		$data = [
+			"user" => $u->getByUid($_GET['id']),
+			"groups" => $g->search()
+		];
+
+		// Utils::out( $data );
+
+		// return;
 		App::render($data,'user','modify');
-		
 
 		return [
 			'js' => [

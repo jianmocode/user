@@ -49,7 +49,7 @@ class User extends Model {
 		$this->putColumn( 'user_id', $this->type('string', ['length'=>128, 'unique'=>true]) )    // 用户ID 
 			 ->putColumn( 'group_id', $this->type('string',  ['length'=>128, 'index'=>true]) )   // 用户组
 
-			
+			 // 用户资料
 			 ->putColumn( 'nickname', $this->type('string',  ['length'=>256]) )  // 用户名称
 			 ->putColumn( 'sex', $this->type('integer',  ['length'=>1,  "index"=>true]) )  // 用户性别
 			 ->putColumn( 'city', $this->type('string',  ['length'=>100,  "index"=>true]) )  // 所在城市
@@ -57,18 +57,27 @@ class User extends Model {
 			 ->putColumn( 'country', $this->type('string',  ['length'=>100,  "index"=>true]) )  // 所在国家
 			 ->putColumn( 'headimgurl', $this->type('string',  ['length'=>256]) )  // 用户头像地址
 			 ->putColumn( 'language', $this->type('string',  ['length'=>20]) )  // 系统语言
+			 ->putColumn( 'birthday', $this->type('timestamp',  []) )  // 出生日期
+
 
 			 // 常用字段
 			 ->putColumn( 'mobile', $this->type('string',  ['length'=>40, 'unique'=>true]) )  // 手机号
 			 ->putColumn( 'mobile_nation', $this->type('string',  ['length'=>40, 'unique'=>true]) )  // 手机号
 			 ->putColumn( 'email', $this->type('string',  ['length'=>128, 'unique'=>true]) )  // 电邮地址
 			 
+			 ->putColumn( 'contact_name', $this->type('string',  ['length'=>256]) )  // 联系人
+			 ->putColumn( 'contact_tel',  $this->type('string',  ['length'=>40]) )   // 联系电话
+			 ->putColumn( 'title',  $this->type('string',  ['length'=>128]) )   // 联系人职务
+			 ->putColumn( 'company',  $this->type('string',  ['length'=>256]) )   // 联系人所在公司
 			 ->putColumn( 'zip', $this->type('string',  ['length'=>40]) )  // 邮编
 			 ->putColumn( 'address', $this->type('string',  ['length'=>256]) )  // 收货地址
 			 ->putColumn( 'remark', $this->type('string',  ['length'=>256]) )  // 用户备注
 			 ->putColumn( 'tag', $this->type('text',  ['json'=>true]) )  // 用户标签
 
 			// 身份校验
+			 ->putColumn( 'user_verified', $this->type('boolean',  ['default'=>"0"]) )    // 用户是否通过身份认证
+			 ->putColumn( 'verify', $this->type('string',  ['length'=>128]) )    	      // 用户身份信息
+			 ->putColumn( 'verify_data', $this->type('text',  ['json'=>true]) )  		  // 用户认证证明材料
 			 ->putColumn( 'mobile_verified', $this->type('boolean',  ['default'=>"0"]) )  // 手机号是否通过校验
 			 ->putColumn( 'email_verified', $this->type('boolean',  ['default'=>"0"]) )   // 电邮地址是否通过校验
 			
@@ -479,6 +488,35 @@ class User extends Model {
 	}
 
 
+
+	/**
+	 * 读取用户资料
+	 * @param  [type] $user_id [description]
+	 * @return [type]          [description]
+	 */
+	function getByUid( $user_id ) {
+
+		$user = $this->query()
+					 ->where("user_id", "=", $user_id)
+					 ->limit()
+					 ->select('*')
+					 ->get()
+					 ->toArray()
+				;
+
+		$this->formatUsers($user);
+
+		if ( empty($user) ) {
+			return [
+				"user_id" => $this->genUserId()
+			];
+		}
+
+		return current($user);
+	}
+
+
+
 	/**
 	 * 用户检索
 	 * @param  [type] $query [description]
@@ -560,6 +598,8 @@ class User extends Model {
 	 */
 	function formatUsers( & $users  ) {
 
+		$media = new \Tuanduimao\Media;
+
 		if ( empty($users) ) {
 			return;
 		}
@@ -635,6 +675,21 @@ class User extends Model {
 			
 			unset($users[$idx]["pay_password"]);
 			unset($users[$idx]["password"]);
+
+
+			// 用户头像处理
+			if ( isset( $user['headimgurl']) ) {
+				if ( Utils::isURL( $user['headimgurl']) ) {
+					$users[$idx]['headimg_url'] = $user['headimgurl'];
+					$users[$idx]['headimg_path'] = '';
+				}  else {
+					$img =  $media->get($user['headimg_path']);
+					$users[$idx]['headimg_path'] = $img['path'];
+					$users[$idx]['headimg_url'] = $img['origin'];
+					$users[$idx]['headimg_path']  = $img['url'];
+				}
+			}
+
 		}
 
 
@@ -642,6 +697,8 @@ class User extends Model {
 
 
 	}
+
+
 
 
 

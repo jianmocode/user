@@ -29,6 +29,9 @@
 		<div class="block-content" style="padding:40px;padding-top:20px;" >
 			<form class="form-horizontal push-10-t" action="base_forms_elements_modern.html" method="post" onsubmit="return false;">
 				
+				<!-- 用户ID  -->
+				<input type="hidden" name="user_id" id="user_id" value="<?=$user['user_id']?>">
+				
 				<div class="form-group">
 					<div class="col-xs-12 push-10">
 						<h5 class="font-w400">账号密码</h5>
@@ -42,9 +45,16 @@
 							<select class="js-select2 form-control" id="status" name="status" 
 								style="width: 100%;" data-placeholder="请选择状态...">
 								<option></option>
-								<option value="on" selected>正常</option>
-								<option value="off">封禁</option>
-								<option value="lock">锁定</option>
+								<option value="on" 
+									<?=($user['status'] == 'on' || empty($user['status'])) ? 'selected' : '' ?>
+								> 正常</option>
+
+								<option value="off"
+									<?=($user['status'] == 'off') ? 'selected' : '' ?>
+								>封禁</option>
+								<option value="lock"
+									<?=($user['status'] == 'lock') ? 'selected' : '' ?>
+								>锁定</option>
 							</select>
 							<label for="status">状态</label>
 							<div class="help-block text-right"></div>
@@ -57,8 +67,12 @@
 							<select class="js-select2 form-control" id="group_id" name="group_id" 
 								style="width: 100%;" data-placeholder="请选择组...">
 								<option></option>
-								<option value="1">分组1</option>
-								<option value="2">分组2</option>
+								<?php foreach($groups as $g ) : ?>
+								<option value="<?=$g['group_id']?>"
+									<?=($user['group_id'] == $g['group_id']) ? 'selected' : '' ?>
+								><?=$g['name']?></option>
+								<?php endforeach;?>
+
 							</select>
 							<label for="group_id">用户组</label>
 							<div class="help-block text-right"></div>
@@ -72,7 +86,8 @@
 					<div class="col-xs-6">
 						<div class="form-material">
 							<input class="form-control" type="text" id="mobile" name="mobile" 
-									  placeholder="填写手机号">
+								value="<?=$user['mobile']?>" 
+								placeholder="填写手机号">
 							<label for="mobile">手机号</label>
 							<div class="help-block text-right"></div>
 						</div>
@@ -82,7 +97,8 @@
 					<div class="col-xs-6">
 						<div class="form-material">
 							<input class="form-control" type="text" id="email" name="email" 
-									  placeholder="">
+								value="<?=$user['email']?>"
+								placeholder="填写电子邮箱">
 							<label for="email">邮箱</label>
 							<div class="help-block text-right"></div>
 						</div>
@@ -116,12 +132,42 @@
 				</div>
 
 				<div class="form-group">
+					<div class="col-xs-4">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="mobile_verified" 
+								<?=($user['mobile_verified'] ) ? 'checked' : '' ?>
+								><span></span> 手机号已验证
+							</label>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="user_verified" 
+								<?=($user['user_verified'] ) ? 'checked' : '' ?>
+								><span></span> 用户身份信息已核验
+							</label>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="email_verified" 
+								<?=($user['email_verified'] ) ? 'checked' : '' ?>
+								><span></span> 邮箱地址已验证
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
 					<div class="col-xs-12">
 						<div class="form-material">
 							 <input class="form-control" type="text" id="verify" name="verify" 
-							 value=""
+							 value="<?=$user['verify']?>"
 							 placeholder="请填写用户身份信息">
-							<label for="verify">身份认证</label>
+							<label for="verify">身份信息</label>
 							<div class="help-block text-right"></div>
 						</div>
 					</div>
@@ -130,7 +176,9 @@
 				<div class="form-group">
 					<div class="col-xs-12">
 						<div class="form-material">
-							 <input class="js-tags-input form-control" type="text" id="tag" name="tag" value="">
+							<input class="js-tags-input form-control" type="text" id="tag" name="tag" 
+							value="<?=empty($user['tag'])?'':import(',',$user['tag'])?>"
+							>
 							<label for="tag">标签</label>
 							<div class="help-block text-right"></div>
 						</div>
@@ -140,30 +188,14 @@
 				<div class="form-group">
 					<div class="col-xs-12">
 						<div class="form-material">
-							<textarea class="form-control" id="remark" name="remark" rows="3" placeholder="填写备注信息"></textarea>
+							<textarea class="form-control" id="remark" name="remark" rows="3" placeholder="填写备注信息"><?=$user['remark']?></textarea>
 							<label for="remark">备注</label>
 							<div class="help-block text-right"></div>
 						</div>
 					</div>
 				</div>
 
-				<div class="form-group">
-					<div class="col-xs-6">
-						<div>
-							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="mobile_verified" ><span></span> 已校验手机号码
-							</label>
-						</div>
-					</div>
-					<div class="col-xs-6">
-						<div>
-							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="email_verified" ><span></span> 已校验邮箱地址
-							</label>
-						</div>
-						
-					</div>
-				</div>
+				
 				
 				<div class="form-group">
 					<div class="col-xs-12 push-15-t">
@@ -187,8 +219,8 @@
 								 data-maxsize="400"
 								 data-progress="yes"
 								 data-draggable="yes"
-								 data-src=""
-								 data-path=""
+								 data-src="<?=$user['headimg_url']?>"
+								 data-path="<?=$user['headimg_path']?>"
 								 "
 								 ></div>
 						</div>
@@ -198,7 +230,8 @@
 					<div class="col-xs-6 push-20-t">
 						<div class="form-material">
 							<input class="form-control" type="text" id="nickname" name="nickname" 
-									  placeholder="填写用户昵称">
+							value="<?=$user['nickname']?>"
+							placeholder="填写用户昵称">
 							<label for="nickname">昵称</label>
 							<div class="help-block text-right"></div>
 						</div>
@@ -209,10 +242,14 @@
 						<div class="form-material">
 							<div>
 								<label class="css-input css-radio css-radio-primary push-10-r">
-									<input type="radio" name="sex" value="1"  > <span></span> 男
+									<input type="radio" name="sex" value="1" 
+									<?=($user['sex'] == 1 ) ? 'checked' : '' ?>
+									> <span></span> 男
 								</label>
 								<label class="css-input css-radio css-radio-primary">
-									<input type="radio" name="sex" value="0" checked ><span></span> 女
+									<input type="radio" name="sex" value="0" 
+									<?=($user['sex'] == 0 || !array_key_exists('sex', $user) ) ? 'checked' : '' ?>
+									 ><span></span> 女
 								</label>
 							</div>
 							<label for="sex">性别</label>
@@ -221,7 +258,9 @@
 
 					<div class="col-xs-6 push-20-t">
 						<div class="form-material">
-							 <input class="js-datepicker form-control" type="text" id="birthday" name="birthday" data-date-format="yyyy年mm月dd日" placeholder="请选择出生日期..">
+							 <input class="js-datepicker form-control" type="text" id="birthday" name="birthday" 
+							 value="<?=empty($user['birthday'])?'':date('Y年m月d日')?>"
+							 data-date-format="yyyy年mm月dd日" placeholder="请选择出生日期..">
 							<label for="birthday">生日</label>
 							<div class="help-block text-right"></div>
 						</div>
@@ -229,30 +268,76 @@
 
 				</div>
 
+				
+				<div class="form-group">
+					<div class="col-xs-12 push-15-t push-10">
+						<h5 class="font-w400">收货信息</h5>
+					</div>
+				</div>
+
+				<div class="form-group">
+
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="country" name="country" 
+							value="<?=empty($user['country'])?'中国':$user['country']?>"
+							placeholder="填写所在国家">
+							<label for="country">国家</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="province" name="province" 
+							value="<?=$user['province']?>"
+							placeholder="填写所在省份">
+							<label for="province">省份</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="city" name="city" 
+							value="<?=$user['city']?>"
+							placeholder="填写所在城市">
+							<label for="city">城市</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+				</div>
 
 				<div class="form-group">
 					
 					<div class="col-xs-4">
 						<div class="form-material">
-							<input class="form-control" type="text" id="city" name="city" 
-									  placeholder="">
-							<label for="city">城市</label>
+							<input class="form-control" type="text" id="contact_name" name="contact_name" 
+							value="<?=empty($user['contact_name'])?$user['nickname']:$user['contact_name']?>"
+							placeholder="填写联系人">
+							<label for="contact_name">联系人</label>
 							<div class="help-block text-right"></div>
 						</div>
 					</div>
+
+
 					<div class="col-xs-4">
 						<div class="form-material">
-							<input class="form-control" type="text" id="province" name="province" 
-									  placeholder="">
-							<label for="province">省份</label>
+							<input class="form-control" type="text" id="contact_tel" name="contact_tel" 
+							value="<?=empty($user['contact_tel'])?$user['mobile']:$user['contact_tel']?>"
+							placeholder="填写联系电话">
+							<label for="contact_tel">联系电话</label>
 							<div class="help-block text-right"></div>
 						</div>
 					</div>
+
 					<div class="col-xs-4">
 						<div class="form-material">
-							<input class="form-control" type="text" id="country" name="country" 
-									  placeholder="">
-							<label for="country">国家</label>
+							<input class="form-control" type="text" id="zip" name="zip" 
+							value="<?=$user['zip']?>"
+							placeholder="填写所在地邮编">
+							<label for="zip">邮编</label>
 							<div class="help-block text-right"></div>
 						</div>
 					</div>
@@ -262,26 +347,39 @@
 				<div class="form-group">
 					<div class="col-xs-8">
 						<div class="form-material">
-							<input class="form-control" type="text" id="address" name="address" 
-									  placeholder="">
-							<label for="address">收货地址</label>
+							<input class="form-control" type="text" id="company" name="company" 
+							value="<?=$user['company']?>"
+							placeholder="填写公司名称">
+							<label for="company">公司名称</label>
 							<div class="help-block text-right"></div>
 						</div>
 					</div>
-
+					
 					<div class="col-xs-4">
 						<div class="form-material">
-							<input class="form-control" type="text" id="zip" name="zip" 
-									  placeholder="">
-							<label for="zip">邮编</label>
+							<input class="form-control" type="text" id="title" name="title" 
+							value="<?=$user['title']?>"
+							placeholder="填写职务">
+							<label for="title">职务</label>
 							<div class="help-block text-right"></div>
 						</div>
 					</div>
 					
 				</div>
 
-
-
+				<div class="form-group">
+					<div class="col-xs-12">
+						<div class="form-material">
+							<input class="form-control" type="text" id="address" name="address" 
+							value="<?=$user['address']?>"
+							placeholder="填写收货地址，精确到门牌号">
+							<label for="address">收货地址</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+				
+				<?php if (is_array($user['wechats']) && !empty($user['wechats'])) : ?>
 				<div class="form-group">
 					<div class="col-xs-12 push-15-t">
 						<h5 class="font-w400">微信授权</h5>
@@ -291,38 +389,33 @@
 						<table class="table">
 							<thead>
 								<tr>
-									<th style="width:35%"> 公众号名称 </th>
-									<th style="width:35%"> AppID </th>
-									<th style="width:30%"> 管理 </th>
+									<th style="width:15%"> 公众号名称 </th>
+									<th style="width:15%"> AppID </th>
+									<th style="width:30%"> OpenID </th>
+									<th style="width:30%"> UnionID </th>
+									<th style="width:10%"> 管理 </th>
 								</tr>
 							</thead>
 
 							<tbody>
+								<?php foreach($user['wechats'] as $we) : ?>
 								<tr>
-									<td> 团队猫 </td>
-									<td> 团队猫 </td>
-									<td style="width:30%">
+									<td> <?=$we['name']?> </td>
+									<td> <?=$we['appid']?> </td>
+									<td> <?=$we['openid']?> </td>
+									<td> <?=$we['unionid']?> </td>
+									<td >
 										<div class="btn-group">
-											<button class="btn btn-xs btn-danger" type="button" ><i class="fa fa-minus-circle"></i> 解绑 </button>
+											<button class="btn btn-xs btn-danger btn-minw" type="button" ><i class="fa fa-minus-circle"></i> 取消授权 </button>
 										</div>
 									</td>
 								</tr>
-								<tr>
-									<td> 团队猫 </td>
-									<td> 团队猫 </td>
-									<td style="width:30%">
-										<div class="btn-group">
-											<button class="btn btn-xs btn-danger" type="button" ><i class="fa fa-minus-circle"></i> 解绑 </button>
-										</div>
-									</td>
-								</tr>
+								<?php endforeach; ?>
 							</tbody>
 						</table>
 					</div>
-
 				</div>
-
-
+				<?php endif; ?>
 				
 				<!--  提交按钮 -->
 				<div class="block block-quickpanel">
@@ -336,7 +429,7 @@
 								 type="button" 
 								 class="btn btn-primary font-w300 btn-minw  push-20-r">
 									 <i class="fa fa-save push-5-r"></i> 
-									 保存资料
+									 保存信息
 								</button>
 
 							 <button  
