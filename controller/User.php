@@ -27,7 +27,7 @@ class UserController extends \Tuanduimao\Loader\Controller {
 		$g = new \Mina\User\Model\Group;
 
 		$data = [
-			'users' => $u->search($_GET),
+			'users' => $u->search($query),
 			"groups" => $g->search(),
 			"query" => $query
 		];
