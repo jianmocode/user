@@ -64,8 +64,9 @@ class User extends Model {
 
 
 			 // 常用字段
-			 ->putColumn( 'mobile', $this->type('string',  ['length'=>40, 'unique'=>true]) )  // 手机号
-			 ->putColumn( 'mobile_nation', $this->type('string',  ['length'=>40, 'unique'=>true]) )  // 手机号
+			 ->putColumn( 'mobile', $this->type('string',  ['length'=>40]) )  // 手机号
+			 ->putColumn( 'mobile_nation', $this->type('string',  ['length'=>40, 'default'=>"86"]) )  // 手机号国别
+			 ->putColumn( 'mobile_full', $this->type('string',  ['length'=>40, 'unique'=>true]) )  // 完整的手机号码
 			 ->putColumn( 'email', $this->type('string',  ['length'=>128, 'unique'=>true]) )  // 电邮地址
 			 
 			 ->putColumn( 'contact_name', $this->type('string',  ['length'=>256]) )  // 联系人
@@ -329,10 +330,11 @@ class User extends Model {
 	/**
 	 * 用户登录
 	 */
-	function login( $mobile, $password = null ) {
+	function login( $mobile,  $password = null, $mobile_nation="86" ) {
 
 		$rows = $this->query()
 				->where('mobile', '=', $mobile)
+				->where('mobile_nation', '=', $mobile_nation)
 				->limit(1)
 				->select(
 					"user_id",
@@ -491,6 +493,20 @@ class User extends Model {
 
 		if (array_key_exists('pay_password', $data) ) {
 			$data['pay_password'] = $this->hashPassowrd($data['pay_password']);
+		}
+
+		// 包含国别的手机号
+		if (array_key_exists('mobile_nation', $data) ) {
+			$data['mobile_nation'] = str_replace('00', '',$mobile_nation);
+			$data['mobile_nation'] = str_replace('+', '', $mobile_nation);
+
+			if (empty($data['mobile_nation']) ) {
+				$data['mobile_nation'] = "86";
+			}
+		}
+
+		if (array_key_exists('mobile', $data) ) {
+			$data['mobile_full'] = "DB::RAW(CONCAT(`mobile_nation`, `mobile`))";
 		}
 		
 		return parent::create( $data );

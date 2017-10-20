@@ -265,12 +265,13 @@ class User extends Api {
 		$this->authVcode();
 		$u = new UserModel();
 		$mobile = $data['mobile'];
+		$data['mobile_nation'] = empty($data['mobile_nation']) ? '86' : $data['mobile_nation'];
 
 		if ( empty($mobile) ) {
 			throw new Excp("未知手机号码", 404, ['data'=>$data, 'query'=>$query]);
 		}
 
-		$u->login($mobile, $data['password']);
+		$u->login($mobile, $data['password'], $data['mobile_nation'] );
 		return ['code'=>0, "message"=>"登录成功"];
 
 	}
@@ -320,10 +321,11 @@ class User extends Api {
 			throw new Excp("手机号码格式不正确", 402, ['data'=>$data]);
 		}
 
+		$data['mobile_nation'] = !empty($data['nation']) ? $data['nation'] : '86';
+
 		// 校验短信验证码
 		if( $map['user/sms/on'] == 1) {
 			$data['mobile_verified'] = true;
-			$data['mobile_nation'] = !empty($data['nation']) ? $data['nation'] : '86';
 			if ( $this->verifySMSCode($query, $data) === false) {
 				throw new Excp("短信验证码不正确", 402, ['data'=>$data]);
 			}
@@ -351,7 +353,7 @@ class User extends Api {
 			$u->create($data);
 		} catch(Excp $e ){
 			if ( $e->getCode() == '1062') {
-				throw new Excp("手机号 {$data['mobile']} 已被注册", 402, ['data'=>$data]);	
+				throw new Excp("手机号 +{$data['mobile_nation']} {$data['mobile']} 已被注册", 402, ['data'=>$data]);	
 			}
 			throw $e;
 		}
