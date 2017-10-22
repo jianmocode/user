@@ -306,14 +306,14 @@
 						<label for="material-gridl2"> 头像 </label>
 						<div class="form-material">
 							<div id="headimg" name="headimg" class="file-uploader rounded rounded-4"
-								 data-api = '<?=App::URI("core-storage", "public", "upload")?>'
+								 data-api = '<?=App::URI("mina", "uploader", "upload", ["type"=>"image"])?>'
 								 data-title='图片控'
 								 data-previews="64,64|32,32|24,24"
 								 data-width="128px"
 								 data-height="128px"
 								 data-icon="fa fa-image" 
 								 data-placeholder="点击或拖入图片" 
-								 data-allow-types="image/png,image/jpg,image/jpeg"
+								 data-allow-types="image/png,image/jpg,image/jpeg,image/gif"
 								 data-maxsize="400"
 								 data-progress="yes"
 								 data-draggable="yes"
@@ -322,7 +322,6 @@
 								 ></div>
 						</div>
 					</div>
-
 
 					<div class="col-xs-6 push-20-t">
 						<div class="form-material">

@@ -17,6 +17,24 @@ class UserController extends \Tuanduimao\Loader\Controller {
 	function __construct() {
 	}
 
+	// function test() {
+	// 	$path = "/2017/10/22/926cdbe7ba53176dc0f51b82faae0a91.jpg";
+	// 	$media = new \Tuanduimao\Media(['private'=>true]);
+	// 	$url = $media->privateURL( $path );
+
+	// 	echo "<a href='{$url}' target='_blank' > {$url} </a>";
+	// }
+
+
+	// function uptest() {
+	// 	$url = "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1508681851&di=5e8b7b83e6a0e483fd4da33d6a154ec9&src=http://www.zhlzw.com/UploadFiles/Article_UploadFiles/201204/20120412123914329.jpg";
+
+	// 	$media = new \Tuanduimao\Media(['private'=>true]);
+	// 	$rs = $media->uploadImage($url);
+	// 	Utils::out( $rs );
+	// }
+
+
 	// 用户列表
 	function index() {
 
