@@ -18,9 +18,14 @@ class UserController extends \Tuanduimao\Loader\Controller {
 	}
 
 	// function test() {
-	// 	$path = "/2017/10/22/926cdbe7ba53176dc0f51b82faae0a91.jpg";
+	// 	$path = "/2017/10/23/926cdbe7ba53176dc0f51b82faae0a91.jpg";
 	// 	$media = new \Tuanduimao\Media(['private'=>true]);
 	// 	$url = $media->privateURL( $path );
+
+	// 	$url_b = \Tuanduimao\Media::briage('imagelatest', ['name'=>'testing'], 'https://wss.xpmjs.com', 
+	// 		 '4990e4107dbfe85c045cf8bbd3508652','150698766059529');
+
+	// 	echo "<a href='{$url_b}' target='_blank' > {$url_b} </a><br/>";
 
 	// 	echo "<a href='{$url}' target='_blank' > {$url} </a>";
 	// }
