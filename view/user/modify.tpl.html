@@ -542,8 +542,49 @@
 								</button>
 
 						  	<button  
-								 type="button" 
-								 class="btn btn-danger font-w300 btn-minw push-20-r user-action user-remove">
+								 type="button"
+								 confirm-title="删除用户"
+                                 confirm-content="您确定删除 <strong>用户(<?=$user['user_id']?>)</strong> 吗?"
+                            	 confirm-dismiss = "取消"
+                                 confirm-submit= "确定"
+                                 data-param-user_id="<?=$user['user_id']?>" 
+                                 confirm-action="<?=App::NR('user','remove')?>"
+
+
+                                 event-before="
+									function( btn, modal ) {
+										$('button', modal)
+											.addClass('disabled')
+											.attr('disabled', 'disabled');
+									}
+								"
+
+								event-done="
+									function( data, btn, modal) {
+										$('button', modal)
+											.removeClass('disabled')
+											.removeAttr('disabled');
+									}
+								"
+	                            event-success="
+									function(btn, modal) {
+										success('删除成功');
+										setTimeout(function(){
+											window.location = '<?=App::R('user', 'index')?>';
+										}, 1000);
+									}
+								"
+
+								event-error="
+									function( data, btn, modal) {
+										failure( '删除失败 ('+ data['message'] + ')');
+										return true;
+									}
+								"
+
+								class="btn btn-danger font-w300 btn-minw push-20-r ajax-confirm  
+								user-action user-remove
+								">
 									 <i class="fa fa-minus-circle push-5-r"></i> 
 									 删除用户
 								</button>
@@ -693,7 +734,7 @@ function getData( form, validation ) {
 	}
 
 
-	// 验证支付密码
+	// 验证支付密码 ???
 
 
 
@@ -757,7 +798,7 @@ function saveUser( form, validation ) {
 
 $(function(){
 	App.initHelpers('file-uploader', {'handler':'div[name="headimg"]'});
-	App.initHelpers(['datepicker','select2', 'image-crop', 'tags-inputs']);
+	App.initHelpers(['datepicker','select2', 'image-crop', 'tags-inputs', 'ajax-confirm']);
 
 	// 保存数据按钮
 	$('.user-save').click(function(event) {

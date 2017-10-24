@@ -581,6 +581,33 @@ class User extends Model {
 	}
 
 
+	/**
+	 * 重载Remove
+	 * @return [type] [description]
+	 */
+	function remove( $data_key, $uni_key="_id", $mark_only=true ){ 
+		
+		if ( $mark_only === true ) {
+			$time = date('Y-m-d H:i:s');
+			$_id = $this->getVar("_id", "WHERE {$uni_key}=? LIMIT 1", [$data_key]);
+			$row = $this->update( $_id, [
+				"deleted_at"=>$time, 
+				"user_id"=>"DB::RAW(CONCAT('_','".time() . rand(10000,99999). "_', `user_id`))", 
+				"email"=>null,
+				"mobile_full" => null,
+			]);
+
+			if ( $row['deleted_at'] == $time ) {	
+				return true;
+			}
+
+			return false;
+		}
+
+		return parent::remove($data_key, $uni_key, $mark_only);
+	}
+
+
 
 	/**
 	 * 读取用户资料

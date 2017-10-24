@@ -133,7 +133,30 @@ class UserController extends \Tuanduimao\Loader\Controller {
 
 
 	/**
-	 * 保存用户信息
+	 * 删除用户
+	 */
+	function remove() {		
+
+		$user_id = $_REQUEST['user_id'];
+
+		if ( empty($user_id) ) {
+			throw new Excp("未提供用户信息", 404, []);
+		}
+
+		$u = new \Mina\User\Model\User;
+		$resp = $u->remove( $user_id, "user_id");
+
+		if ( $resp === false){
+			throw new Excp("删除失败", 500, ["user_id"=>$user_id]);
+		}
+
+		Utils::out(["message"=>"删除成功"]);
+	}
+
+
+
+	/**
+	 * 保存用户
 	 * @return true
 	 */
 	function save() {

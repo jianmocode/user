@@ -20,7 +20,7 @@ use \Tuanduimao\Utils as Utils;
 
 			<div class="col-lg-4 col-md-4  col-sm-4">
 				<a 
-					href="<?=App::R('article','editor')?>" 
+					href="<?=App::R('user','modify')?>" 
 					class="btn btn-primary btn-lg font-w300 pull-right push-15-l" 
 					><i class="fa fa-plus"></i> 添加用户</a>
 
@@ -275,7 +275,7 @@ use \Tuanduimao\Utils as Utils;
 					</table><!-- END 文章列表 -->
 					<?php else: // 无数据时呈现 ?>
 					<span class="push-15-l"> 
-						<a href="<?=App::R('article', 'editor')?>"> 添加用户 </a>
+						<a href="<?=App::R('user', 'modify')?>"> 添加用户 </a>
 					</span>
 					<?php endif; // 如果没有数据则不显示 ?>
 			
