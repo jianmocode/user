@@ -131,4 +131,33 @@ class UserController extends \Tuanduimao\Loader\Controller {
 		];
 	}
 
+
+	/**
+	 * 保存用户信息
+	 * @return true
+	 */
+	function save() {
+
+		sleep(1);
+		// throw new Excp("测试出错啦！！！", 500, ["hello"=>"world"]);
+		// throw new Excp("出错啦 1", 500, [ "errors"=>["mobile"=>"手机号码已被注册"]]);
+
+		$data = $_POST;
+		Utils::out( $data );
+	}
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

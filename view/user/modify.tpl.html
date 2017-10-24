@@ -700,9 +700,38 @@ function getData( form, validation ) {
 
 function saveUser( form, validation ) {
 
+	var api = '<?=App::NR("user", "save");?>';
 	var data = getData( form, validation );
+	pending('保存中, 请稍候...');
+	
+	// POST 数据
+	jQuery.post( api, data, function( data, textStatus, xhr) {
 
-	console.log(data);
+		done();
+
+		// 返回数据异常
+		if ( typeof data['code'] === 'number' && data['code'] !== 0 ) {
+
+			if ( typeof data['extra'] == 'object' && typeof data['extra']['errors'] == 'object'  ) {
+				failure( data['extra']['errors'], validation );
+				return;
+			}
+
+			var message = data['message'] || "未知错误";
+			failure( message );
+			return;
+		}
+
+		// 保存成功
+		success('保存成功');
+
+	}, 'json')
+
+	.error(function( xhr, status, message) {
+		failure("保存失败, 网络错误 ( " + xhr.status + ' ' + message+" )");
+		// console.log( status, xhr.status, ' message=', message );
+	});
+
 
 	// failure({mobile:'手机号已被注册'}, validation );
 
@@ -764,7 +793,6 @@ $(function(){
 		},
 		messages: {
 			mobile: {
-				required: '手机号码不能为空',
 				minlength: '手机号码格式不正确',
 				maxlength: '手机号码格式不正确',
 			}
