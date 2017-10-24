@@ -805,6 +805,17 @@ $(function(){
 		$('.user-form').submit();
 	});
 
+	// 返回用户列表
+	$('.user-back').click( function(event) {
+		if ( history.length > 2 ) {
+			history.back();
+			return;
+		}
+
+		window.location = '<?=App::R("user","index")?>';
+		
+	});
+
 	// 自动填写信息联动
 	autoComplete();
 
