@@ -252,6 +252,12 @@ class User extends Model {
 			unset( $data['headimg_path'] );
 		}	
 
+		if ( array_key_exists('tag', $data) && is_string($data['tag']) ) {
+			$data['tag'] = str_replace("，", ",", $data['tag']);
+			$data['tag'] = explode(',', $data['tag']);
+		}
+
+
 		$user_id = $data['user_id'];
 		if ( empty($user_id) ) {
 			$user_id = $this->genUserId();

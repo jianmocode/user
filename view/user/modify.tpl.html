@@ -272,7 +272,7 @@
 					<div class="col-xs-12">
 						<div class="form-material">
 							<input class="js-tags-input form-control" type="text" id="tag" name="tag" 
-							value="<?=empty($user['tag'])?'':import(',',$user['tag'])?>"
+							value="<?=empty($user['tag'])?'':implode(',',$user['tag'])?>"
 							>
 							<label for="tag">标签</label>
 							<div class="help-block text-right"></div>
@@ -670,6 +670,7 @@ function getData( form, validation ) {
 	// 身份信息 (标记为已核验，但身份信息为空)
 	if ( data["user_verified"] == "1" && typeof data["verify"] == 'undefined' ) {
 		failure({verify:'请填写身份信息'}, validation );
+		return false;
 	}
 
 	// 实名信息 (标记为已核验，但真实姓名和身份证号为空)
@@ -684,7 +685,11 @@ function getData( form, validation ) {
 		if ( typeof data["idno"] == 'undefined' ) {
 			error['idno'] = "请填写证件号码"
 		}
-		failure(error, validation );
+
+		if ( typeof error['name'] !== 'undefined' || typeof error['idno'] !== 'undefined' ) {
+			failure(error, validation );
+			return false;
+		}
 	}
 
 
@@ -702,8 +707,11 @@ function saveUser( form, validation ) {
 
 	var api = '<?=App::NR("user", "save");?>';
 	var data = getData( form, validation );
-	pending('保存中, 请稍候...');
+	if ( data === false ) {
+		return;
+	}
 
+	pending('保存中, 请稍候...');
 	// POST 数据
 	jQuery.post( api, data, function( data, textStatus, xhr) {
 
