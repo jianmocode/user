@@ -1,0 +1,861 @@
+<?php
+	use \Tuanduimao\Loader\App as App;
+?>
+<script type="text/javascript">
+	DEBUG_ON = true;
+</script>
+<!-- Page Content -->
+<div class="content "> 
+
+	<div class="block block-bordered webeditor " >
+		<div class="block-header remove-margin" >
+			<ul class="block-options" >
+				<li>
+					<a type="button"	href="#" data-toggle="block-option" data-action="fullscreen_toggle"></a>
+				</li>
+			</ul>
+
+			<h3 class="block-title" >
+				<a href="<?=App::R('user', 'index')?>" class="text-default">
+					<i class="fa fa-arrow-circle-o-left"></i> 
+					用户列表 
+				</a> / 管理用户
+				<!-- <i class="fa fa-lock push-5-l  lock_status text-muted" style="width:18px;"></i> -->
+				<!-- <span class="text-danger status push-10-l font-s13"></span> -->
+			</h3>
+			
+		</div> <!-- END block-header -->
+
+		<div class="block-content" style="padding:40px;padding-top:20px;" >
+			<form class="user-form form-horizontal push-10-t" action="<?=APP::NR('user', 'save')?>" 
+				method="post" >
+				<!-- 用户ID  -->
+				<input type="hidden" name="user_id" id="user_id" value="<?=$user['user_id']?>">
+				
+				<div class="form-group">
+					<div class="col-xs-12 push-10">
+						<h5 class="font-w400">
+							账号信息
+							<span class="text-muted font-s14"> ( ID:<?=$user['user_id']?> ) </span>
+						</h5> 
+					</div>
+				</div>
+
+				<div class="form-group">
+					
+					<div class="col-xs-1">
+						<div class="form-material">
+							<input class="form-control text-right" type="text" id="mobile_nation" name="mobile_nation" 
+								value="<?=(empty($user['mobile_nation'])?'86':$user['mobile_nation'])?>" 
+								placeholder="填写手机号地区">
+							<label for="mobile_nation">手机区号</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+					<div class="col-xs-5">
+						<div class="form-material">
+							<input class="form-control" type="text" id="mobile" name="mobile" 
+								value="<?=$user['mobile']?>" 
+								placeholder="填写手机号">
+							<label for="mobile">手机号码</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="text" id="email" name="email" 
+								value="<?=$user['email']?>"
+								placeholder="填写电子邮箱">
+							<label for="email">邮箱</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+				</div>
+
+
+				<div class="form-group">
+					
+					<div class="col-xs-6">
+						<div class="form-material">
+							<select class="js-select2 form-control" id="status" name="status" 
+								style="width: 100%;" data-placeholder="请选择状态...">
+								<option></option>
+								<option value="on" 
+									<?=($user['status'] == 'on' || empty($user['status'])) ? 'selected' : '' ?>
+								> 正常</option>
+
+								<option value="off"
+									<?=($user['status'] == 'off') ? 'selected' : '' ?>
+								>封禁</option>
+								<option value="lock"
+									<?=($user['status'] == 'lock') ? 'selected' : '' ?>
+								>锁定</option>
+							</select>
+							<label for="status">状态</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+
+					<div class="col-xs-6">
+						<div class="form-material">
+							<select class="js-select2 form-control" id="group_id" name="group_id" 
+								style="width: 100%;" data-placeholder="请选择组...">
+								<option></option>
+								<?php foreach($groups as $g ) : ?>
+								<option value="<?=$g['group_id']?>"
+									<?=($user['group_id'] == $g['group_id']) ? 'selected' : '' ?>
+								><?=$g['name']?></option>
+								<?php endforeach;?>
+
+							</select>
+							<label for="group_id">用户组</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="form-group hidden">
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="password" id="password" name="password" 
+							placeholder="">
+							<label for="password">登录密码</label>
+							<div class="help-block text-right">用于账号登录鉴权。不想修改，请留空。</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="password" id="pay_password" name="pay_password" 
+									  placeholder="">
+							<label for="pay_password">支付密码</label>
+							<div class="help-block text-right">用于余额支付鉴权。不想修改，请留空。</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-12 push-10 push-15-t">
+						<h5 class="font-w400">
+							身份认证
+							<span class="text-muted font-s14"> ( 用户实名、身份认证 ) </span>
+						</h5>
+
+					</div>
+				</div>
+
+				<div class="form-group">
+
+					<div class="col-xs-3">
+						<div class="form-material">
+							<select class="js-select2 form-control" id="iddoc" name="iddoc" 
+								style="width: 100%;" data-placeholder="请有效证件...">
+								<option></option>
+								<option value="1" 
+									<?=($user['iddoc'] == '1' || empty($user['iddoc'])) ? 'selected' : '' ?>
+								> 居民身份证</option>
+
+								<option value="6"
+									<?=($user['iddoc'] == '6') ? 'selected' : '' ?>
+								>护照</option>
+
+								<option value="2"
+									<?=($user['iddoc'] == '2') ? 'selected' : '' ?>
+								>军人身份证件</option>
+
+								<option value="3"
+									<?=($user['iddoc'] == '3') ? 'selected' : '' ?>
+								>武装警察身份证</option>
+
+								<option value="4"
+									<?=($user['iddoc'] == '4') ? 'selected' : '' ?>
+								>港澳通行证</option>
+
+								<option value="5"
+									<?=($user['iddoc'] == '5') ? 'selected' : '' ?>
+								>台胞证</option>
+
+								<option value="7"
+									<?=($user['iddoc'] == '7') ? 'selected' : '' ?>
+								>其他</option>
+
+							</select>
+							<label for="iddoc">有效身份证件</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+					<div class="col-xs-3">
+						<div class="form-material">
+							<input class="form-control" type="text" id="name" name="name" 
+								value="<?=$user['name']?>" 
+								placeholder="填写真实姓名，与身份证一致">
+							<label for="name">真实姓名</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+					
+
+					<div class="col-xs-6">
+						<div class="form-material">
+							<input class="form-control" type="text" id="idno" name="idno" 
+								value="<?=$user['idno']?>" 
+								placeholder="填写所选证件号码">
+							<label for="idno">证件号码</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="col-xs-12">
+						<div class="form-material">
+							 <input class="form-control" type="text" id="verify" name="verify" 
+							 value="<?=$user['verify']?>"
+							 placeholder="请填写用户身份信息">
+							<label for="verify">身份信息</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="form-group">
+					<div class="col-xs-3 push-10">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="mobile_verified" value="1"
+								<?=($user['mobile_verified'] ) ? 'checked' : '' ?>
+								><span></span> 手机号已核验
+							</label>
+						</div>
+					</div>
+
+					<div class="col-xs-3">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="name_verified"  value="1"
+								<?=($user['name_verified'] ) ? 'checked' : '' ?>
+								><span></span> 实名信息已核验
+							</label>
+						</div>
+					</div>
+
+
+					<div class="col-xs-3">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="user_verified"  value="1"
+								<?=($user['user_verified'] ) ? 'checked' : '' ?>
+								><span></span> 身份信息已核验
+							</label>
+						</div>
+					</div>
+					<div class="col-xs-3">
+						<div>
+							<label class="css-input switch switch-sm switch-primary">
+								<input type="checkbox" name="email_verified"  value="1"
+								<?=($user['email_verified'] ) ? 'checked' : '' ?>
+								><span></span> 邮箱地址已核验
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-12">
+						<div class="form-material">
+							<input class="js-tags-input form-control" type="text" id="tag" name="tag" 
+							value="<?=empty($user['tag'])?'':implode(',',$user['tag'])?>"
+							>
+							<label for="tag">标签</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-12">
+						<div class="form-material">
+							<textarea class="form-control" id="remark" name="remark" rows="3" placeholder="填写备注信息"><?=$user['remark']?></textarea>
+							<label for="remark">备注</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+
+				
+				
+				<div class="form-group">
+					<div class="col-xs-12 push-15-t">
+						<h5 class="font-w400">
+							详细档案
+							<span class="text-muted font-s14"> ( 用户头像、昵称等档案资料 ) </span>
+						</h5>
+					</div>
+				</div>
+			
+				<div class="form-group">
+					<div class="col-xs-6">
+						<label for="material-gridl2"> 头像 </label>
+						<div class="form-material">
+							<div id="headimg" name="headimg" class="file-uploader rounded rounded-4"
+								 data-api = '<?=App::URI("mina", "uploader", "upload", ["type"=>"image"])?>'
+								 data-title='图片控'
+								 data-previews="64,64|32,32|24,24"
+								 data-width="128px"
+								 data-height="128px"
+								 data-icon="fa fa-image" 
+								 data-placeholder="点击或拖入图片" 
+								 data-allow-types="image/png,image/jpg,image/jpeg,image/gif"
+								 data-maxsize="400"
+								 data-progress="yes"
+								 data-draggable="yes"
+								 data-src="<?=$user['headimg_url']?>"
+								 data-path="<?=$user['headimg_path']?>"
+								 ></div>
+						</div>
+					</div>
+
+					<div class="col-xs-6 push-20-t">
+						<div class="form-material">
+							<input class="form-control" type="text" id="nickname" name="nickname" 
+							value="<?=$user['nickname']?>"
+							placeholder="填写用户昵称">
+							<label for="nickname">昵称</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+
+					<div class="col-xs-6 push-20-t">
+						<div class="form-material">
+							<div>
+								<label class="css-input css-radio css-radio-primary push-10-r">
+									<input type="radio" name="sex" value="1" 
+									<?=($user['sex'] == 1 ) ? 'checked' : '' ?>
+									> <span></span> 男
+								</label>
+								<label class="css-input css-radio css-radio-primary">
+									<input type="radio" name="sex" value="0" 
+									<?=($user['sex'] == 0 || !array_key_exists('sex', $user) ) ? 'checked' : '' ?>
+									 ><span></span> 女
+								</label>
+							</div>
+							<label for="sex">性别</label>
+						</div>
+					</div>
+
+					<div class="col-xs-6 push-20-t">
+						<div class="form-material">
+							 <input class="js-datepicker form-control" type="text" id="birthday" name="birthday" 
+							 value="<?=empty($user['birthday'])?'':date('Y年m月d日')?>"
+							 data-date-format="yyyy年mm月dd日" placeholder="请选择出生日期..">
+							<label for="birthday">生日</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+				</div>
+
+				
+				<div class="form-group">
+					<div class="col-xs-12 push-15-t push-10">
+						<h5 class="font-w400">
+							收货信息
+							<span class="text-muted font-s14"> ( 地址联系等信息 ) </span>
+						</h5>
+					</div>
+				</div>
+
+				<div class="form-group">
+
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="country" name="country" 
+							value="<?=empty($user['country'])?'中国':$user['country']?>"
+							placeholder="填写所在国家">
+							<label for="country">国家</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="province" name="province" 
+							value="<?=$user['province']?>"
+							placeholder="填写所在省份">
+							<label for="province">省份</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="city" name="city" 
+							value="<?=$user['city']?>"
+							placeholder="填写所在城市">
+							<label for="city">城市</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+				</div>
+
+				<div class="form-group">
+					
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="contact_name" name="contact_name" 
+							value="<?=empty($user['contact_name'])?$user['nickname']:$user['contact_name']?>"
+							placeholder="填写联系人">
+							<label for="contact_name">联系人</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="contact_tel" name="contact_tel" 
+							value="<?=empty($user['contact_tel'])?$user['mobile']:$user['contact_tel']?>"
+							placeholder="填写联系电话">
+							<label for="contact_tel">联系电话</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="zip" name="zip" 
+							value="<?=$user['zip']?>"
+							placeholder="填写所在地邮编">
+							<label for="zip">邮编</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-8">
+						<div class="form-material">
+							<input class="form-control" type="text" id="company" name="company" 
+							value="<?=$user['company']?>"
+							placeholder="填写公司名称">
+							<label for="company">公司名称</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+					<div class="col-xs-4">
+						<div class="form-material">
+							<input class="form-control" type="text" id="title" name="title" 
+							value="<?=$user['title']?>"
+							placeholder="填写职务">
+							<label for="title">职务</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+					
+				</div>
+
+				<div class="form-group">
+					<div class="col-xs-12">
+						<div class="form-material">
+							<input class="form-control" type="text" id="address" name="address" 
+							value="<?=$user['address']?>"
+							placeholder="填写收货地址，精确到门牌号">
+							<label for="address">收货地址</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+				</div>
+				
+				<?php if (is_array($user['wechats']) && !empty($user['wechats'])) : ?>
+				<div class="form-group">
+					<div class="col-xs-12 push-15-t">
+						<h5 class="font-w400">
+							微信授权
+							<span class="text-muted font-s14"> ( 已绑定的微信公众号 ) </span>
+						</h5>
+					</div>
+
+					<div class="col-xs-12">
+						<table class="table">
+							<thead>
+								<tr>
+									<th style="width:15%"> 公众号名称 </th>
+									<th style="width:15%"> AppID </th>
+									<th style="width:30%"> OpenID </th>
+									<th style="width:30%"> UnionID </th>
+									<th style="width:10%"> 管理 </th>
+								</tr>
+							</thead>
+
+							<tbody>
+								<?php foreach($user['wechats'] as $we) : ?>
+								<tr>
+									<td> <?=$we['name']?> </td>
+									<td> <?=$we['appid']?> </td>
+									<td> <?=$we['openid']?> </td>
+									<td> <?=$we['unionid']?> </td>
+									<td >
+										<div class="btn-group">
+											<button class="btn btn-xs btn-danger btn-minw" type="button" ><i class="fa fa-minus-circle"></i> 取消授权 </button>
+										</div>
+									</td>
+								</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<?php endif; ?>
+				
+				<!--  提交按钮 -->
+				<div class="block block-quickpanel">
+					 <div class="block-quickpanel-content  " >
+						<div class="form-group">
+						  <!--	按钮组 (btngroup)-->
+						  <div class="col-xs-12 push-20-t text-center">
+							
+
+							 <button  
+								 type="button" 
+								 class="btn btn-primary font-w300 btn-minw  push-20-r user-action user-save ">
+									 <i class="fa fa-save push-5-r"></i> 
+									 保存数据
+								</button>
+
+							 <button  
+								 type="button" 
+								 class="btn btn-primary font-w300 btn-minw push-50-r user-action user-back" >
+									 <i class="fa fa-angle-double-left push-5-r"></i> 
+									 返回列表
+								</button>
+
+						  	<button  
+								 type="button"
+								 confirm-title="删除用户"
+                                 confirm-content="您确定删除 <strong>用户(<?=$user['user_id']?>)</strong> 吗?"
+                            	 confirm-dismiss = "取消"
+                                 confirm-submit= "确定"
+                                 data-param-user_id="<?=$user['user_id']?>" 
+                                 confirm-action="<?=App::NR('user','remove')?>"
+
+
+                                 event-before="
+									function( btn, modal ) {
+										$('button', modal)
+											.addClass('disabled')
+											.attr('disabled', 'disabled');
+									}
+								"
+
+								event-done="
+									function( data, btn, modal) {
+										$('button', modal)
+											.removeClass('disabled')
+											.removeAttr('disabled');
+									}
+								"
+	                            event-success="
+									function(btn, modal) {
+										success('删除成功');
+										setTimeout(function(){
+											window.location = '<?=App::R('user', 'index')?>';
+										}, 1000);
+									}
+								"
+
+								event-error="
+									function( data, btn, modal) {
+										failure( '删除失败 ('+ data['message'] + ')');
+										return true;
+									}
+								"
+
+								class="btn btn-danger font-w300 btn-minw push-20-r ajax-confirm  
+								user-action user-remove
+								">
+									 <i class="fa fa-minus-circle push-5-r"></i> 
+									 删除用户
+								</button>
+
+							<button  
+								 type="button" 
+								 class="btn btn-danger font-w300 btn-minw push-20-r 
+								 hidden
+								 user-action user-resetpass">
+									 <i class="fa fa-lock push-5-r"></i> 
+									 重置登录密码
+								</button>
+
+							<button  
+								 type="button" 
+								 class="btn btn-danger font-w300 btn-minw push-20-r 
+								 hidden
+								 user-action user-resetpass">
+									 <i class="fa fa-lock push-5-r"></i> 
+									 重置支付密码
+								</button>
+		
+						  </div>
+
+						</div>
+						<div class="bg-primary text-white text-center bottom-line"></div>	
+					 </div>
+				</div> <!-- END 提交按钮 -->
+			</form>
+		</div> <!-- END block-content -->
+	</div> <!-- END block -->
+
+
+</div> <!-- END content -->
+
+
+
+<script type="text/javascript">
+
+function pending( message ) {
+	$('.user-action')
+		.addClass('disabled')
+		.attr('disabled', 'disabled');
+
+	App.loading({message:message}).show();
+}
+
+
+function success( message ) {
+	App.notify( message );
+}
+
+function failure( message,  validation ) {
+	validation = validation  || null;
+	message = message || null;
+
+	if ( typeof message == 'object' ) {
+		validation.showErrors(message);
+		return;
+	}
+
+	if ( message != null ) {
+		App.notify( message, 'fa fa-times', 'danger' );
+	}
+}
+
+function done() {
+	App.loading().hide();
+	$('.user-action')
+		.removeClass('disabled')
+		.removeAttr('disabled');
+}
+
+
+function autoComplete() {
+	if ( $('.user-form [name=contact_name]').val() == '' ) {
+		$('.user-form [name=name]').keyup(function(key){
+			$('.user-form [name=contact_name]').val( $(this).val() );
+		});
+	}
+
+	if ( $('.user-form [name=contact_tel]').val() == '' ) {
+		$('.user-form [name=mobile]').keyup(function(key){
+			$('.user-form [name=contact_tel]').val( $(this).val() );
+		});
+	}
+}
+
+
+function getData( form, validation ) {
+
+	var data = {};
+	var formData =  $(form).serializeArray();
+
+	for( var i=0; i<formData.length; i++ ) {
+		var name = formData[i]['name'];
+		var value = formData[i]['value'];
+
+		if (value !== "") {
+			data[name] = value;
+		}
+	}
+
+	// 特殊数值处理
+	if ( typeof data["mobile_verified"] == 'undefined' ) {
+		data["mobile_verified"] = "0";
+	}
+
+	if ( typeof data["email_verified"] == 'undefined' ) {
+		data["email_verified"] = "0";
+	}
+
+	if ( typeof data["user_verified"] == 'undefined' ) {
+		data["user_verified"] = "0";
+	}
+
+	if ( typeof data["name_verified"] == 'undefined' ) {
+		data["name_verified"] = "0";
+	}
+
+
+	// 特殊数值校验
+	
+	// 身份信息 (标记为已核验，但身份信息为空)
+	if ( data["user_verified"] == "1" && typeof data["verify"] == 'undefined' ) {
+		failure({verify:'请填写身份信息'}, validation );
+		return false;
+	}
+
+	// 实名信息 (标记为已核验，但真实姓名和身份证号为空)
+	if ( data["name_verified"] == "1") {
+
+		var error = {};
+
+		if ( typeof data["name"] == 'undefined' ) {
+			error['name'] = "请填写真实姓名"
+		}
+
+		if ( typeof data["idno"] == 'undefined' ) {
+			error['idno'] = "请填写证件号码"
+		}
+
+		if ( typeof error['name'] !== 'undefined' || typeof error['idno'] !== 'undefined' ) {
+			failure(error, validation );
+			return false;
+		}
+	}
+
+
+	// 验证支付密码 ???
+
+
+
+	data = jQuery.extend(data, {});
+
+	return data;
+}
+
+
+function saveUser( form, validation ) {
+
+	var api = '<?=App::NR("user", "save");?>';
+	var data = getData( form, validation );
+	if ( data === false ) {
+		return;
+	}
+
+	pending('保存中, 请稍候...');
+	// POST 数据
+	jQuery.post( api, data, function( data, textStatus, xhr) {
+
+		done();
+
+		// 返回数据异常
+		if ( typeof data['code'] === 'number' && data['code'] !== 0 ) {
+
+			if ( typeof data['extra'] == 'object' && typeof data['extra']['errors'] == 'object'  ) {
+				failure( data['extra']['errors'], validation );
+				return;
+			}
+
+			var message = data['message'] || "未知错误";
+			failure( message );
+			return;
+		}
+
+		// 保存成功
+		success('保存成功');
+
+	}, 'json')
+
+	.error(function( xhr, status, message) {
+		failure("保存失败, 网络错误 ( " + xhr.status + ' ' + message+" )");
+		// console.log( status, xhr.status, ' message=', message );
+	});
+
+
+	// failure({mobile:'手机号已被注册'}, validation );
+
+	// pending('保存中, 请稍候...');
+
+
+	// setTimeout(function(){
+	// 	failure('保存失败');
+	// 	success('保存成功');
+	// 	done();}, 500);
+	
+	// console.log( form );
+}
+
+
+$(function(){
+	App.initHelpers('file-uploader', {'handler':'div[name="headimg"]'});
+	App.initHelpers(['datepicker','select2', 'image-crop', 'tags-inputs', 'ajax-confirm']);
+
+	// 保存数据按钮
+	$('.user-save').click(function(event) {
+		$('.user-form').submit();
+	});
+
+	// 返回用户列表
+	$('.user-back').click( function(event) {
+		if ( history.length > 2 ) {
+			history.back();
+			return;
+		}
+
+		window.location = '<?=App::R("user","index")?>';
+		
+	});
+
+	// 自动填写信息联动
+	autoComplete();
+
+
+	// 表单验证
+	$('.user-form').validate({
+		errorClass: 'help-block text-right animated fadeInDown',
+		errorElement: 'div',
+		errorPlacement: function(error, e) {				
+			jQuery(e).parents('.form-group .form-material').append(error);
+		},
+		highlight: function(e) {
+			jQuery(e).closest('.form-group .form-material').parent().removeClass('has-error').addClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+		unhighlight:function(e){
+			jQuery(e).closest('.form-group .form-material').parent().removeClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+		success: function(e) {
+			jQuery(e).closest('.form-group .form-material').parent().removeClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+
+		submitHandler: function(form) {
+			saveUser( form, this );
+			return false;
+		},
+		rules: {
+			mobile: {
+				minlength: 2,
+				maxlength: 20
+			}
+		},
+		messages: {
+			mobile: {
+				minlength: '手机号码格式不正确',
+				maxlength: '手机号码格式不正确'
+			}
+		}
+	});
+})
+</script>

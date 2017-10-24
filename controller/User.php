@@ -51,7 +51,7 @@ class UserController extends \Tuanduimao\Loader\Controller {
 
 		$data = [
 			'users' => $u->search($query),
-			"groups" => $g->search(),
+			"groups" => $g->getAll(),
 			"query" => $query
 		];
 
@@ -92,7 +92,7 @@ class UserController extends \Tuanduimao\Loader\Controller {
 
 		$data = [
 			"user" => $u->getByUid($_GET['id']),
-			"groups" => $g->search()
+			"groups" => $g->getAll()
 		];
 
 		// Utils::out( $data );

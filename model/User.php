@@ -636,7 +636,6 @@ class User extends Model {
 	}
 
 
-
 	/**
 	 * 用户检索
 	 * @param  [type] $query [description]
