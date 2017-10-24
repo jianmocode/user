@@ -58,24 +58,17 @@ class GroupController extends \Tuanduimao\Loader\Controller {
 	}
 
 
-	// 修改/创建用户表单
+	// 修改/创建用户组表单
 	function modify(){
 
-		$u = new \Mina\User\Model\User;
 		$g = new \Mina\User\Model\Group;
-
 		$id = $_GET['id'];
 
 		$data = [
-			"user" => $u->getByUid($_GET['id']),
-			"groups" => $g->search()
+			"group" => $g->getByGid($_GET['id']),
 		];
 
-		// Utils::out( $data );
-
-		// return;
-		App::render($data,'user','modify');
-
+		App::render($data,'group','modify');
 		return [
 			'js' => [
 		 			"js/plugins/select2/select2.full.min.js",
@@ -96,34 +89,34 @@ class GroupController extends \Tuanduimao\Loader\Controller {
 	 		],
 
 			'crumb' => [
-	            "用户" => APP::R('user','index'),
-	            "用户列表" => APP::R('user','index'),
-	            "管理用户" => '',
+	            "用户组" => APP::R('group','index'),
+	            "用户组列表" => APP::R('group','index'),
+	            "管理用户组" => '',
 	        ],
 
 	        'active'=> [
-	 			'slug'=>'mina/user/user/index'
+	 			'slug'=>'mina/user/group/index'
 	 		]
 		];
 	}
 
 
 	/**
-	 * 删除用户
+	 * 删除用户组
 	 */
 	function remove() {		
 
-		$user_id = $_REQUEST['user_id'];
+		$group_id = $_REQUEST['group_id'];
 
-		if ( empty($user_id) ) {
+		if ( empty($group_id) ) {
 			throw new Excp("未提供用户信息", 404, []);
 		}
 
-		$u = new \Mina\User\Model\User;
-		$resp = $u->remove( $user_id, "user_id");
+		$g = new \Mina\User\Model\Group;
+		$resp = $g->remove( $group_id, "group_id");
 
 		if ( $resp === false){
-			throw new Excp("删除失败", 500, ["user_id"=>$user_id]);
+			throw new Excp("删除失败", 500, ["group_id"=>$group_id]);
 		}
 
 		Utils::out(["message"=>"删除成功"]);
@@ -132,31 +125,29 @@ class GroupController extends \Tuanduimao\Loader\Controller {
 
 
 	/**
-	 * 保存用户
+	 * 保存用户组
 	 * @return true
 	 */
 	function save() {
 
-		$u = new \Mina\User\Model\User;
+		$g = new \Mina\User\Model\Group;
 
-		// throw new Excp("测试出错啦！！！", 500, ["hello"=>"world"]);
-		// throw new Excp("出错啦 1", 500, [ "errors"=>["mobile"=>"手机号码已被注册"]]);
 		try {
-			$user_id = $u->save($_POST);
+			$group_id = $g->save($_POST);
 		} catch( Excp $e ){
-			if ( $e->getCode() == '23000') {
+			if ( $e->getCode() == '23000' || $e->getCode() == "1062" ) {
 
 				$message = $e->getMessage();
 				$errors = [];
-				if ( strpos($message, "key 'user_email_unique'") !== false ) {
-					$errors['email'] = "邮箱地址已被注册";
+				if ( strpos($message, "key 'group_slug_unique'") !== false ) {
+					$errors['slug'] = "别名已经存在";
 				}
 
-				if ( strpos($message, "key 'user_mobile_full_unique'") !== false ) {
-					$errors['mobile'] = "手机号已被注册";
+				if ( strpos($message, "key 'group_name_unique'") !== false ) {
+					$errors['name'] = "名称已经存在";
 				}
 
-				throw new Excp("账号信息保存失败", 500, [ 
+				throw new Excp("用户组信息保存失败", 500, [ 
 					"message" => $e->getMessage(),
 					"errors"=> $errors
 				]);
@@ -165,8 +156,9 @@ class GroupController extends \Tuanduimao\Loader\Controller {
 			throw $e;
 		}
 
-		echo json_encode(['code'=>0, "message"=>"保存成功", "user_id"=>$user_id]);
+		echo json_encode(['code'=>0, "message"=>"保存成功", "group_id"=>$group_id]);
 	}
+
 
 
 }

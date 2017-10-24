@@ -189,13 +189,12 @@ use \Tuanduimao\Utils as Utils;
 									<?=$rs['slug']?>
 								</td>
 								<td> 
-									<?=empty($rs['tag'])?'':implode(',',$rs['tag'])?>
 
 									<?php 
 									if ( !empty($rs['tag']) ) :
 									foreach( $rs['tag'] as $t ) : 
 									?>
-									<span class="label label-primary">
+									<span class="label label-primary push-5-r">
 										<?=$t?>
 									</span>
 									<?php 

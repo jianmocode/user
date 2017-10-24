@@ -43,6 +43,26 @@ class Group extends Model {
 	}
 
 
+	function getByGid( $group_id  ) {
+
+		$group = $this->query()
+					 ->where("group_id", "=", $group_id)
+					 ->limit()
+					 ->select('*')
+					 ->get()
+					 ->toArray()
+				;
+
+		if ( empty($group) ) {
+			return [
+				"group_id" => $this->genGroupId()
+			];
+		}
+		return current($group);
+	}
+
+
+
 	function getBySlug( $slug, $status=null ) {
 		$qb = $this->query()
 					->where("slug", "=", $slug);
@@ -68,6 +88,82 @@ class Group extends Model {
 	function getAll( $query = [] ) {
 		return $this->query()->get()->toArray();
 	}
+
+
+	/**
+	 * 保存用户组信息
+	 * @param  [type] $data [description]
+	 * @return 成功返回 用户ID, 失败抛出异常
+	 */
+	function save( $data ) {
+
+		if ( array_key_exists('tag', $data) && is_string($data['tag']) ) {
+			$data['tag'] = str_replace("，", ",", $data['tag']);
+			$data['tag'] = explode(',', $data['tag']);
+		}
+
+		$group_id = $data['group_id'];
+		if ( empty($group_id) ) {
+			$group_id = $this->genGroupId();
+		}
+
+		$ginfo = $this->query()
+					  ->where("group_id", '=', $group_id )
+					  ->limit(1)
+					  ->select("group_id")
+					  ->get()
+					  ->toArray();
+
+		if ( empty($ginfo) ) {
+			$this->create( $data );
+
+		} else {
+			$this->updateBy("group_id", $data);
+		}
+
+		return $group_id;
+	}
+
+
+
+
+
+	/**
+	 * 重载Remove
+	 * @return [type] [description]
+	 */
+	function remove( $data_key, $uni_key="_id", $mark_only=true ){ 
+		
+		$u = new User;
+		$rs = $this->getBySlug('default');
+		
+		if ( $mark_only === true ) {
+			$time = date('Y-m-d H:i:s');
+			$_id = $this->getVar("_id", "WHERE {$uni_key}=? LIMIT 1", [$data_key]);
+			$row = $this->update( $_id, [
+				"deleted_at"=>$time, 
+				// "group_id"=>"DB::RAW(CONCAT('_','".time() . rand(10000,99999). "_', `group_id`))", 
+				"slug"=>null
+			]);
+
+			if ( $row['deleted_at'] == $time ) {
+
+				// 转移用户分组
+				$u->runSQL("UPDATE {{table}} SET group_id = ?  WHERE group_id = ? ", false, [$rs['group_id'],$row['group_id']]);
+
+				return true;
+			}
+
+			return false;
+		}
+
+		// 转移用户分组
+		$u->runSQL("UPDATE {{table}} SET group_id = ?  WHERE group_id = ? ", false, [$rs['group_id'],$row['group_id']]);
+
+		return parent::remove($data_key, $uni_key, $mark_only);
+	}
+
+
 
 
 	/**

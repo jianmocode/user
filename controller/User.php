@@ -168,7 +168,7 @@ class UserController extends \Tuanduimao\Loader\Controller {
 		try {
 			$user_id = $u->save($_POST);
 		} catch( Excp $e ){
-			if ( $e->getCode() == '23000') {
+			if ( $e->getCode() == '23000'  || $e->getCode() == "1062" ) {
 
 				$message = $e->getMessage();
 				$errors = [];
