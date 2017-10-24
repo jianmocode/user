@@ -237,6 +237,53 @@ class User extends Model {
 	}
 
 
+	/**
+	 * 保存用户信息 
+	 * @param  [type] $data [description]
+	 * @return 成功返回 用户ID, 失败抛出异常
+	 */
+	function save( $data ) {
+
+		// 用户头像处理
+		if ( array_key_exists('headimg_path', $data) ) {
+			// headimg_path
+			// headimg_url
+			$data['headimgurl'] = $data['headimg_path'];
+			unset( $data['headimg_path'] );
+		}	
+
+		$user_id = $data['user_id'];
+		if ( empty($user_id) ) {
+			$user_id = $this->genUserId();
+		}
+
+
+		$uinfo = $this->query()
+					  ->where("user_id", '=', $user_id )
+					  ->limit(1)
+					  ->select("group_id", "user_id")
+					  ->get()
+					  ->toArray();
+
+		if ( empty($uinfo) ) {
+
+			// Group 信息
+			$opt =  new Option("mina/user");
+			$options = $opt->getAll();
+			$map = $options['map'];	
+			$slug = $map['user/default/group'];
+			$g = new Group();
+			$rs = $g->getBySlug($slug);
+			$data['group_id'] = $rs['group_id'];
+			$this->create( $data );
+
+		} else {
+			$this->updateBy("user_id", $data);
+		}
+
+		return $user_id;
+	}
+
 
 	/**
 	 * 微信用户 注册/登录信息
@@ -510,6 +557,21 @@ class User extends Model {
 		}
 		
 		return parent::create( $data );
+	}
+
+
+	/**
+	 * 重载Update BY 
+	 * @param  [type] $uni_key [description]
+	 * @param  [type] $data    [description]
+	 * @return [type]          [description]
+	 */
+	function updateBy( $uni_key, $data ) {
+		if (array_key_exists('mobile', $data) ) {
+			$data['mobile_full'] = "DB::RAW(CONCAT(`mobile_nation`, `mobile`))";
+		}
+
+		return parent::updateBy( $uni_key, $data );
 	}
 
 

@@ -703,7 +703,7 @@ function saveUser( form, validation ) {
 	var api = '<?=App::NR("user", "save");?>';
 	var data = getData( form, validation );
 	pending('保存中, 请稍候...');
-	
+
 	// POST 数据
 	jQuery.post( api, data, function( data, textStatus, xhr) {
 
@@ -786,15 +786,14 @@ $(function(){
 		},
 		rules: {
 			mobile: {
-				required: true,
 				minlength: 2,
-				maxlength: 20,
+				maxlength: 20
 			}
 		},
 		messages: {
 			mobile: {
 				minlength: '手机号码格式不正确',
-				maxlength: '手机号码格式不正确',
+				maxlength: '手机号码格式不正确'
 			}
 		}
 	});

@@ -138,12 +138,35 @@ class UserController extends \Tuanduimao\Loader\Controller {
 	 */
 	function save() {
 
-		sleep(1);
+		$u = new \Mina\User\Model\User;
+
 		// throw new Excp("测试出错啦！！！", 500, ["hello"=>"world"]);
 		// throw new Excp("出错啦 1", 500, [ "errors"=>["mobile"=>"手机号码已被注册"]]);
+		try {
+			$user_id = $u->save($_POST);
+		} catch( Excp $e ){
+			if ( $e->getCode() == '23000') {
 
-		$data = $_POST;
-		Utils::out( $data );
+				$message = $e->getMessage();
+				$errors = [];
+				if ( strpos($message, "key 'user_email_unique'") !== false ) {
+					$errors['email'] = "邮箱地址已被注册";
+				}
+
+				if ( strpos($message, "key 'user_mobile_full_unique'") !== false ) {
+					$errors['mobile'] = "手机号已被注册";
+				}
+
+				throw new Excp("账号信息保存失败", 500, [ 
+					"message" => $e->getMessage(),
+					"errors"=> $errors
+				]);
+			}
+
+			throw $e;
+		}
+
+		echo json_encode(['code'=>0, "message"=>"保存成功", "user_id"=>$user_id]);
 	}
 
 
