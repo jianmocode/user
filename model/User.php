@@ -577,6 +577,14 @@ class User extends Model {
 			$data['mobile_full'] = "DB::RAW(CONCAT(`mobile_nation`, `mobile`))";
 		}
 
+		if (array_key_exists('password', $data) ) {
+			$data['password'] = $this->hashPassowrd($data['password']);
+		}
+
+		if (array_key_exists('pay_password', $data) ) {
+			$data['pay_password'] = $this->hashPassowrd($data['pay_password']);
+		}
+
 		return parent::updateBy( $uni_key, $data );
 	}
 
@@ -592,7 +600,7 @@ class User extends Model {
 			$_id = $this->getVar("_id", "WHERE {$uni_key}=? LIMIT 1", [$data_key]);
 			$row = $this->update( $_id, [
 				"deleted_at"=>$time, 
-				// "user_id"=>"DB::RAW(CONCAT('_','".time() . rand(10000,99999). "_', `user_id`))", 
+				"user_id"=>"DB::RAW(CONCAT('_','".time() . rand(10000,99999). "_', `user_id`))", 
 				"email"=>null,
 				"mobile_full" => null,
 			]);

@@ -362,6 +362,68 @@ class User extends Api {
 	}
 
 
+	/**
+	 * 微信登录后绑定手机号码
+	 * @param  array  $query [description]
+	 * @param  [type] $data  [description]
+	 * @return [type]        [description]
+	 */
+	protected function bindMobile( $query=[], $data=[] ) {
+
+		$this->authVcode();
+
+		$uinfo = $this->getUserInfo();
+		$user_id = $uinfo['user_id'];
+		$data['user_id'] = $user_id;
+
+		if ( empty($user_id) ) {
+			throw new Excp("尚未登录", 500, ['data'=>$data]);
+		}
+
+		$opt =  new Option("mina/user");
+		$options = $opt->getAll();
+		$map = $options['map'];		
+
+		// 校验手机号码
+		if ( empty($data['mobile']) ) {
+			throw new Excp("手机号码格式不正确", 402, ['data'=>$data]);
+		}
+
+		$data['mobile_nation'] = !empty($data['nation']) ? $data['nation'] : '86';
+
+
+		// 校验短信验证码
+		if( $map['user/sms/on'] == 1) {
+			$data['mobile_verified'] = true;
+			if ( $this->verifySMSCode($query, $data) === false) {
+				throw new Excp("短信验证码不正确", 402, ['data'=>$data]);
+			}
+		}
+
+		// 检查密码
+		if ( isset($data['repassword']) ) { 
+			if ( $data['password'] != $data['repassword'] ) {
+				throw new Excp("两次输入的密码不一致", 402, ['data'=>$data]);
+			}
+		}
+
+		// Group
+		if ( isset( $data['group_slug']) ) { 
+			$slug = $data['group_slug'];
+			$g = new GroupModel();
+			$rs = $g->getBySlug($slug);
+			$data['group_id'] = $rs['group_id'];
+		}
+
+		// 数据入库
+		$u = new UserModel();
+		$u->updateBy('user_id', $data );
+		$u->login($data['mobile'], $data['password'], $data['mobile_nation'] );
+
+		return ["message"=>"绑定成功", "code"=>0 ];
+	}
+
+
 
 	/**
 	 * 校验手机短信验证码
