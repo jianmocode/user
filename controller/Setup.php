@@ -97,6 +97,27 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 			);
 		}
 
+		// 微信登录后是否绑定手机号
+		$bind_mobile = $opt->get('user/bind/mobile');
+		if ( $bind_mobile === null ) {
+			$opt->register(
+				"强制绑定手机号", 
+				"user/bind/mobile", 
+				0,
+				4
+			);
+		}
+
+		// 手机登录后是否绑定微信
+		$bind_wechat = $opt->get('user/bind/wechat');
+		if ( $bind_wechat === null ) {
+			$opt->register(
+				"强制绑定微信", 
+				"user/bind/wechat", 
+				0,
+				4
+			);
+		}
 
 		// 默认用户分组名称
 		$default_group = $opt->get("user/default/group");
@@ -105,7 +126,7 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 				"默认分组", 
 				"user/default/group", 
 				"default",
-				4
+				5
 			);
 		}
 	}
