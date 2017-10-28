@@ -723,7 +723,7 @@ class User extends Model {
 	 * @param  [type] $users [description]
 	 * @return [type]        [description]
 	 */
-	function formatUsers( & $users  ) {
+	function formatUsers( & $users, $remove_password = true  ) {
 
 		$media = new \Tuanduimao\Media;
 
@@ -800,9 +800,10 @@ class User extends Model {
 			$users[$idx]['groups']= $userGroups[$gid] ;
 			$users[$idx]['wechats']=$userWechats[$uid] ;
 			
-			unset($users[$idx]["pay_password"]);
-			unset($users[$idx]["password"]);
-
+			if ( $remove_password === true ) {
+				unset($users[$idx]["pay_password"]);
+				unset($users[$idx]["password"]);
+			}
 
 			// 用户头像处理
 			if ( isset( $user['headimgurl']) ) {
