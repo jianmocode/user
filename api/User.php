@@ -150,7 +150,8 @@ class User extends Api {
 		]);
 
 		if ( Err::isError($resp) ) {
-			throw new Excp($resp);
+			$err = $resp->toArray();
+			throw new Excp($err['message'], $err['code'], $err['extra']);
 		}
 
 		return [
