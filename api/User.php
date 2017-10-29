@@ -3,6 +3,7 @@
 namespace Mina\User\Api;
 
 use \Tuanduimao\Loader\App;
+use \Tuanduimao\Err;
 use \Tuanduimao\Excp;
 use \Tuanduimao\Utils;
 use \Tuanduimao\Api;
@@ -147,6 +148,10 @@ class User extends Api {
 				]
 			]
 		]);
+
+		if ( Err::isError($resp) ) {
+			throw new Excp($resp);
+		}
 
 		return [
 			"name" => $cfg['name'],
