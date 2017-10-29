@@ -508,7 +508,48 @@
 									<td> <?=$we['unionid']?> </td>
 									<td >
 										<div class="btn-group">
-											<button class="btn btn-xs btn-danger btn-minw" type="button" ><i class="fa fa-minus-circle"></i> 取消授权 </button>
+											<button 
+											 type="button"
+											 confirm-title="请确认取消微信授权吗"
+			                                 confirm-content="您确定取消该用户对 <strong><?=$we['name']?>(<?=$we['appid']?> )</strong> 的授权吗?"
+			                            	 confirm-dismiss = "取消"
+			                                 confirm-submit= "确定"
+			                                 data-param-user_id="<?=$user['user_id']?>" 
+			                                 data-param-appid="<?=$we['appid']?>"
+			                                 confirm-action="<?=App::NR('user','removeWechat')?>"
+
+			                                 event-before="
+												function( btn, modal ) {
+													$('button', modal)
+														.addClass('disabled')
+														.attr('disabled', 'disabled');
+												}
+											"
+
+											event-done="
+												function( data, btn, modal) {
+													$('button', modal)
+														.removeClass('disabled')
+														.removeAttr('disabled');
+												}
+											"
+				                            event-success="
+												function(btn, modal) {
+													success('成功取消授权');
+													setTimeout(function(){
+														window.location.reload();
+													}, 1000);
+												}
+											"
+
+											event-error="
+												function( data, btn, modal) {
+													failure( '取消授权失败 ('+ data['message'] + ')');
+													return true;
+												}
+											"
+
+											class="btn btn-xs btn-danger btn-minw ajax-confirm" type="button" ><i class="fa fa-minus-circle"></i> 取消授权 </button>
 										</div>
 									</td>
 								</tr>

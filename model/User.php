@@ -590,12 +590,49 @@ class User extends Model {
 
 
 	/**
+	 * 取消微信授权
+	 * @param  [type] $user_id [description]
+	 * @param  [type] $appid   [description]
+	 * @return [type]          [description]
+	 */
+	function removeWechat( $user_id,  $appid = null, $mark_only = true ) {
+
+		if ( $mark_only == true ) {
+			$now = date("Y-m-d H:i:s");
+			if ( empty($appid) ) {
+				return $this->user_wechat->runsql("update {{table}} SET `deleted_at`= ?, `appid_openid`=null WHERE `user_id` = ?", false ,[$now, $user_id]);
+			} else {
+				return $this->user_wechat->runsql("update {{table}} SET `deleted_at`= ?, `appid_openid`=null WHERE `user_id` = ? AND `appid`=?", false ,[$now, $user_id, $appid]);
+			}
+		}
+
+		if ( empty($appid) ) {
+			return $this->user_wechat->runsql("delete {{table}} WHERE `user_id` = ?", false ,[$user_id]);
+		}
+
+		return $this->user_wechat->runsql("delete {{table}} WHERE `user_id` = ? AND `appid`=? ", false ,[$user_id, $appid]);
+
+	}
+
+
+
+
+	/**
 	 * 重载Remove
 	 * @return [type] [description]
 	 */
 	function remove( $data_key, $uni_key="_id", $mark_only=true ){ 
 		
+		if ( $uni_key == 'user_id') {
+			// 取消用户微信授权
+			$resp = $this->removeWechat( $data_key );
+			if ( $resp === false ) {
+				return false;
+			}
+		}
+
 		if ( $mark_only === true ) {
+
 			$time = date('Y-m-d H:i:s');
 			$_id = $this->getVar("_id", "WHERE {$uni_key}=? LIMIT 1", [$data_key]);
 			$row = $this->update( $_id, [

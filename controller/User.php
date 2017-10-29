@@ -133,6 +133,34 @@ class UserController extends \Tuanduimao\Loader\Controller {
 
 
 	/**
+	 * 取消微信授权
+	 */
+	function removeWechat() {
+
+		$appid = $_REQUEST['appid'];
+		$user_id = $_REQUEST['user_id'];
+
+		if ( empty($user_id) ) {
+			throw new Excp("未提供用户信息", 404, []);
+		}
+
+		if ( empty($appid) ) {
+			throw new Excp("未提供应用信息", 404, []);
+		}
+
+		$u = new \Mina\User\Model\User;
+		$resp = $u->removeWechat( $user_id, $appid );
+
+		if ( $resp === false) {
+			throw new Excp("取消授权失败", 500, ["user_id"=>$user_id, "appid"=>$appid]);
+		}
+
+		Utils::out(["message"=>"取消授权成功"]);
+	}
+
+
+
+	/**
 	 * 删除用户
 	 */
 	function remove() {		
