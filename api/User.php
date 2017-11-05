@@ -163,6 +163,52 @@ class User extends Api {
 
 
 	/**
+	 * 用户登录二维码
+	 * @return [type] [description]
+	 */
+	protected function wechatQrcode( $query ) {
+
+		$option =  new Option("mina/user");
+		$appid = $option->get("user/wechat/login/appid");
+		$conf = Utils::getConf();
+
+		if ( $appid !== null ){
+			$cfg = $conf['_map'][$appid]; 
+		} else if ( is_array($conf['_type']['1'])) {
+			
+			$cfg = current($conf['_type']['1']);
+		}
+
+		if ( empty($cfg) ) {
+			throw new Excp("未找到有效的微信公众号配置", 404);
+		}
+
+		$query["scene_id"] = !empty($query["scene_id"]) ? $query["scene_id"] : 10086;
+		$wechat = new Wechat( $cfg );
+
+		$resp = $wechat->getQrcodeURL([
+			"action_name" => "QR_LIMIT_SCENE",
+			'action_info'=>[
+				"scene"=>[
+					"scene_id"=>$query["scene_id"]
+				]
+			]
+		]);
+
+		if ( Err::isError($resp) ) {
+			$err = $resp->toArray();
+			throw new Excp($err['message'], $err['code'], $err['extra']);
+		}
+
+		return [
+			"name" => $cfg['name'],
+			"url" => $resp['showqrcode'],
+			"expire_seconds" => $resp['expire_seconds']
+		];
+	}
+
+
+	/**
 	 * 微信授权登录
 	 */
 	protected function wechatAuthUrl( $query ) {
