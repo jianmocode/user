@@ -340,6 +340,9 @@ class User extends Model {
 		$u['headimgurl'] = str_replace("http:", "", $u['headimgurl']);
 		$u['headimgurl'] = str_replace("https:", "", $u['headimgurl']);
 
+		// 处理用户昵称
+		$u['nickname'] = $u['nickName'];
+		$u['sex'] = $u['gender'];
 
 		// 从未注册 生成 UserID
 		$this->user_wechat->createOrUpdate($u);
