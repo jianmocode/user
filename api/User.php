@@ -70,7 +70,12 @@ class User extends Api {
 	}
 
 
-
+	/**
+	 * 微信用户登录
+	 * @param  [type] $query [description]
+	 * @param  [type] $data  [description]
+	 * @return [type]        [description]
+	 */
 	protected function wxappLogin( $query, $data ) {
 
 		$this->authSecret($query['_secret']);
