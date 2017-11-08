@@ -71,10 +71,37 @@ class User extends Api {
 
 
 
+	protected function wxappLogin( $query, $data ) {
+
+		$this->authSecret($query['_secret']);
+		$appid = !empty($query['_appid']) ? $query['_appid'] : null;
+		$conf = Utils::getConf();
+
+		if ( $appid !== null ){
+			$cfg = $conf['_map'][$appid]; 
+		} else if ( is_array($conf['_type']['3'])) {
+			$cfg = current($conf['_type']['3']);
+		}
+
+		if ( empty($cfg) ) {
+			throw new Excp("未找到有效的微信公众号配置", 404);
+		}
+
+		$u = new UserModel();
+		$user_id = $u->updateWxappUser( $cfg['appid'], $data );
+		$user = $u->getByUid($user_id);
+		$user["_id"] = $user_id;
+
+		return $user;
+	}
 
 
+	protected function test( $query ) {
 
-	protected function test() {
+		$this->authSecret( $query['_secret'] );
+
+
+		return $query;
 
 		// $u = new UserModel();
 		// // $user_id = $u->updateWechatUser("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g");
@@ -162,8 +189,10 @@ class User extends Api {
 	}
 
 
+
+
 	/**
-	 * 用户登录二维码
+	 * 服务号二维码
 	 * @return [type] [description]
 	 */
 	protected function wechatQrcode( $query ) {

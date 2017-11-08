@@ -86,6 +86,8 @@ class User extends Model {
 			 ->putColumn( 'mobile_verified', $this->type('boolean',  ['default'=>"0"]) )  // 手机号是否通过校验
 			 ->putColumn( 'email_verified', $this->type('boolean',  ['default'=>"0"]) )   // 电邮地址是否通过校验
 			
+			// 扩展属性字段
+			->putColumn( 'extra', $this->type('text',  ['json'=>true]) )  // 扩展属性 JSON
 
 			// 登录密码
 			->putColumn( 'password', $this->type('string', ['length'=>128] ) )
@@ -289,6 +291,94 @@ class User extends Model {
 
 		return $user_id;
 	}
+
+
+	/**
+	 * 微信用户 注册/登录信息
+	 * @param  [type] $appid  [description]
+	 * @param  [type] $openid [description]
+	 * @return [type]         [description]
+	 */
+	function updateWxappUser( $appid, $wxappUinfo ) {
+
+		$conf = Utils::getConf();
+		$cfg = $conf["_map"][$appid];
+		if ( empty($cfg) ) {
+			throw new Excp( "未找到配置信息($appid)", 404, ['openid'=>$openid, 'appid'=>$appid]);
+		}
+
+		$wechat = new Wechat( $cfg );
+		$u =$wxappUinfo;
+		$openid = $u['openid'];
+		$u['appid'] = $appid;
+		$u['appid_openid'] = "{$appid}_{$u['openid']}";
+
+	
+		$user_id =  null;
+
+		// 是否已注册 ( 检查 unionid )
+		if( !empty($u['unionid']) ) {
+			$user_id_unionid = $this->user_wechat->getVar('user_id', "WHERE unionid = ? LIMIT 1", [$u['unionid']]);
+			if ( !empty($user_id_unionid) ) {
+				$user_id = $user_id_unionid;
+			}
+		}
+
+		//是否已注册 ( 检查 openid )
+		$user_id_openid = $this->user_wechat->getVar('user_id', "WHERE openid = ? AND appid = ? LIMIT 1", [$openid, $appid]);
+
+		if ( !empty($user_id_openid) ) {
+			$user_id = $user_id_openid;
+		} else if ( empty($user_id) ) {
+			$user_id = $this->genUserId();
+		}
+
+		$u['user_id'] = $user_id;
+
+		// 处理微信用户头像信息
+		$u['headimgurl'] = $u['avatarUrl'];
+		$u['headimgurl'] = str_replace("http:", "", $u['headimgurl']);
+		$u['headimgurl'] = str_replace("https:", "", $u['headimgurl']);
+
+
+		// 从未注册 生成 UserID
+		$this->user_wechat->createOrUpdate($u);
+
+
+		$uinfo = $this->query()
+					  ->where("user_id", '=', $user_id )
+					  ->limit(1)
+					  ->select("group_id", "user_id")
+					  ->get()
+					  ->toArray();
+		
+		unset($u['remark']);
+
+		if ( empty($uinfo) ) {
+
+			// Group 信息
+			$opt =  new Option("mina/user");
+			$options = $opt->getAll();
+			$map = $options['map'];	
+
+			$slug = $map['user/default/group'];
+			$g = new Group();
+			$rs = $g->getBySlug($slug);
+			$u['group_id'] = $rs['group_id'];
+			$this->create( $u );
+
+		} else {
+			$this->updateBy("user_id", $u);
+		}
+
+		$this->appid = $appid;
+		$this->openid = $openid;
+		$this->unionid = $u['unionid'];
+		$this->cfg = $cfg;
+		return $user_id;
+	}
+
+
 
 
 	/**
