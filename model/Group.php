@@ -47,7 +47,7 @@ class Group extends Model {
 
 		$group = $this->query()
 					 ->where("group_id", "=", $group_id)
-					 ->limit()
+					 ->limit(1)
 					 ->select('*')
 					 ->get()
 					 ->toArray()
