@@ -939,19 +939,15 @@ class User extends Model {
 					$users[$idx]['headimg_url'] = $user['headimgurl'];
 					$users[$idx]['headimg_path'] = '';
 				}  else {
-					$img =  $media->get($user['headimg_path']);
+					$img =  $media->get($user['headimgurl']);
 					$users[$idx]['headimg_path'] = $img['path'];
 					$users[$idx]['headimg_url'] = $img['origin'];
-					$users[$idx]['headimg_path']  = $img['url'];
+					// $users[$idx]['headimg_path']  = $img['url'];
 				}
 			}
 
 		}
-
-
 		// Utils::out( $userGroups, $userWechats );
-
-
 	}
 
 
