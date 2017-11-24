@@ -754,7 +754,7 @@ class User extends Model {
 
 		$user = $this->query()
 					 ->where("user_id", "=", $user_id)
-					 ->limit()
+					 ->limit(1)
 					 ->select('*')
 					 ->get()
 					 ->toArray()
