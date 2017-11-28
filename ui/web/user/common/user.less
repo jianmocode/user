@@ -1,0 +1,154 @@
+.side {
+	background-image:url('{{__STOR__::/__PROJECT_NAME/user/assets}}/images/signup_01.jpg');
+	background-repeat: no-repeat;
+	background-size:cover;
+	background-position:center;
+	height:100%;
+	max-width:480px;
+}
+
+.form {
+	
+	font-family:"system-ui";
+	height:100%;
+
+	.nav {
+		position: relative;
+		z-index: 1000;
+		li {
+			margin: 20px 20px 0 0;
+			line-height: 24px;
+			
+			a {
+				color: #000;
+				opacity: .6;
+				font-size: 16px;
+				background: none;
+			}
+
+			a:hover, a:active {
+				opacity: .9;
+				background: none;
+			}
+		}
+
+		.active {
+			a { opacity: .9; }
+		}
+	}
+
+	.dropdown {
+		ul {
+			margin: 0;
+			padding:0;
+			border:none;
+			li {
+				margin: 0;
+				padding:0;
+				a {
+					padding: 10px 15px 10px 15px; 
+				}
+			}
+		}
+	}
+
+	.dropdown.open {
+
+		.dropdown-toggle {
+			opacity: .9;
+			background:none;
+		}
+	}
+
+
+	.form-wraper {
+		position: absolute;
+		z-index:900;
+		top:50%;
+
+		margin-top: -358.5px;
+		width: 100%;
+		text-align: center;
+
+		.main {
+			position: relative;
+			text-align: left;
+			margin:0 auto;
+			width: 480px;
+
+			.form-header {
+
+				margin-bottom: 40px;
+
+				h1 {
+					font-size: 44px;
+				}
+
+				h2 {
+					font-size: 28px;
+					color:#333;
+				}
+			}
+
+			.form-group {
+				margin-bottom: 30px;
+				.form-control-feedback {
+					line-height:42px;
+				}
+
+				.input-group-addon.image {
+					background:none;
+					padding:0;
+					cursor: pointer;
+					// border:1;
+				} 
+
+				.btn-minw {
+					min-width: 200px;
+				}
+			}
+
+
+
+			input.form-control {
+				// height: 50px;
+				// font-size: 20px;
+				font-family:"system-ui";
+			}
+
+			.wechat {
+				margin-right: 15px;
+				color:#76D061;
+				font-size: 16px;
+				opacity: .8;
+			}
+
+			.wechat:hover {
+				opacity: 1;
+			}
+
+
+			.default {
+				margin-right: 15px;
+				font-size: 16px;
+				opacity: .8;
+			}
+
+			.default:hover {
+				opacity: 1;
+			}
+
+			.user {
+				margin-right: 15px;
+				color:#3E8FE1;
+				font-size: 16px;
+				opacity: .8;
+			}
+
+			.user:hover {
+				opacity: 1;
+			}
+		}
+	}
+	
+}

@@ -1,0 +1,131 @@
+<include src="__WEB_ROOT__/user/common/header.page"  />
+
+<section class="canvas-wrap"> <div id="canvas" class="gradient"></div></section>
+<div class=" row page">
+	<div class="col-xs-8 col-xs-offset-2 form">
+		
+		<div class="row ">
+			<ul class="nav navbar-nav pull-right hidden">
+				<li mp:if="{{option.user_mobile_signup_on == 1}}"> <a href="/user/signup">注册</a> </li>
+				<li> <a href="/">首页</a> </li>
+			</ul>
+		</div>
+
+		<div class="row form-wraper">
+			
+			<div class="main signup-form" mp:if="{{option.user_mobile_on == 1}}">
+
+				<div class="form-header">
+					<h1>可信云受理系统</h1>
+<!-- 					<h2>登录系统，系统查看审批进度。</h2>
+ -->				</div>
+				
+				<div class="alert alert-success alert-dismissible hidden" role="alert">
+					<span class="message">错误描述</span>
+				</div>
+
+				<div class="alert alert-danger alert-dismissible hidden" role="alert">
+					<button type="button" class="close" onclick="$(this).parent().addClass('hidden');">
+					<span>&times;</span></button>
+					<span class="message">错误描述</span>
+				</div>
+
+	
+				<div class="form-group has-feedback">
+					<input type="text"
+						name="mobile"
+						class="form-control input-lg" placeholder="手机号">
+					<span class="icon glyphicon glyphicon-ok form-control-feedback hidden" ></span>
+					<span class="help-block"></span>
+				</div>
+
+				<div class="form-group has-feedback">
+					<input 
+					name="password"
+					type="password" class="form-control input-lg"  placeholder="密码">
+					<span class="icon glyphicon glyphicon-ok form-control-feedback hidden" ></span>
+					<span id="helpBlock" class="help-block"></span>
+				</div>
+
+				<div class="form-group">
+					<div class="input-group">
+						<input 
+						name="_vcode"
+						type="text" class="form-control input-lg" placeholder="图形验证码">
+						<span class="input-group-addon image vcode">
+							<img src="/_api/xpmsns/user/user/vcode?width=200&height=44&size=20">
+						</span>
+					</div>
+					<span id="helpBlock" class="help-block"></span>
+				</div>
+
+
+
+				<div class="form-group">
+					<button class="btn btn-primary btn-lg btn-block signin action" type="button">立即登录</button>
+				</div>
+				
+
+				<div class="form-group" mp:if="{{option.user_wechat_on == 1}}"  >
+
+					<a href="/user/signin/wechat" class="wechat" > 
+						<img src="{{__STOR__::/__PROJECT_NAME/user/assets}}/images/wechat-color.svg" width="40">微信登录
+					</a>
+
+					<a href="/user/signup" class="default hidden" mp:if="{{option.user_mobile_signup_on == 1}}" > 
+						没有账号？立即注册
+					</a>
+				</div>
+				
+			</div>
+
+<!-- 
+	***** 后台未开放用户注册权限 ************************************************************  
+-->
+			<div class="main" mp:else >
+				<div class="form-header">
+					<h2>未开放手机号登录</h2>
+					<div class="form-group"  >
+						<a href="/user/signin/wechat" class="wechat" mp:if="{{option.user_wechat_on == 1}}"  > 
+							<img src="{{__STOR__::/__PROJECT_NAME/user/assets}}/images/wechat-color.svg" width="40">微信登录
+						</a>
+
+						<a href="/user/signup" class="default hidden " mp:if="{{option.user_mobile_signup_on == 1}}"  > 
+							没有账号？立即注册
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+
+<!-- 
+	<div class="header-top row" id="top">
+	用户注册桌面浏览器页面 ( 手机号注册表单 )
+	</div> -->
+</div>
+<div class="footer-wrap">
+	<a href="/" class="default" mp:if="{{option.user_mobile_signup_on == 1}}" > 
+		© 数据中心联盟版权所有 2017京ICP备06029202号-9
+	</a>
+	<!-- <ul class="nav navbar-nav">
+		<li mp:if="{{option.user_mobile_signup_on == 1}}"> <a href="/user/signup">注册</a> </li>
+		<li> <a href="/">首页</a> </li>
+	</ul> -->
+</div>
+
+
+<script type="text/javascript" type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/motion/s1/three.min.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/motion/s1/projector.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/motion/s1/canvas-renderer.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/motion/s1/3d-lines-animation.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/motion/s1/color.js"></script>
+
+
+<!-- 最底部版权 -->
+</body>
+</html>

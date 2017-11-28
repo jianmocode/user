@@ -1,0 +1,152 @@
+<include src="__WEB_ROOT__/user/common/header.page"  />
+<div class="row page">
+	
+	<div class="col-xs-5 side" >
+		<img src="{{__STOR__::/__PROJECT_NAME/user/assets}}/images/logo.png">
+	</div>
+
+	<div class="col-xs-7 form">
+		
+		<div class="row">
+			<ul class="nav navbar-nav pull-right">
+				<!-- <li class="active"><a href="#">Link </a></li> -->
+				
+				<li mp:if="{{option.user_mobile_on == 1}}"> <a href="/user/signin/mobile">登录</a> </li>
+				<li> <a href="/">首页</a> </li>
+
+				<!-- <li class="dropdown">
+				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> 栏目导航<span class="caret"></span></a>
+				  <ul class="dropdown-menu dropdown-menu-right">
+					<li><a href="#">Action</a></li>
+					<li><a href="#">Another action</a></li>
+					<li><a href="#">Something else here</a></li>
+					<li role="separator" class="divider"></li>
+					<li><a href="#">Separated link</a></li>
+					<li role="separator" class="divider"></li>
+					<li><a href="#">One more separated link</a></li>
+				  </ul>
+				</li> -->
+			</ul>
+		</div>
+
+		<div class="row form-wraper">
+			
+			<div class="main signup-form" mp:if="{{option.user_mobile_signup_on == 1}}">
+
+				<div class="form-header">
+					<h1>欢迎加入!</h1>
+					<h2>成为会员，向医生提问。</h2>
+				</div>
+				
+				<div class="alert alert-success alert-dismissible hidden" role="alert">
+					<span class="message">错误描述</span>
+				</div>
+
+				<div class="alert alert-danger alert-dismissible hidden" role="alert">
+					<button type="button" class="close" onclick="$(this).parent().addClass('hidden');">
+					<span>&times;</span></button>
+					<span class="message">错误描述</span>
+				</div>
+
+	
+				<div class="form-group has-feedback">
+					<input type="text"
+						name="mobile"
+						class="form-control input-lg" placeholder="手机号">
+					<span class="icon glyphicon glyphicon-ok form-control-feedback hidden" ></span>
+					<span class="help-block"></span>
+				</div>
+
+				<div class="form-group has-feedback">
+					<input 
+					name="password"
+					type="password" class="form-control input-lg"  placeholder="密码">
+					<span class="icon glyphicon glyphicon-ok form-control-feedback hidden" ></span>
+					<span id="helpBlock" class="help-block"></span>
+				</div>
+
+				<div class="form-group has-feedback">
+					<input 
+					name="repassword"
+					type="password" class="form-control input-lg" placeholder="再次输入密码">
+					<span class="icon glyphicon glyphicon-ok form-control-feedback hidden" ></span>
+					<span id="helpBlock" class="help-block"></span>
+				</div>
+
+				<div class="form-group">
+					<div class="input-group">
+						<input 
+						name="_vcode"
+						type="text" class="form-control input-lg" placeholder="图形验证码">
+						<span class="input-group-addon image vcode">
+							<img src="/_api/xpmsns/user/user/vcode?width=200&height=44&size=20">
+						</span>
+					</div>
+					<span id="helpBlock" class="help-block"></span>
+				</div>
+
+
+				<div class="form-group" mp:if="{{option.user_sms_on == 1}}">
+					<div class="input-group">
+						<input 
+						name="smscode"
+						type="text" class="form-control input-lg" placeholder="短信验证码">
+						<span class="input-group-btn ">
+							 <button class="btn btn-primary btn-lg btn-minw smscode action" type="button">发送短信验证码</button>
+						</span>
+					</div>
+					<span id="helpBlock" class="help-block"></span>
+				</div>
+
+
+				<div class="form-group">
+					<button class="btn btn-primary btn-lg btn-block signup action" type="button">立即注册</button>
+				</div>
+				
+
+				<div class="form-group" >
+
+					<a href="/user/signin/wechat" class="wechat" mp:if="{{option.user_wechat_on == 1}}"  > 
+						<img src="{{__STOR__::/__PROJECT_NAME/user/assets}}/images/wechat-color.svg" width="40">微信登录
+					</a>
+
+					<a href="/user/signin/mobile" class="default" mp:if="{{option.user_mobile_on == 1}}" > 
+						已有账号？立即登录
+					</a>
+				</div>
+				
+			</div>
+
+<!-- 
+	***** 后台未开放用户注册权限 ************************************************************  
+-->
+			<div class="main" mp:else >
+				<div class="form-header">
+					<h2>未开放用户注册</h2>
+					<div class="form-group"  >
+						<a href="/user/signin/wechat" class="wechat" mp:if="{{option.user_wechat_on == 1}}"  > 
+							<img src="{{__STOR__::/__PROJECT_NAME/user/assets}}/images/wechat-color.svg" width="40">微信登录
+						</a>
+
+						<a href="/user/signin/mobile" class="default" mp:if="{{option.user_mobile_on == 1}}" > 
+							已有账号？立即登录
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+
+<!-- 
+	<div class="header-top row" id="top">
+	用户注册桌面浏览器页面 ( 手机号注册表单 )
+	</div> -->
+</div>
+
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/bootstrap/bootstrap.min.js"></script>
+<!-- 最底部版权 -->
+</body>
+</html>
