@@ -1,16 +1,16 @@
 <?php
 
-namespace Mina\User\Api;
+namespace Xpmsns\User\Api;
 
-use \Tuanduimao\Loader\App;
-use \Tuanduimao\Err;
-use \Tuanduimao\Excp;
-use \Tuanduimao\Utils;
-use \Tuanduimao\Api;
-use \Tuanduimao\Option;
-use \Tuanduimao\Wechat;
-use \Mina\User\Model\User as UserModel;
-use \Mina\User\Model\Group as GroupModel;
+use \Xpmse\Loader\App;
+use \Xpmse\Err;
+use \Xpmse\Excp;
+use \Xpmse\Utils;
+use \Xpmse\Api;
+use \Xpmse\Option;
+use \Xpmse\Wechat;
+use \Xpmsns\User\Model\User as UserModel;
+use \Xpmsns\User\Model\Group as GroupModel;
 
 
 /**
@@ -37,7 +37,7 @@ class User extends Api {
 	 */
 	protected function wechatRouter( $query ) {
 
-		$log = new \Tuanduimao\Log("Wechat");
+		$log = new \Xpmse\Log("Wechat");
 
 		$message = $query['message'];
 		$param =  $query['query'];
@@ -117,7 +117,7 @@ class User extends Api {
 		// ;
 
 
-// 		$option =  new Option("mina/user");
+// 		$option =  new Option("xpmsns/user");
 // 		$appid = $option->get("user/wechat/login/appid");
 // 		$conf = Utils::getConf();
 
@@ -154,7 +154,7 @@ class User extends Api {
 	 */
 	protected function wechatSigninQrcode() {
 
-		$option =  new Option("mina/user");
+		$option =  new Option("xpmsns/user");
 		$appid = $option->get("user/wechat/login/appid");
 		$conf = Utils::getConf();
 
@@ -202,7 +202,7 @@ class User extends Api {
 	 */
 	protected function wechatQrcode( $query ) {
 
-		$option =  new Option("mina/user");
+		$option =  new Option("xpmsns/user");
 		$appid = $option->get("user/wechat/login/appid");
 		$conf = Utils::getConf();
 
@@ -247,7 +247,7 @@ class User extends Api {
 	 */
 	protected function wechatAuthUrl( $query ) {
 
-		$option =  new Option("mina/user");
+		$option =  new Option("xpmsns/user");
 		$appid = $option->get("user/wechat/login/appid");
 		$conf = Utils::getConf();
 
@@ -264,7 +264,7 @@ class User extends Api {
 		$back = !empty($query['back']) ? $query['back'] : "/";
 		$back = urlencode($back);
 
-		$authback = Utils::getHomeLink() . "/_api/mina/user/user/wechatAuthBack?back={$back}";
+		$authback = Utils::getHomeLink() . "/_api/xpmsns/user/user/wechatAuthBack?back={$back}";
 
 		$wechat = new Wechat( $cfg );
 		$url = $wechat->authUrl($authback);
@@ -287,7 +287,7 @@ class User extends Api {
 	 */
 	protected function wechatAuthBack( $query ){
 
-		$option =  new Option("mina/user");
+		$option =  new Option("xpmsns/user");
 		$appid = $option->get("user/wechat/login/appid");
 		$conf = Utils::getConf();
 
@@ -324,7 +324,7 @@ class User extends Api {
 	 */
 	protected function option( $query=[] ) {
 
-		$opt =  new Option("mina/user");
+		$opt =  new Option("xpmsns/user");
 		$options = $opt->getAll();
 
 		$map = $options['map'];
@@ -398,7 +398,7 @@ class User extends Api {
 
 		$this->authVcode();
 
-		$opt =  new Option("mina/user");
+		$opt =  new Option("xpmsns/user");
 		$options = $opt->getAll();
 		$map = $options['map'];		
 
@@ -466,7 +466,7 @@ class User extends Api {
 			throw new Excp("尚未登录", 500, ['data'=>$data]);
 		}
 
-		$opt =  new Option("mina/user");
+		$opt =  new Option("xpmsns/user");
 		$options = $opt->getAll();
 		$map = $options['map'];		
 
@@ -536,7 +536,7 @@ class User extends Api {
 		$this->authVcodeOnly();
 
 		// 是否开启验证码
-		$opt =  new Option("mina/user");
+		$opt =  new Option("xpmsns/user");
 		$options = $opt->getAll();
 		$map = $options['map'];
 
@@ -642,7 +642,7 @@ class User extends Api {
 			}
 		}
 		
-		$cate = new \Mina\Pages\Model\Tag;
+		$cate = new \Xpmsns\Pages\Model\Tag;
 		$rs = $cate->getLine("WHERE name=:name LIMIT 1", $select, ["name"=>$name]);
 		if ( empty($rs) ) {
 			throw new Excp("标签不存在", 404,  ['query'=>$query]);

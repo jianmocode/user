@@ -28,7 +28,7 @@ if ( function_exists('apache_request_headers') ) {
 }
 
 // 服务库根目录
-$seroot = $headers['Tuanduimao-Service'];
+$seroot = $headers['Xpmse-Service'];
 if ( empty($seroot) ) {
 	echo json_encode([
 		'result'=>false, 
@@ -40,5 +40,5 @@ if ( empty($seroot) ) {
 
 // 自动载入脚本
 require_once( $seroot . DS . 'loader' . DS  . "Autoload.php" );
-\Tuanduimao\Loader\Auto::run( $headers );
+\Xpmse\Loader\Auto::run( $headers );
 

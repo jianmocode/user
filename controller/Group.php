@@ -1,18 +1,18 @@
 <?php
-use \Tuanduimao\Loader\App as App;
-use \Tuanduimao\Utils as Utils;
-use \Tuanduimao\Tuan as Tuan;
-use \Tuanduimao\Excp as Excp;
-use \Tuanduimao\Conf as Conf;
-use \Tuanduimao\Task as Task;
-use \Mina\Storage\Local as Storage;
+use \Xpmse\Loader\App as App;
+use \Xpmse\Utils as Utils;
+use \Xpmse\Tuan as Tuan;
+use \Xpmse\Excp as Excp;
+use \Xpmse\Conf as Conf;
+use \Xpmse\Task as Task;
+use \Xpmsns\Storage\Local as Storage;
 use \Endroid\QrCode\QrCode as Qrcode;
 use Endroid\QrCode\LabelAlignment;
 use \Endroid\QrCode\ErrorCorrectionLevel;
 
 
 
-class GroupController extends \Tuanduimao\Loader\Controller {
+class GroupController extends \Xpmse\Loader\Controller {
 	
 	function __construct() {
 	}
@@ -24,7 +24,7 @@ class GroupController extends \Tuanduimao\Loader\Controller {
 		$query = $_GET;
 		$query['order'] = !empty($query['order']) ? trim($query['order']) : 'created_at desc';
 		
-		$g = new \Mina\User\Model\Group;
+		$g = new \Xpmsns\User\Model\Group;
 
 		$data = [
 			"groups" => $g->search( $query ),
@@ -61,7 +61,7 @@ class GroupController extends \Tuanduimao\Loader\Controller {
 	// 修改/创建用户组表单
 	function modify(){
 
-		$g = new \Mina\User\Model\Group;
+		$g = new \Xpmsns\User\Model\Group;
 		$id = $_GET['id'];
 
 		$data = [
@@ -95,7 +95,7 @@ class GroupController extends \Tuanduimao\Loader\Controller {
 	        ],
 
 	        'active'=> [
-	 			'slug'=>'mina/user/group/index'
+	 			'slug'=>'xpmsns/user/group/index'
 	 		]
 		];
 	}
@@ -112,7 +112,7 @@ class GroupController extends \Tuanduimao\Loader\Controller {
 			throw new Excp("未提供用户信息", 404, []);
 		}
 
-		$g = new \Mina\User\Model\Group;
+		$g = new \Xpmsns\User\Model\Group;
 		$resp = $g->remove( $group_id, "group_id");
 
 		if ( $resp === false){
@@ -130,7 +130,7 @@ class GroupController extends \Tuanduimao\Loader\Controller {
 	 */
 	function save() {
 
-		$g = new \Mina\User\Model\Group;
+		$g = new \Xpmsns\User\Model\Group;
 
 		try {
 			$group_id = $g->save($_POST);

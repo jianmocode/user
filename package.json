@@ -1,24 +1,24 @@
 {
-    "org": "mina",
+    "org": "xpmsns",
     "name": "user",
-    "version": "1.0.0",
-    "cname": "MINA 用户",
+    "version": "1.1.0",
+    "cname": "XpmSNS-用户中心",
     "image": {
         "color":"/static/icons/app-color.svg",
         "dark":"/static/icons/app-dark.svg",
         "light":"/static/icons/app-light.svg"
     },
     "icontype": "img",
-    "intro": "MINA 用户系统。支持用户分组，微信登录、手机短信验证等特性的用户系统。",
+    "intro": "XpmSNS 用户中心系统。支持用户分组，微信登录、手机短信验证等特性的用户系统。",
     "detail": "@readme.md",
     "document": "@document.md",
     "author": "北京云道天成科技有限公司",
-    "homepage": "https://www.minapages.com",
+    "homepage": "https://www.xpmsns.com",
     "menu":[{
-        "slug":"mina/user/group",
-        "group":"MINA 用户"
+        "slug":"xpmsns/user/group",
+        "group":"用户"
     },{
-        "slug":"mina/user/user/index",
+        "slug":"xpmsns/user/user/index",
         "name":"用户",
         "index": true,
         "icon":{
@@ -30,7 +30,7 @@
         "permission": "boss,admin,manager,user",
         "order":9999
     },{
-        "slug":"mina/user/group/index",
+        "slug":"xpmsns/user/group/index",
         "name":"用户组",
         "icon":{
             "default":"/static/icons/group.svg"

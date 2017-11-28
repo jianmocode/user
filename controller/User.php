@@ -1,28 +1,28 @@
 <?php
-use \Tuanduimao\Loader\App as App;
-use \Tuanduimao\Utils as Utils;
-use \Tuanduimao\Tuan as Tuan;
-use \Tuanduimao\Excp as Excp;
-use \Tuanduimao\Conf as Conf;
-use \Tuanduimao\Task as Task;
-use \Mina\Storage\Local as Storage;
+use \Xpmse\Loader\App as App;
+use \Xpmse\Utils as Utils;
+use \Xpmse\Tuan as Tuan;
+use \Xpmse\Excp as Excp;
+use \Xpmse\Conf as Conf;
+use \Xpmse\Task as Task;
+use \Xpmsns\Storage\Local as Storage;
 use \Endroid\QrCode\QrCode as Qrcode;
 use Endroid\QrCode\LabelAlignment;
 use \Endroid\QrCode\ErrorCorrectionLevel;
 
 
 
-class UserController extends \Tuanduimao\Loader\Controller {
+class UserController extends \Xpmse\Loader\Controller {
 	
 	function __construct() {
 	}
 
 	// function test() {
 	// 	$path = "/2017/10/23/926cdbe7ba53176dc0f51b82faae0a91.jpg";
-	// 	$media = new \Tuanduimao\Media(['private'=>true]);
+	// 	$media = new \Xpmse\Media(['private'=>true]);
 	// 	$url = $media->privateURL( $path );
 
-	// 	$url_b = \Tuanduimao\Media::briage('imagelatest', ['name'=>'testing'], 'https://wss.xpmjs.com', 
+	// 	$url_b = \Xpmse\Media::briage('imagelatest', ['name'=>'testing'], 'https://wss.xpmjs.com', 
 	// 		 '4990e4107dbfe85c045cf8bbd3508652','150698766059529');
 
 	// 	echo "<a href='{$url_b}' target='_blank' > {$url_b} </a><br/>";
@@ -34,7 +34,7 @@ class UserController extends \Tuanduimao\Loader\Controller {
 	// function uptest() {
 	// 	$url = "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1508681851&di=5e8b7b83e6a0e483fd4da33d6a154ec9&src=http://www.zhlzw.com/UploadFiles/Article_UploadFiles/201204/20120412123914329.jpg";
 
-	// 	$media = new \Tuanduimao\Media(['private'=>true]);
+	// 	$media = new \Xpmse\Media(['private'=>true]);
 	// 	$rs = $media->uploadImage($url);
 	// 	Utils::out( $rs );
 	// }
@@ -46,8 +46,8 @@ class UserController extends \Tuanduimao\Loader\Controller {
 		$query = $_GET;
 		$query['order'] = !empty($query['order']) ? trim($query['order']) : 'created_at desc';
 
-		$u = new \Mina\User\Model\User;
-		$g = new \Mina\User\Model\Group;
+		$u = new \Xpmsns\User\Model\User;
+		$g = new \Xpmsns\User\Model\Group;
 
 		$data = [
 			'users' => $u->search($query),
@@ -85,8 +85,8 @@ class UserController extends \Tuanduimao\Loader\Controller {
 	// 修改/创建用户表单
 	function modify(){
 
-		$u = new \Mina\User\Model\User;
-		$g = new \Mina\User\Model\Group;
+		$u = new \Xpmsns\User\Model\User;
+		$g = new \Xpmsns\User\Model\Group;
 
 		$id = $_GET['id'];
 
@@ -126,7 +126,7 @@ class UserController extends \Tuanduimao\Loader\Controller {
 	        ],
 
 	        'active'=> [
-	 			'slug'=>'mina/user/user/index'
+	 			'slug'=>'xpmsns/user/user/index'
 	 		]
 		];
 	}
@@ -148,7 +148,7 @@ class UserController extends \Tuanduimao\Loader\Controller {
 			throw new Excp("未提供应用信息", 404, []);
 		}
 
-		$u = new \Mina\User\Model\User;
+		$u = new \Xpmsns\User\Model\User;
 		$resp = $u->removeWechat( $user_id, $appid );
 
 		if ( $resp === false) {
@@ -171,7 +171,7 @@ class UserController extends \Tuanduimao\Loader\Controller {
 			throw new Excp("未提供用户信息", 404, []);
 		}
 
-		$u = new \Mina\User\Model\User;
+		$u = new \Xpmsns\User\Model\User;
 		$resp = $u->remove( $user_id, "user_id");
 
 		if ( $resp === false){
@@ -189,7 +189,7 @@ class UserController extends \Tuanduimao\Loader\Controller {
 	 */
 	function save() {
 
-		$u = new \Mina\User\Model\User;
+		$u = new \Xpmsns\User\Model\User;
 
 		// throw new Excp("测试出错啦！！！", 500, ["hello"=>"world"]);
 		// throw new Excp("出错啦 1", 500, [ "errors"=>["mobile"=>"手机号码已被注册"]]);

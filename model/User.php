@@ -1,15 +1,15 @@
 <?php
-namespace Mina\User\Model; 
-define('__NS__', 'Mina\User\Model'); // 兼容旧版 App::M 方法调用
+namespace Xpmsns\User\Model; 
+define('__NS__', 'Xpmsns\User\Model'); // 兼容旧版 App::M 方法调用
 
-use \Tuanduimao\Mem as Mem;
-use \Tuanduimao\Excp as Excp;
-use \Tuanduimao\Err as Err;
-use \Tuanduimao\Conf as Conf;
-use \Tuanduimao\Model as Model;
-use \Tuanduimao\Utils as Utils;
-use \Tuanduimao\Wechat as Wechat;
-use \Tuanduimao\Option as Option;
+use \Xpmse\Mem as Mem;
+use \Xpmse\Excp as Excp;
+use \Xpmse\Err as Err;
+use \Xpmse\Conf as Conf;
+use \Xpmse\Model as Model;
+use \Xpmse\Utils as Utils;
+use \Xpmse\Wechat as Wechat;
+use \Xpmse\Option as Option;
 
 
 /**
@@ -31,11 +31,11 @@ class User extends Model {
 	 * @param array $param [description]
 	 */
 	function __construct( $param=[] ) {
-		parent::__construct(['prefix'=>'mina_user_']);
+		parent::__construct(['prefix'=>'xpmsns_user_']);
 		$this->table('user');
 
 		// 微信公众号授权表
-		$this->user_wechat = Utils::getTab('user_wechat', "mina_user_");  
+		$this->user_wechat = Utils::getTab('user_wechat', "xpmsns_user_");  
 	}
 
 	
@@ -276,7 +276,7 @@ class User extends Model {
 		if ( empty($uinfo) ) {
 
 			// Group 信息
-			$opt =  new Option("mina/user");
+			$opt =  new Option("xpmsns/user");
 			$options = $opt->getAll();
 			$map = $options['map'];	
 			$slug = $map['user/default/group'];
@@ -360,7 +360,7 @@ class User extends Model {
 		if ( empty($uinfo) ) {
 
 			// Group 信息
-			$opt =  new Option("mina/user");
+			$opt =  new Option("xpmsns/user");
 			$options = $opt->getAll();
 			$map = $options['map'];	
 
@@ -448,7 +448,7 @@ class User extends Model {
 		if ( empty($uinfo) ) {
 
 			// Group 信息
-			$opt =  new Option("mina/user");
+			$opt =  new Option("xpmsns/user");
 			$options = $opt->getAll();
 			$map = $options['map'];	
 
@@ -564,7 +564,7 @@ class User extends Model {
 	 */
 	function SMSCode( $mobile, $nationcode=86 ) {
 
-		$opt =  new \Tuanduimao\Option("mina/user");
+		$opt =  new \Xpmse\Option("xpmsns/user");
 		$options = $opt->getAll();
 		$c = $options['map'];
 
@@ -853,7 +853,7 @@ class User extends Model {
 	 */
 	function formatUsers( & $users, $remove_password = true  ) {
 
-		$media = new \Tuanduimao\Media;
+		$media = new \Xpmse\Media;
 
 		if ( empty($users) ) {
 			return;

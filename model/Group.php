@@ -1,13 +1,13 @@
 <?php
-namespace Mina\User\Model; 
-define('__NS__', 'Mina\User\Model'); // 兼容旧版 App::M 方法调用
+namespace Xpmsns\User\Model; 
+define('__NS__', 'Xpmsns\User\Model'); // 兼容旧版 App::M 方法调用
 
-use \Tuanduimao\Mem as Mem;
-use \Tuanduimao\Excp as Excp;
-use \Tuanduimao\Err as Err;
-use \Tuanduimao\Conf as Conf;
-use \Tuanduimao\Model as Model;
-use \Tuanduimao\Utils as Utils;
+use \Xpmse\Mem as Mem;
+use \Xpmse\Excp as Excp;
+use \Xpmse\Err as Err;
+use \Xpmse\Conf as Conf;
+use \Xpmse\Model as Model;
+use \Xpmse\Utils as Utils;
 
 
 /**
@@ -20,7 +20,7 @@ class Group extends Model {
 	 * @param array $param [description]
 	 */
 	function __construct( $param=[] ) {
-		parent::__construct(['prefix'=>'mina_user_']);
+		parent::__construct(['prefix'=>'xpmsns_user_']);
 		$this->table('group');
 	}
 	

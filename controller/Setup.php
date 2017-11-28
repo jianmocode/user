@@ -1,20 +1,20 @@
 <?php
-use \Tuanduimao\Loader\App as App;
-use \Tuanduimao\Utils as Utils;
-use \Tuanduimao\Tuan as Tuan;
-use \Tuanduimao\Excp as Excp;
-use \Tuanduimao\Conf as Conf;
-use \Tuanduimao\Option as Option;
-use \Tuanduimao\Wechat as Wechat;
+use \Xpmse\Loader\App as App;
+use \Xpmse\Utils as Utils;
+use \Xpmse\Tuan as Tuan;
+use \Xpmse\Excp as Excp;
+use \Xpmse\Conf as Conf;
+use \Xpmse\Option as Option;
+use \Xpmse\Wechat as Wechat;
 
 
-class SetupController extends \Tuanduimao\Loader\Controller {
+class SetupController extends \Xpmse\Loader\Controller {
 	
 	function __construct() {
 
 		$this->models = [
-			'\\Mina\\User\\Model\\User',
-			'\\Mina\\User\\Model\\Group'
+			'\\Xpmsns\\User\\Model\\User',
+			'\\Xpmsns\\User\\Model\\Group'
 		];
 	}
 
@@ -26,9 +26,9 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 	private function init_option() {
 
 		// 注册微信消息处理器
-		Wechat::bind("mina/user", "user/wechatRouter");
+		Wechat::bind("xpmsns/user", "user/wechatRouter");
 
-		$opt = new Option('mina/user');
+		$opt = new Option('xpmsns/user');
 
 		// 短信验证码
 		$sms_vcode = $opt->get("user/sms/vcode");
@@ -133,17 +133,17 @@ class SetupController extends \Tuanduimao\Loader\Controller {
 
 
 	private  function remove_option(){
-		$opt = new Option('mina/user');
+		$opt = new Option('xpmsns/user');
 		$opt->unregister();
 
 		// 解绑微信处理器
-		Wechat::unbind("mina/user");
+		Wechat::unbind("xpmsns/user");
 	}
 
 	
 	private  function init_group() {
 		
-		$g = new \Mina\User\Model\Group;
+		$g = new \Xpmsns\User\Model\Group;
 		$default = $g->getBySlug('default');
 		if ( empty($default) ) {
 			$g->create(['slug'=>"default", 'name'=>'默认分组']);
