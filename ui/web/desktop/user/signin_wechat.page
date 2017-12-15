@@ -1,4 +1,4 @@
-<include src="__WEB_ROOT__/user/common/header.page"  />
+<include src="__WEB_ROOT__/common/header.page"  />
 
 <section class="canvas-wrap"> <div id="canvas" class="gradient"></div></section>
 <div class=" row page">
@@ -95,13 +95,13 @@
 </div>
 
 
-<script type="text/javascript" type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/bootstrap/bootstrap.min.js"></script>
-<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/motion/s1/three.min.js"></script>
-<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/motion/s1/projector.js"></script>
-<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/motion/s1/canvas-renderer.js"></script>
-<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/motion/s1/3d-lines-animation.js"></script>
-<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/user/assets}}/js/motion/s1/color.js"></script>
+<script type="text/javascript" type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/assets/user}}/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/assets/user}}/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/assets/user}}/js/motion/s1/three.min.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/assets/user}}/js/motion/s1/projector.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/assets/user}}/js/motion/s1/canvas-renderer.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/assets/user}}/js/motion/s1/3d-lines-animation.js"></script>
+<script type="text/javascript" src="{{__STOR__::/__PROJECT_NAME/assets/user}}/js/motion/s1/color.js"></script>
 
 
 <!-- 最底部版权 -->

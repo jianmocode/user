@@ -8,6 +8,6 @@
 	<meta name="keywords" content="{{page.keywords}}">
 	<meta name="author" content="{{page.author}}">
 	<meta name="generator" content="GitBook 3.1.1">
-	<link rel="stylesheet" type="text/css" href="{{__STOR__::/__PROJECT_NAME/user/assets}}/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="{{__STOR__::/__PROJECT_NAME/assets/user}}/bootstrap/bootstrap.min.css">
 </head>
 <body class="xpmsns" >

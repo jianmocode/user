@@ -2,10 +2,10 @@
 	"cname":"微信登录页",
 	"data": {
 		"images":[
-			"{{__STOR__::/__PROJECT_NAME/user/assets}}/images/signup_01.jpg",
-			"{{__STOR__::/__PROJECT_NAME/user/assets}}/images/signup_02.jpg",
-			"{{__STOR__::/__PROJECT_NAME/user/assets}}/images/signup_03.jpg",
-			"{{__STOR__::/__PROJECT_NAME/user/assets}}/images/signup_04.jpg"
+			"{{__STOR__::/__PROJECT_NAME/assets/user}}/images/signup_01.jpg",
+			"{{__STOR__::/__PROJECT_NAME/assets/user}}/images/signup_02.jpg",
+			"{{__STOR__::/__PROJECT_NAME/assets/user}}/images/signup_03.jpg",
+			"{{__STOR__::/__PROJECT_NAME/assets/user}}/images/signup_04.jpg"
 		],
 		"qrcode":{
 			"api":"/xpmsns/user/user/wechatSigninQrcode",

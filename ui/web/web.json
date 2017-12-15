@@ -1,14 +1,14 @@
 {
 	"cname":"XpmSNS-用户中心默认主题",
 	"pages":[
-		"/user/desktop/signup",
-		"/user/desktop/signin",
-		"/user/desktop/signin_wechat",
-		"/user/desktop/bind_mobile",
-		"/user/desktop/index"
+		"/desktop/user/signup",
+		"/desktop/user/signin",
+		"/desktop/user/signin_wechat",
+		"/desktop/user/bind_mobile",
+		"/desktop/user/index"
 	],
 	"common":[
-		"/user/common"
+		"/common"
 	],
 	"storage": {
 		"engine":"minapages",
@@ -16,16 +16,16 @@
 			"debug":true
 		},
 		"pages":{
-			"remote": "/{PROJECT_NAME}/user/pages",
-			"url": "/static-file/{PROJECT_NAME}/user/pages",
-			"origin": "/static-file/{PROJECT_NAME}/user/pages"
+			"remote": "/{PROJECT_NAME}/user",
+			"url": "/static-file/{PROJECT_NAME}/user",
+			"origin": "/static-file/{PROJECT_NAME}/user"
 		},
 		"binds": [
 			{
-				"local": "/web/user/assets",
-				"remote": "/{PROJECT_NAME}/user/assets",
-				"url": "/static-file/{PROJECT_NAME}/user/assets",
-				"origin": "/static-file/{PROJECT_NAME}/user/assets"
+				"local": "/web/assets",
+				"remote": "/{PROJECT_NAME}/assets/user",
+				"url": "/static-file/{PROJECT_NAME}/assets/user",
+				"origin": "/static-file/{PROJECT_NAME}/assets/user"
 			}
 		]
 	},
