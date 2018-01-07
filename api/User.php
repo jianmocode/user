@@ -387,7 +387,6 @@ class User extends Api {
 
 
 
-
 	/**
 	 * 创建一个新用户
 	 * @param  array  $query [description]
@@ -395,10 +394,6 @@ class User extends Api {
 	 * @return [type]        [description]
 	 */
 	protected function create( $query=[], $data=[] ) {
-
-		throw new Excp("BREAK", 406, ['data'=>$data]);
-
-		return "kks";
 
 		$this->authVcode();
 
@@ -429,7 +424,6 @@ class User extends Api {
 			}
 		}
 
-
 		// Group
 		$g = new GroupModel();
 		if ( isset( $data['group_slug']) ) { 	
@@ -443,9 +437,6 @@ class User extends Api {
 			$rs = $g->getBySlug($slug);
 			$data['group_id'] = $rs['group_id'];
 		}
-
-
-		throw new Excp("BREAK", 406, ['data'=>$data]);
 
 		// 数据入库
 		$u = new UserModel();
