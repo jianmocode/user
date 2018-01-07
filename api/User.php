@@ -396,6 +396,10 @@ class User extends Api {
 	 */
 	protected function create( $query=[], $data=[] ) {
 
+		throw new Excp("BREAK", 406, ['data'=>$data]);
+
+		return "kks";
+
 		$this->authVcode();
 
 		$opt =  new Option("xpmsns/user");
@@ -427,11 +431,21 @@ class User extends Api {
 
 
 		// Group
-		$slug = $map['user/default/group'];
 		$g = new GroupModel();
-		$rs = $g->getBySlug($slug);
-		$data['group_id'] = $rs['group_id'];
+		if ( isset( $data['group_slug']) ) { 	
+			$slug = $data['group_slug'];
+			$rs = $g->getBySlug($slug);
+			$data['group_id'] = $rs['group_id'];
+		}  
 
+		if ( empty($data['group_id']) ) {
+			$slug = $map['user/default/group'];
+			$rs = $g->getBySlug($slug);
+			$data['group_id'] = $rs['group_id'];
+		}
+
+
+		throw new Excp("BREAK", 406, ['data'=>$data]);
 
 		// 数据入库
 		$u = new UserModel();
