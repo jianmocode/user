@@ -145,11 +145,10 @@ class User extends Model {
 	function getUserInfo() {
 
 		@session_start();
-		$rs = $_SESSION['USER:info'];
+		$rs = !empty($_SESSION['USER:info']) ? $_SESSION['USER:info'] : $_SESSION['_uinfo'] ;
 		if ( empty($rs) ) {
 			return [];
 		}
-
 		return $rs;
 	}
 
@@ -956,7 +955,7 @@ class User extends Model {
 
 
 	function genUserId() {
-		return time() . rand(10000,99999);
+		return uniqid();
 	}
 
 
