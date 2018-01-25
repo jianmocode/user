@@ -820,6 +820,11 @@ class User extends Model {
 			$qb->where("country", "=", "{$query['country']}");
 		}
 
+		// 按ID列表
+		if ( array_key_exists('user_ids', $query)  ) {
+			$qb->whereIn('user_id', $query['user_ids'] );
+		}
+
 		// 排序: 最新注册
 		if ( array_key_exists('order', $query)  ) {
 
