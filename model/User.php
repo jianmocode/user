@@ -38,6 +38,47 @@ class User extends Model {
 		$this->user_wechat = Utils::getTab('user_wechat', "xpmsns_user_");  
 	}
 
+
+	public static function getFields() {
+		return [
+			'user_id', 
+			'group_id',
+			'name',
+			'idno',
+			'iddoc',
+			'nickname',
+			'sex',
+			'city',
+			'province',
+			'country', 
+			'headimgurl',
+			'language',
+			'birthday',
+			'mobile', 
+			'mobile_nation',
+			'mobile_full', 
+			'email', 
+			'contact_name',
+			'contact_tel', 
+			'title', 
+			'company', 
+			'zip',
+			'address', 
+			'remark', 
+			'tag', 
+			'user_verified', 
+			'name_verified', 
+			'verify', 
+			'verify_data',
+			'mobile_verified',
+			'email_verified', 
+			'extra',
+			'password',
+			'pay_password',
+			'status'
+		];
+	}
+
 	
 	/**
 	 * 数据表结构
@@ -50,10 +91,10 @@ class User extends Model {
 			 ->putColumn( 'group_id', $this->type('string',  ['length'=>128, 'index'=>true]) )   // 用户组
 
 			 // 用户资料
-			 ->putColumn( 'name', $this->type('string',  ['length'=>256]) )  // 真实姓名
+			 ->putColumn( 'name', $this->type('string',  ['length'=>128, 'index'=>true]) )  // 真实姓名
 			 ->putColumn( 'idno', $this->type('string',  ['length'=>256]) )  // 身份证件号码
 			 ->putColumn( 'iddoc', $this->type('string',  ['length'=>256]) )  // 身份证件类型 1 身份证 2 军人身份证 3 警察身份证  4 港澳通行证  5 台胞证  6 护照  7 其他
-			 ->putColumn( 'nickname', $this->type('string',  ['length'=>256]) )  // 用户名称
+			 ->putColumn( 'nickname', $this->type('string',  ['length'=>128, 'index'=>true]) )  // 用户名称
 			 ->putColumn( 'sex', $this->type('integer',  ['length'=>1,  "index"=>true]) )  // 用户性别
 			 ->putColumn( 'city', $this->type('string',  ['length'=>100,  "index"=>true]) )  // 所在城市
 			 ->putColumn( 'province', $this->type('string',  ['length'=>100,  "index"=>true]) )  // 所在省份
@@ -784,6 +825,7 @@ class User extends Model {
 		if ( array_key_exists('keyword', $query) && !empty($query['keyword']) ) {
 			$qb->where(function ( $qb ) use($query) {
 			   	$qb->where("nickname", "like", "%{$query['keyword']}%");
+			   	$qb->orWhere("name", "like", "%{$query['keyword']}%");
 				$qb->orWhere("mobile","like", "%{$query['keyword']}%");
 				$qb->orWhere('email', 'like', "%{$query['keyword']}%");
 			})
@@ -847,6 +889,22 @@ class User extends Model {
 
 		return $users;
 
+	}
+
+
+	function getInByUserId( $ids, $select = ['*'] ) {
+
+		$qb = $this->query();
+		$qb->whereIn("user_id", $ids);
+		$qb->select($select);
+		$rows = $qb->get()->toArray();
+		$map = [];
+
+		foreach ($rows as & $rs ) {
+			$this->format( $rs );
+			$map[$rs['user_id']] = $rs;
+		}
+		return $map;
 	}
 
 
@@ -952,6 +1010,21 @@ class User extends Model {
 
 		}
 		// Utils::out( $userGroups, $userWechats );
+	}
+
+
+	function format( & $rs ) {
+		if ( array_key_exists("headimgurl", $rs)  ){
+			if ( Utils::isURL( $user['headimgurl']) ) {
+				$users[$idx]['headimg_url'] = $user['headimgurl'];
+				$users[$idx]['headimg_path'] = '';
+			}  else {
+				$img =  $media->get($user['headimgurl']);
+				$users[$idx]['headimg_path'] = $img['path'];
+				$users[$idx]['headimg_url'] = $img['origin'];
+				// $users[$idx]['headimg_path']  = $img['url'];
+			}
+		}
 	}
 
 
