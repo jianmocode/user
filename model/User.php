@@ -1031,12 +1031,10 @@ class User extends Model {
 	}
 
 
-
-
-
-
+	
 	function genUserId() {
-		return uniqid();
+		return $this->genId();
+		// return uniqid();
 	}
 
 
