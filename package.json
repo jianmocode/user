@@ -1,15 +1,15 @@
 {
     "org": "xpmsns",
     "name": "user",
-    "version": "1.1.0",
-    "cname": "XpmSNS-会员",
+    "version": "1.2.0",
+    "cname": "简墨会员",
     "image": {
         "color":"/static/icons/app-color.svg",
         "dark":"/static/icons/app-dark.svg",
         "light":"/static/icons/app-light.svg"
     },
     "icontype": "img",
-    "intro": "XpmSNS会员系统。支持会员分组，微信登录、手机短信验证等特性的会员系统。",
+    "intro": "简墨会员系统。支持会员分组，微信登录、手机短信验证等特性的会员系统。",
     "detail": "@readme.md",
     "document": "@document.md",
     "author": "北京云道天成科技有限公司",
