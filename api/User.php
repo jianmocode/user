@@ -403,7 +403,7 @@ class User extends Api {
 
 		// 校验手机号码
 		if ( empty($data['mobile']) ) {
-			throw new Excp("手机号码格式不正确", 402, ['data'=>$data]);
+			throw new Excp("手机号码格式不正确", 402, ['data'=>$data, 'errorlist'=>[['mobile'=>'手机号码格式不正确']]]);
 		}
 
 		$data['mobile_nation'] = !empty($data['nation']) ? $data['nation'] : '86';
@@ -412,7 +412,7 @@ class User extends Api {
 		if( $map['user/sms/on'] == 1) {
 			$data['mobile_verified'] = true;
 			if ( $this->verifySMSCode($query, $data) === false) {
-				throw new Excp("短信验证码不正确", 402, ['data'=>$data]);
+				throw new Excp("短信验证码不正确", 402, ['data'=>$data, 'errorlist'=>[['smscode'=>'短信验证码不正确']]]);
 			}
 		}
 
@@ -420,7 +420,7 @@ class User extends Api {
 		// 检查密码
 		if ( isset($data['repassword']) ) { 
 			if ( $data['password'] != $data['repassword'] ) {
-				throw new Excp("两次输入的密码不一致", 402, ['data'=>$data]);
+				throw new Excp("两次输入的密码不一致", 402, ['data'=>$data, 'errorlist'=>[['repassword'=>'两次输入的密码不一致']]]);
 			}
 		}
 
@@ -444,7 +444,7 @@ class User extends Api {
 			$u->create($data);
 		} catch(Excp $e ){
 			if ( $e->getCode() == '1062') {
-				throw new Excp("手机号 +{$data['mobile_nation']} {$data['mobile']} 已被注册", 402, ['data'=>$data]);	
+				throw new Excp("手机号 +{$data['mobile_nation']} {$data['mobile']} 已被注册", 402, ['data'=>$data, 'errorlist'=>[['mobile'=>'手机号码已被注册']]]);
 			}
 			throw $e;
 		}
