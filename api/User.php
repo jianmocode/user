@@ -416,12 +416,14 @@ class User extends Api {
 			}
 		}
 
-
 		// 检查密码
 		if ( isset($data['repassword']) ) { 
 			if ( $data['password'] != $data['repassword'] ) {
 				throw new Excp("两次输入的密码不一致", 402, ['data'=>$data, 'errorlist'=>[['repassword'=>'两次输入的密码不一致']]]);
 			}
+		}
+		if ( empty($data['password']) ) {
+			throw new Excp("请输入登录密码", 402, ['data'=>$data, 'errorlist'=>[['password'=>'请输入登录密码']]]);
 		}
 
 		// Group
@@ -551,7 +553,7 @@ class User extends Api {
 
 		// 提交信息校验
 		if ( empty($query['mobile']) ) {
-			throw new Excp("非法请求 未知手机号码", 401, ['query'=>$query]);
+			throw new Excp("未知手机号码", 401, ['query'=>$query, 'errorlist'=>[["mobile"=>"未知手机号码"]]]);
 		}
 
 		$now = time();
@@ -559,7 +561,7 @@ class User extends Api {
 		$locked_at = intval($_SESSION['SMSCODE:locked_at']);
 
 		if ( ( $now - $locked_at ) < $lock_time ) {
-			throw new Excp("非法请求 请求过于频繁", 403, ['locked_at'=>$locked_at]);
+			throw new Excp("请求过于频繁", 403, ['locked_at'=>$locked_at, 'errorlist'=>[["smscode"=>"请求过于频繁"]]]);
 		}
 
 
