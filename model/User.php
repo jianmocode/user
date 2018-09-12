@@ -539,7 +539,7 @@ class User extends Model {
 
 		if ( $password != null ) {
 			if ( $this->checkPassword($password, $rs['password']) === false ) {
-				throw new Excp( "登录密码错误", 404, ['data'=>$data, 'query'=>$query, 'errorlist'=>[['mobile'=>'登录密码错误']]]);
+				throw new Excp( "登录密码错误", 404, ['data'=>$data, 'query'=>$query, 'errorlist'=>[['password'=>'登录密码错误']]]);
 			}
 		}
 
