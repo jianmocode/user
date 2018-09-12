@@ -356,7 +356,7 @@ class User extends Api {
 		if ( empty($mobile) ) {
 			throw new Excp("未知手机号码", 404, ['data'=>$data, 'query'=>$query]);
 		}
-
+		
 		$u->login($mobile, $data['password'], $data['mobile_nation'] );
 		return ['code'=>0, "message"=>"登录成功"];
 
@@ -394,7 +394,7 @@ class User extends Api {
 	 * @return [type]        [description]
 	 */
 	protected function create( $query=[], $data=[] ) {
-
+		
 		$this->authVcode();
 
 		$opt =  new Option("xpmsns/user");

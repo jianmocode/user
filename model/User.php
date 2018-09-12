@@ -532,14 +532,14 @@ class User extends Model {
 				->toArray();
 
 		if ( empty($rows) ) {
-			throw new Excp( "用户不存在", 404, ['data'=>$data, 'query'=>$query]);
+			throw new Excp( "用户不存在", 404, ['data'=>$data, 'query'=>$query, 'errorlist'=>[['mobile'=>'用户不存在']]]);
 		}
 
 		$rs = current($rows);
 
 		if ( $password != null ) {
 			if ( $this->checkPassword($password, $rs['password']) === false ) {
-				throw new Excp( "密码错误", 404, ['data'=>$data, 'query'=>$query]);
+				throw new Excp( "登录密码错误", 404, ['data'=>$data, 'query'=>$query, 'errorlist'=>[['mobile'=>'登录密码错误']]]);
 			}
 		}
 
@@ -579,7 +579,7 @@ class User extends Model {
 				->toArray();
 
 		if ( empty($rows) ) {
-			throw new Excp( "用户不存在", 404, ['data'=>$data, 'query'=>$query]);
+			throw new Excp( "用户不存在", 404, ['data'=>$data, 'query'=>$query, 'errorlist'=>[['mobile'=>'用户不存在']]]);
 		}
 
 		$rs = current($rows);
