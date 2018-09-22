@@ -563,7 +563,7 @@ class User extends Model {
 				->limit(1)
 				->select(
 					"user_id", "user.group_id as group_id", 
-					"nickname", "sex", "city", "province", "country","headimgurl", "language",
+					"user.name","nickname", "sex", "city", "province", "country","headimgurl", "language",
 					"mobile", "mobile_nation", "mobile_verified",
 					"email", "email_verified",
 					"zip", "address", "user.remark as remark", "user.tag as tag",
