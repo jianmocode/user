@@ -348,18 +348,24 @@ class User extends Api {
 	 * @return [type]        [description]
 	 */
 	protected function login( $query=[], $data=[] ) {
+		
+
 		$this->authVcode();
 		$u = new UserModel();
 		$mobile = $data['mobile'];
 		$data['mobile_nation'] = empty($data['mobile_nation']) ? '86' : $data['mobile_nation'];
 
 		if ( empty($mobile) ) {
-			throw new Excp("未知手机号码", 404, ['data'=>$data, 'query'=>$query]);
+			throw new Excp("未知手机号码", 404, ['data'=>$data, 'query'=>$query, 'errorlist'=>[['mobile'=>'未知手机号码']]]);
 		}
 		
 		$u->login($mobile, $data['password'], $data['mobile_nation'] );
-		return ['code'=>0, "message"=>"登录成功"];
+		$uinfo = $u->getUserInfo();
+		if (empty($uinfo) ){
+			throw new Excp("系统错误, 读取用户信息失败", 500, ['data'=>$data, 'query'=>$query]);
+		}
 
+		return $uinfo;
 	}
 
 
@@ -394,6 +400,8 @@ class User extends Api {
 	 * @return [type]        [description]
 	 */
 	protected function create( $query=[], $data=[] ) {
+
+		// return ["message"=>"注册成功", "code"=>0 ]; // 快速测试
 		
 		$this->authVcode();
 
