@@ -187,9 +187,10 @@ class User extends Model {
 
 		@session_start();
 		$rs = !empty($_SESSION['USER:info']) ? $_SESSION['USER:info'] : $_SESSION['_uinfo'] ;
-		if ( empty($rs) ) {
-			return [];
+		if ( !is_array($rs) ) {
+			$rs = [];
 		}
+		$rs['session_id'] = session_id();
 		return $rs;
 	}
 
