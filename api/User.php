@@ -29,6 +29,10 @@ class User extends Api {
 	}
 
 
+	protected function upload( $query, $data ){
+		return ["code"=>0, "message"=>"上传成功"];
+	}
+
 	/**
 	 * 微信推送-消息接收器 (禁止直接调用)
 	 * @param $query['query']    微信 GET参数
