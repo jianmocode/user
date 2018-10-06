@@ -29,8 +29,20 @@ class User extends Api {
 	}
 
 
-	protected function upload( $query, $data ){
-		return ["code"=>0, "message"=>"上传成功"];
+	/**
+	 * 上传文件
+	 * @param  [type] $query [description]
+	 * @param  [type] $data  [description]
+	 * @return [type]        [description]
+	 */
+	protected function upload( $query, $data ) {
+
+		$resp = $this->__savefile([
+			"host" => Utils::getHome(),
+			"image"=>["image/png", "image/jpeg", "image/gif"]
+		]);
+
+		return $resp;
 	}
 
 	/**
