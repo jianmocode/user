@@ -54,6 +54,8 @@ class User extends Model {
 			'headimgurl',
 			'language',
 			'birthday',
+			'bio',
+			'bgimgurl',
 			'mobile', 
 			'mobile_nation',
 			'mobile_full', 
@@ -99,17 +101,17 @@ class User extends Model {
 			 ->putColumn( 'city', $this->type('string',  ['length'=>100,  "index"=>true]) )  // 所在城市
 			 ->putColumn( 'province', $this->type('string',  ['length'=>100,  "index"=>true]) )  // 所在省份
 			 ->putColumn( 'country', $this->type('string',  ['length'=>100,  "index"=>true]) )  // 所在国家
-			 ->putColumn( 'headimgurl', $this->type('string',  ['length'=>256]) )  // 用户头像地址
+			 ->putColumn( 'headimgurl', $this->type('text',  ["json"=>true]) )  // 用户头像地址信息
 			 ->putColumn( 'language', $this->type('string',  ['length'=>20]) )  // 系统语言
 			 ->putColumn( 'birthday', $this->type('timestamp',  []) )  // 出生日期
-
+			 ->putColumn( 'bio', $this->type('string',  ["length"=>600]) )  // 用户简介
+			 ->putColumn( 'bgimgurl', $this->type('text',  ["json"=>true]) )  // 用户中心图片地址
 
 			 // 常用字段
 			 ->putColumn( 'mobile', $this->type('string',  ['length'=>40]) )  // 手机号
 			 ->putColumn( 'mobile_nation', $this->type('string',  ['length'=>40, 'default'=>"86"]) )  // 手机号国别
 			 ->putColumn( 'mobile_full', $this->type('string',  ['length'=>40, 'unique'=>true]) )  // 完整的手机号码
 			 ->putColumn( 'email', $this->type('string',  ['length'=>128, 'unique'=>true]) )  // 电邮地址
-			 
 			 ->putColumn( 'contact_name', $this->type('string',  ['length'=>256]) )  // 联系人
 			 ->putColumn( 'contact_tel',  $this->type('string',  ['length'=>40]) )   // 联系电话
 			 ->putColumn( 'title',  $this->type('string',  ['length'=>128]) )   // 联系人职务
@@ -564,7 +566,7 @@ class User extends Model {
 				->limit(1)
 				->select(
 					"user_id", "user.group_id as group_id", 
-					"user.name","nickname", "sex", "city", "province", "country","headimgurl", "language",
+					"user.name","nickname", "sex", "city", "province", "country","headimgurl", "language", "bio", "bgimgurl",
 					"mobile", "mobile_nation", "mobile_verified",
 					"email", "email_verified",
 					"zip", "address", "user.remark as remark", "user.tag as tag",

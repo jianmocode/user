@@ -30,12 +30,18 @@ class User extends Api {
 
 
 	/**
-	 * 上传文件
+	 * 上传图片文件
 	 * @param  [type] $query [description]
 	 * @param  [type] $data  [description]
-	 * @return [type]        [description]
+	 * @return [type]		[description]
 	 */
 	protected function upload( $query, $data ) {
+
+		$u = new UserModel();
+		$uinfo = $u->getUserInfo();
+		if ( empty($uinfo['user_id']) ) {
+			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
+		}
 
 		$resp = $this->__savefile([
 			"host" => Utils::getHome(),
@@ -45,10 +51,61 @@ class User extends Api {
 		return $resp;
 	}
 
+
+
+	/**
+	 * Update Profile API
+	 * @param  [type] $query [description]
+	 * @param  [type] $data  [description]
+	 * @return [type]		[description]
+	 */
+	protected function updateProfile( $query, $data ) {
+
+		/**
+		 * 许可字段清单
+		 */
+		$allowed = ["bio", "nickname", "country", "city", "headimgurl", "bgimgurl", "birthday", "language"];
+
+		// 用户身份验证
+		$u = new UserModel();
+		$uinfo = $u->getUserInfo();
+		if ( empty($uinfo['user_id']) ) {
+			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
+		}
+
+		$data = array_filter(
+			$data,
+			function ($key) use ($allowed) {
+				return in_array($key, $allowed);
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+
+		$data['user_id'] = $uinfo['user_id'];
+
+		// 用户头像
+		if ( !empty($data['headimgurl']) ) {
+			$data['headimgurl'] = json_decode($data['headimgurl'], true);
+		}
+
+		// 背景图片
+		if ( !empty($data['bgimgurl']) ) {
+			$data['bgimgurl'] = json_decode($data['bgimgurl'], true);
+		}
+
+
+		$u->save( $data );
+		$u->loginSetSession($uinfo['user_id']);
+
+		return ['code'=>0, 'message'=>'数据保存成功'];
+	}
+
+
+
 	/**
 	 * 微信推送-消息接收器 (禁止直接调用)
-	 * @param $query['query']    微信 GET参数
-	 *        $query['message']  解密后消息正文
+	 * @param $query['query']	微信 GET参数
+	 *		$query['message']  解密后消息正文
 	 * @return 
 	 */
 	protected function wechatRouter( $query ) {
@@ -90,7 +147,7 @@ class User extends Api {
 	 * 微信用户登录
 	 * @param  [type] $query [description]
 	 * @param  [type] $data  [description]
-	 * @return [type]        [description]
+	 * @return [type]		[description]
 	 */
 	protected function wxappLogin( $query, $data ) {
 
@@ -299,7 +356,7 @@ class User extends Api {
 	/**
 	 * 微信授权登录成功
 	 * @param  [type] $query [description]
-	 * @return [type]        [description]
+	 * @return [type]		[description]
 	 */
 	protected function wechatAuthBack( $query ){
 
@@ -361,7 +418,7 @@ class User extends Api {
 	 * 用户登录 
 	 * @param  array  $query [description]
 	 * @param  array  $data  [description]
-	 * @return [type]        [description]
+	 * @return [type]		[description]
 	 */
 	protected function login( $query=[], $data=[] ) {
 		
@@ -400,7 +457,7 @@ class User extends Api {
 	 * 读取用户会话信息
 	 * @param  array  $query [description]
 	 * @param  array  $data  [description]
-	 * @return [type]        [description]
+	 * @return [type]		[description]
 	 */
 	protected function getUserInfo( $query=[], $data=[] ) {
 		$u = new UserModel();
@@ -413,7 +470,7 @@ class User extends Api {
 	 * 创建一个新用户
 	 * @param  array  $query [description]
 	 * @param  [type] $data  [description]
-	 * @return [type]        [description]
+	 * @return [type]		[description]
 	 */
 	protected function create( $query=[], $data=[] ) {
 
@@ -483,7 +540,7 @@ class User extends Api {
 	 * 微信登录后绑定手机号码
 	 * @param  array  $query [description]
 	 * @param  [type] $data  [description]
-	 * @return [type]        [description]
+	 * @return [type]		[description]
 	 */
 	protected function bindMobile( $query=[], $data=[] ) {
 
@@ -546,7 +603,7 @@ class User extends Api {
 	 * 校验手机短信验证码
 	 * @param  array  $query [description]
 	 * @param  array  $data  [description]
-	 * @return [type]        [description]
+	 * @return [type]		[description]
 	 */
 	protected function verifySMSCode( $query=[], $data=[] ) {
 		$u = new UserModel();
@@ -560,7 +617,7 @@ class User extends Api {
 	/**
 	 * 读取手机短信验证码
 	 * @param  array $query [description]
-	 * @return [type]        [description]
+	 * @return [type]		[description]
 	 */
 	protected function getSMSCode( $query = [] ) {
 
@@ -610,8 +667,8 @@ class User extends Api {
 	 *
 	 * 读取字段 select 默认 name
 	 *
-	 *    示例:  ["*"] /["tag_id", "name" ....] / "*" / "tag_id,name"
-	 *    许可值: "*","tag_id","name","param"
+	 *	示例:  ["*"] /["tag_id", "name" ....] / "*" / "tag_id,name"
+	 *	许可值: "*","tag_id","name","param"
 	 * 
 	 * 
 	 * 查询条件
@@ -621,11 +678,11 @@ class User extends Api {
 	 * 	  
 	 * 排序方式 order 默认 tag_id  updated_at asc, tag_id desc
 	 * 
-	 *    1. 按标签更新顺序  updated_at
-	 *    2. 按标签创建顺序  tag_id  
-	 *    
+	 *	1. 按标签更新顺序  updated_at
+	 *	2. 按标签创建顺序  tag_id  
+	 *	
 	 *
-	 * 当前页码 page    默认 1 
+	 * 当前页码 page	默认 1 
 	 * 每页数量 perpage 默认 50 
 	 * 	
 	 * 
@@ -644,12 +701,12 @@ class User extends Api {
 	/**
 	 * 读取标签详情信息
 	 * @param  array  $query Query 查询
-	 *                   int ["name"]  标签详情
-	 *                   
-	 *          string|array ["select"] 读取字段  
-	 *          			 示例:  ["*"] /["tag_id", "name" ....] / "*" / "tag_id,name"
-	 *          		     许可值: "*","tag_id","name","param"
-	 *                    
+	 *				   int ["name"]  标签详情
+	 *				   
+	 *		  string|array ["select"] 读取字段  
+	 *		  			 示例:  ["*"] /["tag_id", "name" ....] / "*" / "tag_id,name"
+	 *		  			 许可值: "*","tag_id","name","param"
+	 *					
 	 * @return Array 文章数据
 	 * 
 	 */
