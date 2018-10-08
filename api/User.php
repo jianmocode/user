@@ -64,7 +64,7 @@ class User extends Api {
 		/**
 		 * 许可字段清单
 		 */
-		$allowed = ["bio", "nickname", "country", "city", "headimgurl", "bgimgurl", "birthday", "language"];
+		$allowed = ["bio", "sex", "nickname", "country", "city", "headimgurl", "bgimgurl", "birthday", "language"];
 
 		// 用户身份验证
 		$u = new UserModel();

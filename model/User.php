@@ -1004,10 +1004,19 @@ class User extends Model {
 			// 用户头像处理
 			if ( isset( $user['headimgurl']) ) {
 				if ( Utils::isURL( $user['headimgurl']) ) {
-					$users[$idx]['headimg_url'] = $user['headimgurl'];
+					$url = $user['headimgurl'];
+					$users[$idx]['headimg_url'] = $url;
 					$users[$idx]['headimg_path'] = '';
-				}  else {
+					$users[$idx]['headimgurl']['url'] = $url;
+					$users[$idx]['headimgurl']['path'] = '';
+
+				} else if ( is_array( $user['headimgurl']) ){
+					$users[$idx]['headimg_path'] = $user['headimgurl']['path'];
+					$users[$idx]['headimg_url'] = $user['headimgurl']['url'];
+
+				}  else if ( is_string($user['headimgurl']) ) {
 					$img =  $media->get($user['headimgurl']);
+					$users[$idx]['headimgurl'] = $img;
 					$users[$idx]['headimg_path'] = $img['path'];
 					$users[$idx]['headimg_url'] = $img['origin'];
 					// $users[$idx]['headimg_path']  = $img['url'];
@@ -1024,7 +1033,12 @@ class User extends Model {
 			if ( Utils::isURL( $user['headimgurl']) ) {
 				$users[$idx]['headimg_url'] = $user['headimgurl'];
 				$users[$idx]['headimg_path'] = '';
-			}  else {
+
+			} else if ( is_array( $user['headimgurl']) ){
+				$users[$idx]['headimg_path'] = $users[$idx]['path'];
+				$users[$idx]['headimg_url'] = $users[$idx]['url'];
+
+			} else {
 				$img =  $media->get($user['headimgurl']);
 				$users[$idx]['headimg_path'] = $img['path'];
 				$users[$idx]['headimg_url'] = $img['origin'];
