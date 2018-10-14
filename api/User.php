@@ -54,16 +54,14 @@ class User extends Api {
 
 
 	/**
-	 * Update Profile API
+	 * 更新资料 API
 	 * @param  [type] $query [description]
 	 * @param  [type] $data  [description]
 	 * @return [type]		[description]
 	 */
 	protected function updateProfile( $query, $data ) {
 
-		/**
-		 * 许可字段清单
-		 */
+		// 许可字段清单
 		$allowed = ["bio", "sex", "nickname", "country", "city", "headimgurl", "bgimgurl", "birthday", "language"];
 
 		// 用户身份验证
@@ -81,6 +79,7 @@ class User extends Api {
 			ARRAY_FILTER_USE_KEY
 		);
 
+		// 只能更新自己
 		$data['user_id'] = $uinfo['user_id'];
 
 		// 用户头像
@@ -100,6 +99,97 @@ class User extends Api {
 		return $u->getUserInfo();
 
 		// return ['code'=>0, 'message'=>'数据保存成功'];
+	}
+
+
+	/**
+	 * 实名认证申请 API
+	 * @param  [type] $query [description]
+	 * @param  [type] $data  [description]
+	 * @return [type]        [description]
+	 */
+	protected function nameVerifiy( $query, $data ) {
+		
+		// 许可字段清单
+		$allowed = ["name", "idno", "idtype", "iddoc"];
+
+		// 用户身份验证
+		$u = new UserModel();
+		$uinfo = $u->getUserInfo();
+		if ( empty($uinfo['user_id']) ) {
+			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
+		}
+
+		$data = array_filter(
+			$data,
+			function ($key) use ($allowed) {
+				return in_array($key, $allowed);
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+		
+		$data['user_id'] = $uinfo['user_id']; // 只能更新自己的数据
+		$data["name_verified"] = 'verifying'; // 标记为认证申请中
+
+		// 证件文档
+		if ( !empty($data['iddoc']) ) {
+			$data['iddoc'] = json_decode($data['iddoc'], true);
+		}
+
+		return $u->save( $data );
+	}
+
+
+	/**
+	 * 实名认证重置 API
+	 * @param  [type] $query [description]
+	 * @param  [type] $data  [description]
+	 * @return [type]        [description]
+	 */
+	protected function nameReset( $query, $data ) {
+		
+		// 用户身份验证
+		$u = new UserModel();
+		$uinfo = $u->getUserInfo();
+		if ( empty($uinfo['user_id']) ) {
+			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
+		}
+
+		$then = $query['then'];
+		$data['user_id'] = $uinfo['user_id']; // 只能更新自己的数据
+		$data["name_verified"] = 'unverified'; // 标记为未认证
+		$rs = $u->save( $data );
+
+		if ( !empty($then)) {
+			header("Location: {$then}");
+		}
+		return $rs;
+	}
+
+
+	/**
+	 * 读取用户自己相关信息(可公开的)
+	 * @param  [type] $query [description]
+	 * @param  [type] $data  [description]
+	 * @return [type]        [description]
+	 */
+	protected function getData( $query, $data ) {
+
+		// 许可字段清单
+		$user_id = $query['user_id'];
+		if ( empty($user_id) ) {
+			return [];
+		}
+
+		$allowed = [
+			"user_id","bio", "sex", "nickname", "country", "city", "headimgurl", "bgimgurl", "birthday", "language", 
+			"name", "idno", "idtype", "iddoc", "name_verified"
+		];
+		$query['select'] = is_string($query['select']) ?  explode(',',$query['select']) : $query['select'];
+		$select = empty($query['select']) ? $allowed : $query['select'];
+		$select = array_intersect($select, $allowed);
+		$u = new UserModel();
+		return $u->getByUid( $user_id, $select );
 	}
 
 
@@ -174,52 +264,6 @@ class User extends Api {
 
 		return $user;
 	}
-
-
-	protected function test( $query ) {
-
-		$this->authSecret( $query['_secret'] );
-
-
-		return $query;
-
-		// $u = new UserModel();
-		// // $user_id = $u->updateWechatUser("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g");
-		// // return $user_id;
-
-		// $resp = $u->loginByOpenId("wxf427d2cb6ac66d2c","o2ylUw_SyKDaSW3OE71JkEJ7N36g", "j0d2vq39eh86hdjjcvud43t3g4")
-		// 	 ->replyText( "登录成功", "gh_da2c392b7342")
-		// ;
-
-
-// 		$option =  new Option("xpmsns/user");
-// 		$appid = $option->get("user/wechat/login/appid");
-// 		$conf = Utils::getConf();
-
-// 		if ( $appid !== null ){
-// 			$cfg = $conf['_map'][$appid]; 
-// 		} else if ( is_array($conf['_type']['1'])) {
-			
-// 			$cfg = current($conf['_type']['1']);
-// 		}
-
-// 		$wechat = new Wechat( $cfg );
-
-
-// 		$xml = '<xml><ToUserName><![CDATA[gh_da2c392b7342]]></ToUserName>
-// <FromUserName><![CDATA[o2ylUw_SyKDaSW3OE71JkEJ7N36g]]></FromUserName>
-// <CreateTime>1507023717</CreateTime>
-// <MsgType><![CDATA[event]]></MsgType>
-// <Event><![CDATA[SCAN]]></Event>
-// <EventKey><![CDATA[signin]]></EventKey>
-// <Ticket><![CDATA[gQH87jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAySmVZNmN3ckZkazMxU3FyajFwY2UAAgReW9NZAwQ8AAAA]]></Ticket>
-// </xml>';
-
-// 		$resp = $wechat->messageToArray( $xml );
-
-		return $resp;
-	}
-
 
 
 

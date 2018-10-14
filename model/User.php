@@ -95,7 +95,8 @@ class User extends Model {
 			 // 用户资料
 			 ->putColumn( 'name', $this->type('string',  ['length'=>128, 'index'=>true]) )  // 真实姓名
 			 ->putColumn( 'idno', $this->type('string',  ['length'=>256]) )  // 身份证件号码
-			 ->putColumn( 'iddoc', $this->type('string',  ['length'=>256]) )  // 身份证件类型 1 身份证 2 军人身份证 3 警察身份证  4 港澳通行证  5 台胞证  6 护照  7 其他
+			 ->putColumn( 'idtype', $this->type('string',  ['length'=>40, 'index'=>true]) )  // 身份证件类型 ID:身份证 MID:军人身份证  APID: 警察身份证  HMLP:港澳通行证 MTPS:台胞证  PASSPORT:护照  OTHER:其他
+			 ->putColumn( 'iddoc', $this->type('text',  ["json"=>true]) )  // 身份证件文件地址
 			 ->putColumn( 'nickname', $this->type('string',  ['length'=>128, 'index'=>true]) )  // 用户名称
 			 ->putColumn( 'sex', $this->type('integer',  ['length'=>1,  "index"=>true]) )  // 用户性别
 			 ->putColumn( 'city', $this->type('string',  ['length'=>100,  "index"=>true]) )  // 所在城市
@@ -122,8 +123,8 @@ class User extends Model {
 			 ->putColumn( 'tag', $this->type('text',  ['json'=>true]) )  // 用户标签
 
 			// 身份校验
-			 ->putColumn( 'user_verified', $this->type('boolean',  ['default'=>"0"]) )    // 用户是否通过身份认证
-			 ->putColumn( 'name_verified', $this->type('boolean',  ['default'=>"0"]) )    // 用户是否通过实名认证
+			 ->putColumn( 'user_verified', $this->type('string',  ["length"=>40, 'default'=>"unverified"]) )    // 身份认证 unverified 未通过认证  verified 已认证  verifying 认证中
+			 ->putColumn( 'name_verified', $this->type('string',  ["length"=>40, 'default'=>"unverified"]) )    // 实名认证 unverified 未通过认证  verified 已认证  verifying 认证中
 			 ->putColumn( 'verify', $this->type('string',  ['length'=>128]) )    	      // 用户身份信息
 			 ->putColumn( 'verify_data', $this->type('text',  ['json'=>true]) )  		  // 用户认证证明材料
 			 ->putColumn( 'mobile_verified', $this->type('boolean',  ['default'=>"0"]) )  // 手机号是否通过校验
@@ -796,25 +797,30 @@ class User extends Model {
 	 * @param  [type] $user_id [description]
 	 * @return [type]          [description]
 	 */
-	function getByUid( $user_id ) {
+	function getByUid( $user_id, $select = "*" ) {
+
+		if ( is_array($select) ) {
+			array_push($select, 'user_id');
+			array_push($select, 'group_id');
+		}
 
 		$user = $this->query()
 					 ->where("user_id", "=", $user_id)
 					 ->limit(1)
-					 ->select('*')
+					 ->select($select)
 					 ->get()
 					 ->toArray()
 				;
-
-		$this->formatUsers($user);
 
 		if ( empty($user) ) {
 			return [
 				"user_id" => $this->genUserId()
 			];
 		}
-
+	
+		$this->formatUsers($user);
 		return current($user);
+
 	}
 
 
