@@ -97,7 +97,9 @@ class User extends Api {
 		$u->save( $data );
 		$u->loginSetSession($uinfo['user_id']);
 
-		return ['code'=>0, 'message'=>'数据保存成功'];
+		return $u->getUserInfo();
+
+		// return ['code'=>0, 'message'=>'数据保存成功'];
 	}
 
 
