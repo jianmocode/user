@@ -1,7 +1,7 @@
 {
     "org": "xpmsns",
     "name": "user",
-    "version": "1.3.0",
+    "version": "1.3.2",
     "cname": "简墨会员",
     "image": {
         "color":"/static/icons/app-color.svg",
@@ -63,7 +63,9 @@
         "permission": "boss,admin,manager,user",
         "order":9999
     }],
-    "dependencies": [],
+    "dependencies": {
+        "xpmsns/pages": "1.3.3~"
+    },
     "injections": [],
     "api": [],
     "register_api": [],
