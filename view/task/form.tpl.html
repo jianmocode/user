@@ -58,6 +58,60 @@ use \Xpmse\T;
 		</div>
 	</div><!-- END 单行文本: 名称 (name) -->
 
+	<!-- 单行文本: 步骤 (process) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="process">步骤</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg"  
+				type="text" 
+				id="process" name="process" 
+				placeholder="完成任务一共有多少步骤"  
+				value="<?=T::v('<%=process | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">填写整数</div>
+		</div>
+	</div><!-- END 单行文本: 步骤 (process) -->
+
+
+	<!-- 单选框: 类型 (type) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="type">类型</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["type"])) { $rs["type"] = "repeatable"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="type" data-uncheck-value="repeatable" value="repeatable" <?=("repeatable" == $rs["type"]) ? "checked" : ""?> > <span></span> 可重复</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="type" data-uncheck-value="once" value="once" <?=("once" == $rs["type"]) ? "checked" : ""?> > <span></span> 一次性</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 类型 (type) 开始  -->
+
+
+
+
+	<!-- 单图上传: 封面 (cover) 开始  -->
+	<div class="xpmse-image  " name="cover">
+		<div class="form-group " >
+			<label class="col-xs-2 control-label" for="cover">封面</label>
+			<div class="col-xs-8">
+		   		<div name="cover" class="file-uploader rounded rounded-4 push-10-t"
+					data-api='/_a/mina/uploader/upload?type=image'
+					data-title='请上传任务封面'
+					data-previews=""
+					data-width="200"
+					data-height="200"
+					data-icon="fa fa-image" 
+					data-placeholder="请上传任务封面" 
+					data-allow-types="image/png,image/jpg,image/jpeg,image/gif"
+					data-maxsize="20"
+					data-progress="yes"
+					data-cropable="1"
+					data-draggable="yes"
+					data-src="<?=T::v('<%=cover.url%>', $rs )?>"
+					data-path="<?=T::v('<%=cover.path%>', $rs )?>"
+					></div>
+				<div class="help-block"></div>
+			</div>
+		</div> 
+	</div><!-- END 单图上传: 封面 (cover) -->
+
 <!-- : summary 空值-->
 
 	<!-- 单行文本: 积分数量 (quantity) 开始  -->
@@ -86,6 +140,84 @@ use \Xpmse\T;
 			<div class="help-block">由工程师填写</div>
 		</div>
 	</div><!-- END 文本域: 奖励公式 (formula) -->
+
+	<!-- 单行文本: 时限额 (hourly_limit) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="hourly_limit">时限额</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg"  
+				type="text" 
+				id="hourly_limit" name="hourly_limit" 
+				placeholder="每小时可接次数"  
+				value="<?=T::v('<%=hourly_limit | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">对可重复类型任务有效</div>
+		</div>
+	</div><!-- END 单行文本: 时限额 (hourly_limit) -->
+
+	<!-- 单行文本: 日限额 (daily_limit) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="daily_limit">日限额</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg"  
+				type="text" 
+				id="daily_limit" name="daily_limit" 
+				placeholder="每天可接次数"  
+				value="<?=T::v('<%=daily_limit | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">对可重复类型任务有效</div>
+		</div>
+	</div><!-- END 单行文本: 日限额 (daily_limit) -->
+
+	<!-- 单行文本: 周限额 (weekly_limit) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="weekly_limit">周限额</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg"  
+				type="text" 
+				id="weekly_limit" name="weekly_limit" 
+				placeholder="每周可接次数"  
+				value="<?=T::v('<%=weekly_limit | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">对可重复类型任务有效</div>
+		</div>
+	</div><!-- END 单行文本: 周限额 (weekly_limit) -->
+
+	<!-- 单行文本: 月限额 (monthly_limit) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="monthly_limit">月限额</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg"  
+				type="text" 
+				id="monthly_limit" name="monthly_limit" 
+				placeholder="每月可接次数"  
+				value="<?=T::v('<%=monthly_limit | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">对可重复类型任务有效</div>
+		</div>
+	</div><!-- END 单行文本: 月限额 (monthly_limit) -->
+
+	<!-- 单行文本: 年限额 (yearly_limit) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="yearly_limit">年限额</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg"  
+				type="text" 
+				id="yearly_limit" name="yearly_limit" 
+				placeholder="每年可接次数"  
+				value="<?=T::v('<%=yearly_limit | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">对可重复类型任务有效</div>
+		</div>
+	</div><!-- END 单行文本: 年限额 (yearly_limit) -->
+
+	<!-- 单行文本: 完成时限 (time_limit) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="time_limit">完成时限</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg"  
+				type="text" 
+				id="time_limit" name="time_limit" 
+				placeholder="必须在此时间内完成"  
+				value="<?=T::v('<%=time_limit | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">单位:秒</div>
+		</div>
+	</div><!-- END 单行文本: 完成时限 (time_limit) -->
 
 
 
@@ -130,16 +262,16 @@ use \Xpmse\T;
 	</div><!-- END 文本域: 事件 (events) -->
 
 
-	<!-- 单选框: 事件 (status) 开始  -->
+	<!-- 单选框: 状态 (status) 开始  -->
 	<div class="form-group   ">
-		<label class="col-xs-2 control-label" for="status">事件</label>
+		<label class="col-xs-2 control-label" for="status">状态</label>
 		<div class="col-xs-8">
 			<?php if (is_null($rs["status"])) { $rs["status"] = "online"; } ?>
 <label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="status" data-uncheck-value="online" value="online" <?=("online" == $rs["status"]) ? "checked" : ""?> > <span></span> 上线</label>
 <label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="status" data-uncheck-value="offline" value="offline" <?=("offline" == $rs["status"]) ? "checked" : ""?> > <span></span> 下线</label>
 			<div class="help-block"></div>
 		</div>
-	</div><!-- END 单选框: 事件 (status) 开始  -->
+	</div><!-- END 单选框: 状态 (status) 开始  -->
 
 				<!--  提交按钮 -->
 				<div class="block block-quickpanel sidebar-mini">

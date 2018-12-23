@@ -18,18 +18,6 @@
         "slug":"xpmsns/user/group",
         "group":"会员"
     },{
-        "slug":"xpmsns/pages/audit/index",
-        "name":"审核",
-        "index": true,
-        "icon":{
-            "default":"/static/icons/audit.svg"
-        },
-        "icontype": "img",
-        "linktype":"i",
-        "link":"{article,index}",
-        "permission": "boss,admin,manager,user",
-        "order":9999
-    },{
         "slug":"xpmsns/user/user/index",
         "name":"用户",
         "icon":{
@@ -74,27 +62,31 @@
         "permission": "boss,admin,manager,user",
         "order":9999
     },{
-        "slug":"xpmsns/user/task/index",
+        "slug":"xpmsns/user/task",
         "name":"任务",
         "icon":{
             "default":"/static/icons/task.svg"
         },
         "icontype": "img",
         "linktype":"i",
-        "link":"{task,index}",
         "permission": "boss,admin,manager,user",
-        "order":9999
-    },{
-        "slug":"xpmsns/user/feed/index",
-        "name":"动态",
-        "icon":{
-            "default":"/static/icons/feed.svg"
-        },
-        "icontype": "img",
-        "linktype":"i",
-        "link":"{feed,index}",
-        "permission": "boss,admin,manager,user",
-        "order":9999
+        "order":9999,
+        "submenu":[
+            {
+				"slug":"xpmsns/user/usertask/index",
+				"name":"用户任务",
+				"link":"{usertask,index}",
+				"permission": "boss,admin,manager,user",
+				"order":9999
+			},
+			{
+				"slug":"xpmsns/user/task/index",
+				"name":"任务设定",
+				"link":"{task,index}",
+				"permission": "boss,admin,manager,user",
+				"order":9999
+			}
+		]
     }],
     "dependencies": {
         "xpmsns/pages": "1.3.3~"

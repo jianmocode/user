@@ -4,22 +4,33 @@
  * 任务数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-23 21:43:25
+ * 最后修改: 2018-12-23 22:27:55
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
-               
+                         
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
 use \Xpmse\Conf;
+use \Xpmse\Media;
 use \Xpmse\Loader\App as App;
 
 
 class Task extends Model {
 
 
+	/**
+	 * 公有媒体文件对象
+	 * @var \Xpmse\Meida
+	 */
+	protected $media = null;
 
+	/**
+	 * 私有媒体文件对象
+	 * @var \Xpmse\Meida
+	 */
+	protected $mediaPrivate = null;
 
 	/**
 	 * 任务数据模型
@@ -30,6 +41,7 @@ class Task extends Model {
 
 		parent::__construct(array_merge(['prefix'=>'xpmsns_user_'],$param));
 		$this->table('task'); // 数据表名称 xpmsns_user_task
+		$this->media = new Media(['host'=>Utils::getHome()]);  // 公有媒体文件实例
 
 	}
 
@@ -49,13 +61,31 @@ class Task extends Model {
 		// 别名
 		$this->putColumn( 'slug', $this->type("string", ["length"=>128, "unique"=>true, "null"=>true]));
 		// 名称
-		$this->putColumn( 'name', $this->type("string", ["length"=>200, "index"=>true, "null"=>true]));
+		$this->putColumn( 'name', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
+		// 类型
+		$this->putColumn( 'type', $this->type("string", ["length"=>32, "index"=>true, "null"=>true]));
 		// 简介
 		$this->putColumn( 'summary', $this->type("string", ["length"=>600, "null"=>true]));
+		// 封面
+		$this->putColumn( 'cover', $this->type("text", ["json"=>true, "null"=>true]));
 		// 积分数量
 		$this->putColumn( 'quantity', $this->type("integer", ["length"=>1, "null"=>true]));
 		// 奖励公式
 		$this->putColumn( 'formula', $this->type("text", ["json"=>true, "null"=>true]));
+		// 时限额
+		$this->putColumn( 'hourly_limit', $this->type("integer", ["length"=>1, "null"=>true]));
+		// 日限额
+		$this->putColumn( 'daily_limit', $this->type("integer", ["length"=>1, "null"=>true]));
+		// 周限额
+		$this->putColumn( 'weekly_limit', $this->type("integer", ["length"=>1, "null"=>true]));
+		// 月限额
+		$this->putColumn( 'monthly_limit', $this->type("integer", ["length"=>1, "null"=>true]));
+		// 年限额
+		$this->putColumn( 'yearly_limit', $this->type("integer", ["length"=>1, "null"=>true]));
+		// 完成时限
+		$this->putColumn( 'time_limit', $this->type("integer", ["length"=>1, "null"=>true]));
+		// 步骤
+		$this->putColumn( 'process', $this->type("integer", ["length"=>1, "null"=>true]));
 		// 接受条件
 		$this->putColumn( 'accept', $this->type("text", ["json"=>true, "null"=>true]));
 		// 达成条件
@@ -75,6 +105,27 @@ class Task extends Model {
 	 * @return
 	 */
 	public function format( & $rs ) {
+
+		// 格式化: 封面
+		// 返回值: [{"url":"访问地址...", "path":"文件路径...", "origin":"原始文件访问地址..." }]
+		if ( array_key_exists('cover', $rs ) ) {
+			$is_string = is_string($rs["cover"]);
+			$rs["cover"] = $is_string ? [$rs["cover"]] : $rs["cover"];
+			$rs["cover"] = !is_array($rs["cover"]) ? [] : $rs["cover"];
+			foreach ($rs["cover"] as & $file ) {
+				if ( is_array($file) && !empty($file['path']) ) {
+					$fs = $this->media->get( $file['path'] );
+					$file = array_merge( $file, $fs );
+				} else if ( is_string($file) ) {
+					$file =empty($file) ? [] : $this->media->get( $file );
+				} else {
+					$file = [];
+				}
+			}
+			if ($is_string) {
+				$rs["cover"] = current($rs["cover"]);
+			}
+		}
 
 
 		// 格式化: 状态
@@ -96,6 +147,25 @@ class Task extends Model {
 			$rs["_status"] = $rs["_status_types"][$rs["status"]];
 		}
 
+		// 格式化: 类型
+		// 返回值: "_type_types" 所有状态表述, "_type_name" 状态名称,  "_type" 当前状态表述, "type" 当前状态数值
+		if ( array_key_exists('type', $rs ) && !empty($rs['type']) ) {
+			$rs["_type_types"] = [
+		  		"repeatable" => [
+		  			"value" => "repeatable",
+		  			"name" => "可重复",
+		  			"style" => "primary"
+		  		],
+		  		"once" => [
+		  			"value" => "once",
+		  			"name" => "一次性",
+		  			"style" => "primary"
+		  		],
+			];
+			$rs["_type_name"] = "type";
+			$rs["_type"] = $rs["_type_types"][$rs["type"]];
+		}
+
  
 		// <在这里添加更多数据格式化逻辑>
 		
@@ -110,9 +180,18 @@ class Task extends Model {
 	 *          	  $rs["task_id"],  // 任务ID 
 	 *          	  $rs["slug"],  // 别名 
 	 *          	  $rs["name"],  // 名称 
+	 *          	  $rs["type"],  // 类型 
 	 *          	  $rs["summary"],  // 简介 
+	 *          	  $rs["cover"],  // 封面 
 	 *          	  $rs["quantity"],  // 积分数量 
 	 *          	  $rs["formula"],  // 奖励公式 
+	 *          	  $rs["hourly_limit"],  // 时限额 
+	 *          	  $rs["daily_limit"],  // 日限额 
+	 *          	  $rs["weekly_limit"],  // 周限额 
+	 *          	  $rs["monthly_limit"],  // 月限额 
+	 *          	  $rs["yearly_limit"],  // 年限额 
+	 *          	  $rs["time_limit"],  // 完成时限 
+	 *          	  $rs["process"],  // 步骤 
 	 *          	  $rs["accept"],  // 接受条件 
 	 *          	  $rs["complete"],  // 达成条件 
 	 *          	  $rs["events"],  // 事件 
@@ -159,7 +238,7 @@ class Task extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 任务记录MAP {"task_id1":{"key":"value",...}...}
 	 */
-	public function getInByTaskId($task_ids, $select=["task.task_id","task.slug","task.name","task.summary","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
+	public function getInByTaskId($task_ids, $select=["task.task_id","task.cover","task.slug","task.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -219,9 +298,18 @@ class Task extends Model {
 	 *          	  $rs["task_id"],  // 任务ID 
 	 *          	  $rs["slug"],  // 别名 
 	 *          	  $rs["name"],  // 名称 
+	 *          	  $rs["type"],  // 类型 
 	 *          	  $rs["summary"],  // 简介 
+	 *          	  $rs["cover"],  // 封面 
 	 *          	  $rs["quantity"],  // 积分数量 
 	 *          	  $rs["formula"],  // 奖励公式 
+	 *          	  $rs["hourly_limit"],  // 时限额 
+	 *          	  $rs["daily_limit"],  // 日限额 
+	 *          	  $rs["weekly_limit"],  // 周限额 
+	 *          	  $rs["monthly_limit"],  // 月限额 
+	 *          	  $rs["yearly_limit"],  // 年限额 
+	 *          	  $rs["time_limit"],  // 完成时限 
+	 *          	  $rs["process"],  // 步骤 
 	 *          	  $rs["accept"],  // 接受条件 
 	 *          	  $rs["complete"],  // 达成条件 
 	 *          	  $rs["events"],  // 事件 
@@ -268,7 +356,7 @@ class Task extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 任务记录MAP {"slug1":{"key":"value",...}...}
 	 */
-	public function getInBySlug($slugs, $select=["task.task_id","task.slug","task.name","task.summary","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
+	public function getInBySlug($slugs, $select=["task.task_id","task.cover","task.slug","task.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -321,6 +409,56 @@ class Task extends Model {
 		return $this->getByTaskId( $rs['task_id'], $select );
 	}
 
+	/**
+	 * 根据任务ID上传封面。
+	 * @param string $task_id 任务ID
+	 * @param string $file_path 文件路径
+	 * @param mix $index 如果是数组，替换当前 index
+	 * @return array 已上传文件信息 {"url":"访问地址...", "path":"文件路径...", "origin":"原始文件访问地址..." }
+	 */
+	public function uploadCoverByTaskId($task_id, $file_path, $index=null, $upload_only=false ) {
+
+		$rs = $this->getBy('task_id', $task_id, ["cover"]);
+		$paths = empty($rs["cover"]) ? [] : $rs["cover"];
+		$fs = $this->media->uploadFile( $file_path );
+		if ( $index === null ) {
+			array_push($paths, $fs['path']);
+		} else {
+			$paths[$index] = $fs['path'];
+		}
+
+		if ( $upload_only !== true ) {
+			$this->updateBy('task_id', ["task_id"=>$task_id, "cover"=>$paths] );
+		}
+
+		return $fs;
+	}
+
+	/**
+	 * 根据别名上传封面。
+	 * @param string $slug 别名
+	 * @param string $file_path 文件路径
+	 * @param mix $index 如果是数组，替换当前 index
+	 * @return array 已上传文件信息 {"url":"访问地址...", "path":"文件路径...", "origin":"原始文件访问地址..." }
+	 */
+	public function uploadCoverBySlug($slug, $file_path, $index=null, $upload_only=false ) {
+
+		$rs = $this->getBy('slug', $slug, ["cover"]);
+		$paths = empty($rs["cover"]) ? [] : $rs["cover"];
+		$fs = $this->media->uploadFile( $file_path );
+		if ( $index === null ) {
+			array_push($paths, $fs['path']);
+		} else {
+			$paths[$index] = $fs['path'];
+		}
+
+		if ( $upload_only !== true ) {
+			$this->updateBy('slug', ["slug"=>$slug, "cover"=>$paths] );
+		}
+
+		return $fs;
+	}
+
 
 	/**
 	 * 添加任务记录
@@ -342,7 +480,7 @@ class Task extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 任务记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["task.task_id","task.slug","task.name","task.summary","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["task.task_id","task.cover","task.slug","task.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -378,7 +516,7 @@ class Task extends Model {
 	/**
 	 * 按条件检索任务记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["task.task_id","task.slug","task.name","task.summary","task.quantity","task.status"]
+	 *         	      $query['select'] 选取字段，默认选择 ["task.task_id","task.cover","task.slug","task.name","task.type","task.process","task.quantity","task.status"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
@@ -386,6 +524,7 @@ class Task extends Model {
 	 *			      $query["slug"] 按别名查询 ( = )
 	 *			      $query["name"] 按名称查询 ( = )
 	 *			      $query["status"] 按状态查询 ( = )
+	 *			      $query["type"] 按类型查询 ( = )
 	 *			      $query["orderby_created_at_desc"]  按name=created_at DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按name=updated_at DESC 排序
 	 *           
@@ -393,9 +532,18 @@ class Task extends Model {
 	 *               	["task_id"],  // 任务ID 
 	 *               	["slug"],  // 别名 
 	 *               	["name"],  // 名称 
+	 *               	["type"],  // 类型 
 	 *               	["summary"],  // 简介 
+	 *               	["cover"],  // 封面 
 	 *               	["quantity"],  // 积分数量 
 	 *               	["formula"],  // 奖励公式 
+	 *               	["hourly_limit"],  // 时限额 
+	 *               	["daily_limit"],  // 日限额 
+	 *               	["weekly_limit"],  // 周限额 
+	 *               	["monthly_limit"],  // 月限额 
+	 *               	["yearly_limit"],  // 年限额 
+	 *               	["time_limit"],  // 完成时限 
+	 *               	["process"],  // 步骤 
 	 *               	["accept"],  // 接受条件 
 	 *               	["complete"],  // 达成条件 
 	 *               	["events"],  // 事件 
@@ -405,7 +553,7 @@ class Task extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["task.task_id","task.slug","task.name","task.summary","task.quantity","task.status"] : $query['select'];
+		$select = empty($query['select']) ? ["task.task_id","task.cover","task.slug","task.name","task.type","task.process","task.quantity","task.status"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
@@ -445,6 +593,11 @@ class Task extends Model {
 		// 按状态查询 (=)  
 		if ( array_key_exists("status", $query) &&!empty($query['status']) ) {
 			$qb->where("task.status", '=', "{$query['status']}" );
+		}
+		  
+		// 按类型查询 (=)  
+		if ( array_key_exists("type", $query) &&!empty($query['type']) ) {
+			$qb->where("task.type", '=', "{$query['type']}" );
 		}
 		  
 
@@ -518,9 +671,18 @@ class Task extends Model {
 			"task_id",  // 任务ID
 			"slug",  // 别名
 			"name",  // 名称
+			"type",  // 类型
 			"summary",  // 简介
+			"cover",  // 封面
 			"quantity",  // 积分数量
 			"formula",  // 奖励公式
+			"hourly_limit",  // 时限额
+			"daily_limit",  // 日限额
+			"weekly_limit",  // 周限额
+			"monthly_limit",  // 月限额
+			"yearly_limit",  // 年限额
+			"time_limit",  // 完成时限
+			"process",  // 步骤
 			"accept",  // 接受条件
 			"complete",  // 达成条件
 			"events",  // 事件

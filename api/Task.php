@@ -4,11 +4,11 @@
  * 任务数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-23 21:43:25
+ * 最后修改: 2018-12-23 22:27:54
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
-               
+                         
 
 use \Xpmse\Loader\App;
 use \Xpmse\Excp;
@@ -32,12 +32,12 @@ class Task extends Api {
 	/**
 	 * 查询一条任务记录
 	 * @param  array $query GET 参数
-	 *               $query['select']  读取字段, 默认 ["task.task_id","task.slug","task.name","task.quantity","task.accept","task.complete","task.events","task.status","task.created_at","task.updated_at"]
+	 *               $query['select']  读取字段, 默认 ["task.task_id","task.slug","task.name","task.type","task.summary","task.quantity","task.hourly_limit","task.daily_limit","task.weekly_limit","task.monthly_limit","task.yearly_limit","task.time_limit","task.process","task.accept","task.complete","task.events","task.status","task.created_at","task.updated_at"]
 	 * 				 $query['task_id']  按查询 (多条用 "," 分割)
 	 * 				 $query['slug']  按查询 (多条用 "," 分割)
      *
 	 * @param  array $data  POST 参数
-	 *               $data['select']  返回字段, 默认 ["task.task_id","task.slug","task.name","task.quantity","task.accept","task.complete","task.events","task.status","task.created_at","task.updated_at"]
+	 *               $data['select']  返回字段, 默认 ["task.task_id","task.slug","task.name","task.type","task.summary","task.quantity","task.hourly_limit","task.daily_limit","task.weekly_limit","task.monthly_limit","task.yearly_limit","task.time_limit","task.process","task.accept","task.complete","task.events","task.status","task.created_at","task.updated_at"]
 	 * 				 $data['task_id']  按查询 (多条用 "," 分割)
 	 * 				 $data['slug']  按查询 (多条用 "," 分割)
 	 *
@@ -45,9 +45,18 @@ class Task extends Api {
 	 *               	["task_id"],  // 任务ID 
 	 *               	["slug"],  // 别名 
 	 *               	["name"],  // 名称 
+	 *               	["type"],  // 类型 
 	 *               	["summary"],  // 简介 
+	 *               	["cover"],  // 封面 
 	 *               	["quantity"],  // 积分数量 
 	 *               	["formula"],  // 奖励公式 
+	 *               	["hourly_limit"],  // 时限额 
+	 *               	["daily_limit"],  // 日限额 
+	 *               	["weekly_limit"],  // 周限额 
+	 *               	["monthly_limit"],  // 月限额 
+	 *               	["yearly_limit"],  // 年限额 
+	 *               	["time_limit"],  // 完成时限 
+	 *               	["process"],  // 步骤 
 	 *               	["accept"],  // 接受条件 
 	 *               	["complete"],  // 达成条件 
 	 *               	["events"],  // 事件 
@@ -62,7 +71,7 @@ class Task extends Api {
 		$data = array_merge( $query, $data );
 
 		// 读取字段
-		$select = empty($data['select']) ? ["task.task_id","task.slug","task.name","task.quantity","task.accept","task.complete","task.events","task.status","task.created_at","task.updated_at"] : $data['select'];
+		$select = empty($data['select']) ? ["task.task_id","task.slug","task.name","task.type","task.summary","task.quantity","task.hourly_limit","task.daily_limit","task.weekly_limit","task.monthly_limit","task.yearly_limit","task.time_limit","task.process","task.accept","task.complete","task.events","task.status","task.created_at","task.updated_at"] : $data['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
@@ -105,7 +114,7 @@ class Task extends Api {
 	/**
 	 * 根据条件检索任务记录
 	 * @param  array $query GET 参数
-	 *         	      $query['select'] 选取字段，默认选择 ["task.task_id","task.slug","task.name","task.quantity","task.accept","task.complete","task.status","task.created_at","task.updated_at"]
+	 *         	      $query['select'] 选取字段，默认选择 ["task.task_id","task.slug","task.name","task.type","task.summary","task.quantity","task.hourly_limit","task.daily_limit","task.weekly_limit","task.monthly_limit","task.yearly_limit","task.time_limit","task.process","task.accept","task.complete","task.status","task.created_at","task.updated_at"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
@@ -113,11 +122,12 @@ class Task extends Api {
 	 *			      $query["slug"] 按别名查询 ( AND = )
 	 *			      $query["name"] 按名称查询 ( AND = )
 	 *			      $query["status"] 按状态查询 ( AND = )
+	 *			      $query["type"] 按类型查询 ( AND = )
 	 *			      $query["orderby_created_at_desc"]  按 DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按 DESC 排序
      *
 	 * @param  array $data  POST 参数
-	 *         	      $data['select'] 选取字段，默认选择 ["name=task_id","name=slug","name=name","name=quantity","name=accept","name=complete","name=status","name=created_at","name=updated_at"]
+	 *         	      $data['select'] 选取字段，默认选择 ["name=task_id","name=slug","name=name","name=type","name=summary","name=quantity","name=hourly_limit","name=daily_limit","name=weekly_limit","name=monthly_limit","name=yearly_limit","name=time_limit","name=process","name=accept","name=complete","name=status","name=created_at","name=updated_at"]
 	 *         	      $data['page'] 页码，默认为 1
 	 *         	      $data['perpage'] 每页显示记录数，默认为 20
 	 *			      $data["keyword"] 按关键词查询
@@ -125,6 +135,7 @@ class Task extends Api {
 	 *			      $data["slug"] 按别名查询 ( AND = )
 	 *			      $data["name"] 按名称查询 ( AND = )
 	 *			      $data["status"] 按状态查询 ( AND = )
+	 *			      $data["type"] 按类型查询 ( AND = )
 	 *			      $data["orderby_created_at_desc"]  按 DESC 排序
 	 *			      $data["orderby_updated_at_desc"]  按 DESC 排序
 	 *
@@ -133,9 +144,18 @@ class Task extends Api {
 	 *               	["task_id"],  // 任务ID 
 	 *               	["slug"],  // 别名 
 	 *               	["name"],  // 名称 
+	 *               	["type"],  // 类型 
 	 *               	["summary"],  // 简介 
+	 *               	["cover"],  // 封面 
 	 *               	["quantity"],  // 积分数量 
 	 *               	["formula"],  // 奖励公式 
+	 *               	["hourly_limit"],  // 时限额 
+	 *               	["daily_limit"],  // 日限额 
+	 *               	["weekly_limit"],  // 周限额 
+	 *               	["monthly_limit"],  // 月限额 
+	 *               	["yearly_limit"],  // 年限额 
+	 *               	["time_limit"],  // 完成时限 
+	 *               	["process"],  // 步骤 
 	 *               	["accept"],  // 接受条件 
 	 *               	["complete"],  // 达成条件 
 	 *               	["events"],  // 事件 
@@ -150,7 +170,7 @@ class Task extends Api {
 		$data = array_merge( $query, $data );
 
 		// 读取字段
-		$select = empty($data['select']) ? ["task.task_id","task.slug","task.name","task.quantity","task.accept","task.complete","task.status","task.created_at","task.updated_at"] : $data['select'];
+		$select = empty($data['select']) ? ["task.task_id","task.slug","task.name","task.type","task.summary","task.quantity","task.hourly_limit","task.daily_limit","task.weekly_limit","task.monthly_limit","task.yearly_limit","task.time_limit","task.process","task.accept","task.complete","task.status","task.created_at","task.updated_at"] : $data['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}

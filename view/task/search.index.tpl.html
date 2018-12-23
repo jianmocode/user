@@ -100,18 +100,18 @@ use \Xpmse\T;
 								</ul>
 							</div> <!-- END 结果集排序 -->
 						
-							<!-- 任务状态过滤 -->
+							<!-- 状态过滤 -->
 							<div class="btn-group pull-right push-20-l" role="group">  
 								<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" >
 									<i class="glyphicon glyphicon-list-alt"></i> 
 									<?=($query['status'] == 'online') ? '上线' : '' ?>
 									<?=($query['status'] == 'offline') ? '下线' : '' ?>
-									<?=(empty($query['status'])) ? '任务状态' : '' ?>
+									<?=(empty($query['status'])) ? '状态' : '' ?>
 									<span class="caret"></span> 
 								</button>
 
 								<ul class="dropdown-menu dropdown-menu-right"  style="min-width: 87px;">
-									<li class="dropdown-header">任务状态</li>
+									<li class="dropdown-header">状态</li>
 									<li>
 										<a href="javascript:search('status','')">
 										   全部
@@ -128,7 +128,37 @@ use \Xpmse\T;
 										</a>
 									</li>
 								</ul>
-							</div> <!-- END 任务状态过滤 -->
+							</div> <!-- END 状态过滤 -->
+
+							<!-- 类型过滤 -->
+							<div class="btn-group pull-right push-20-l" role="group">  
+								<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" >
+									<i class="glyphicon glyphicon-list-alt"></i> 
+									<?=($query['type'] == 'repeatable') ? '可重复' : '' ?>
+									<?=($query['type'] == 'once') ? '一次性' : '' ?>
+									<?=(empty($query['type'])) ? '类型' : '' ?>
+									<span class="caret"></span> 
+								</button>
+
+								<ul class="dropdown-menu dropdown-menu-right"  style="min-width: 87px;">
+									<li class="dropdown-header">类型</li>
+									<li>
+										<a href="javascript:search('type','')">
+										   全部
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('type','repeatable')">
+										   可重复
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('type','once')">
+										   一次性
+										</a>
+									</li>
+								</ul>
+							</div> <!-- END 类型过滤 -->
 
 
 						</div><!-- END col-xs-7 -->
@@ -141,9 +171,11 @@ use \Xpmse\T;
 						<thead>
 							<tr>
 								<th class="font-w300"> 任务ID </th>
+								<th class="font-w300"> 封面 </th>
 								<th class="font-w300"> 别名 </th>
 								<th class="font-w300"> 名称 </th>
-								<th class="font-w300"> 简介 </th>
+								<th class="font-w300"> 类型 </th>
+								<th class="font-w300"> 步骤 </th>
 								<th class="font-w300"> 积分数量 </th>
 								<th class="font-w300"> 状态 </th>
 							</tr>
@@ -157,13 +189,23 @@ use \Xpmse\T;
 									<?php $v=null; $v=T::s("{{task_id}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
+									<div style="line-height: 84px;display: inline-block; max-width:260px;word-wrap:break-word;" > 
+										<?php if ( !empty($rs["cover"]['url']) ) : ?>
+										<img src="<?=$rs["cover"]['url']?>" height="64" style="max-width:260px;"/> 
+										<?php endif;?>
+									</div>
+								</td>
+								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{slug}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{name}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
-									<?php $v=null; $v=T::s("{{summary}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
+									<span class="text-<?=$rs['_type']['style']?>"><?=$rs['_type']['name'] ? $rs['_type']['name']  : $rs['type'] ?></span>
+								</td>
+								<td class="font-w300">
+									<?php $v=null; $v=T::s("{{process}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{quantity}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
@@ -177,7 +219,7 @@ use \Xpmse\T;
 						</tbody>
 
 						<tfoot>
-							<tr><td colspan="6"> <nav class="pull-right">
+							<tr><td colspan="8"> <nav class="pull-right">
 
 								<ul class="pagination">
 									<?php if ($response['prev'] !== false): ?>

@@ -4,13 +4,14 @@
  * 任务控制器
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-23 21:43:25
+ * 最后修改: 2018-12-23 22:27:55
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/controller/Name.php
  */
 
 use \Xpmse\Loader\App;
 use \Xpmse\Excp;
 use \Xpmse\Utils;
+use \Xpmse\Media;
 
 class TaskController extends \Xpmse\Loader\Controller {
 
@@ -173,6 +174,20 @@ class TaskController extends \Xpmse\Loader\Controller {
 		unset($rs['slug']);
 
 		// 复制图片
+		if ( is_array($rs['cover'])) {
+
+			$resp = [];
+			foreach ($rs['cover'] as $idx=>$fs ) {
+
+				if ( empty($fs['local']) ) {
+					continue;
+				}
+				$resp[] = $inst->uploadCoverByTaskId( $task_id, $fs['local'], $idx, true);
+			}
+
+			$rs['cover'] = $resp;
+		}
+
 
 		$data = [
 			'action_name' =>  $action_name,
