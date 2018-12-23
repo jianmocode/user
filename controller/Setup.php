@@ -14,7 +14,8 @@ class SetupController extends \Xpmse\Loader\Controller {
 
 		$this->models = [
 			'\\Xpmsns\\User\\Model\\User',
-			'\\Xpmsns\\User\\Model\\Group'
+            '\\Xpmsns\\User\\Model\\Group',
+            '\\Xpmsns\\User\\Model\\Coin'
 		];
 	}
 

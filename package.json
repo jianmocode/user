@@ -52,6 +52,17 @@
         "permission": "boss,admin,manager,user",
         "order":9999
     },{
+        "slug":"xpmsns/user/coin/index",
+        "name":"积分",
+        "icon":{
+            "default":"/static/icons/coin.svg"
+        },
+        "icontype": "img",
+        "linktype":"i",
+        "link":"{coin,index}",
+        "permission": "boss,admin,manager,user",
+        "order":9999
+    },{
         "slug":"xpmsns/user/feed/index",
         "name":"动态",
         "icon":{
