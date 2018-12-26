@@ -62,7 +62,7 @@ class User extends Api {
 	protected function updateProfile( $query, $data ) {
 
 		// 许可字段清单
-		$allowed = ["bio", "sex", "nickname", "country", "city", "headimgurl", "bgimgurl", "birthday", "language"];
+		$allowed = ["extra", "mobile", "address", "bio", "sex", "nickname", "country", "city", "headimgurl", "bgimgurl", "birthday", "language"];
 
 		// 用户身份验证
 		$u = new UserModel();
@@ -96,9 +96,7 @@ class User extends Api {
 		$u->save( $data );
 		$u->loginSetSession($uinfo['user_id']);
 
-		return $u->getUserInfo();
-
-		// return ['code'=>0, 'message'=>'数据保存成功'];
+		return ['code'=>0, 'message'=>'数据保存成功', 'user_info'=>$u->getUserInfo()];
 	}
 
 
