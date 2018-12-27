@@ -89,8 +89,7 @@ class Coin extends Api {
 	*               	["user_idtype"], // user.idtype
 	*/
 	protected function get( $query, $data ) {
-
-
+ 
 		// 支持POST和GET查询
 		$data = array_merge( $query, $data );
 
