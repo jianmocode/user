@@ -839,9 +839,11 @@ class User extends Model {
 			];
 		}
 	
-		$this->formatUsers($user);
-		return current($user);
-
+        $this->formatUsers($user);
+        $rs = current($user);
+        $rs["balance"] = $this->getBalance( $user_id );
+        $rs["coin"] = $this->getCoin( $user_id );
+		return $rs;
 	}
 
 
