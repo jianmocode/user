@@ -37,6 +37,23 @@ class Balance extends Model {
 	 * 自定义函数 
 	 */
 
+    // @KEEP BEGIN
+    
+    /**
+     * 计算用户账户余额
+     * @param string $user_id 用户ID
+     */
+    function sum( $user_id ) {
+
+        $sum = $this->query()
+                    ->where("user_id","=", $user_id)
+                    ->sum("quantity")
+                ;
+
+        return intval($sum);
+    }
+    // @KEEP END
+
 
 	/**
 	 * 创建数据表

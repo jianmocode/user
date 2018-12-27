@@ -568,7 +568,31 @@ class User extends Api {
 	protected function getUserInfo( $query=[], $data=[] ) {
 		$u = new UserModel();
 		return $u->getUserInfo();
-	}
+    }
+    
+    
+    /**
+     * 读取用户账户信息
+     */
+    protected function getUserAccountInfo( $query=[], $data=[] ) {
+		$u = new UserModel();
+        $user = $u->getUserInfo();
+        $user_id = $user["user_id"];
+
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 503, [""]);
+        }
+
+
+        $balance = $u->getBalance( $user_id );
+        $coin = $u->getCoin( $user_id );
+
+        return [
+            "user_id" => $user_id,
+            "balance" => $balance,
+            "coin" => $coin,
+        ];
+    }
 
 
 
@@ -769,7 +793,7 @@ class User extends Api {
 
 
 	/**
-	 * 查询标签列表
+	 * 查询标签列表 ( 废弃)
 	 *
 	 * 读取字段 select 默认 name
 	 *
@@ -795,7 +819,7 @@ class User extends Api {
 	 * @param  array  $query 
 	 * @return array 文章结果集列表
 	 */
-	protected function search( $query=[] ) {
+	protected function ______search( $query=[] ) {
 
 		$this->authVcode();
 		return $query;
@@ -805,7 +829,7 @@ class User extends Api {
 
 
 	/**
-	 * 读取标签详情信息
+	 * 读取标签详情信息( 废弃 )
 	 * @param  array  $query Query 查询
 	 *				   int ["name"]  标签详情
 	 *				   
@@ -816,7 +840,7 @@ class User extends Api {
 	 * @return Array 文章数据
 	 * 
 	 */
-	protected function get( $query=[] ) {
+	protected function ___get( $query=[] ) {
 
 		// 验证数值
 		if ( empty($query['name']) ) {

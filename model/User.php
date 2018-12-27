@@ -181,6 +181,22 @@ class User extends Model {
 	}
 
 
+    /**
+     * 读取用户账户余额
+     */
+    function getBalance( $user_id ) {
+        $blc = new Balance();
+        return $blc->Sum( $user_id );
+    }
+
+
+    /**
+     * 读取用户积分余额
+     */
+    function getCoin( $user_id ){
+        $coin = new Coin();
+        return $coin->Sum( $user_id );
+    }
 
 	/**
 	 * 读取用户信息
@@ -586,7 +602,11 @@ class User extends Model {
 			throw new Excp( "用户不存在", 404, ['data'=>$data, 'query'=>$query, 'errorlist'=>[['mobile'=>'用户不存在']]]);
 		}
 
-		$rs = current($rows);
+        $rs = current($rows);
+        
+        // 读取用户账户信息
+        $rs["balance"] = $this->getBalance( $user_id );
+        $rs["coin"] = $this->getCoin( $user_id );
 
 		if ( $session_id != null ) {
 			@session_id($session_id);
@@ -601,7 +621,8 @@ class User extends Model {
 		$this->userinfo = $userinfo;
 		$this->user_id = $userinfo['user_id']; 
 		return $this;
-	}
+    }
+    
 
 
 	/**
