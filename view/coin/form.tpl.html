@@ -145,24 +145,25 @@ use \Xpmse\T;
 									class="btn btn-lg btn-primary font-w300 btn-minw push-20-l user-action fn-back" >
 									<i class="fa fa-angle-double-left push-5-r"></i> 积分列表 
 								</a>
-							</div>
+                            </div>
+                            <!-- @KEEP BEGIN -->
 							<div class="col-xs-8 push-20-t text-center">
 								<button  
 									type="submit" 
-									class="btn btn-lg btn-primary font-w300 btn-minw  push-20-r fn-action fn-save  ">
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-20-r fn-action fn-save hidden  ">
 										<i class="fa fa-save push-5-r"></i> 保存
 								</button>
 
 								<button  
 									type="button" 
 									data-param-id="<?=$rs['coin_id']?>"
-									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate  ">
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate hidden ">
 										<i class="fa fa-files-o push-5-r"></i> 复制
 								</button>
 
 								<button 
 									type="button"
-									class="btn btn-lg btn-danger btn-minw ajax-confirm fn-action fn-saved-only fn-remove"
+									class="btn btn-lg btn-danger btn-minw ajax-confirm fn-action fn-saved-only fn-remove hidden"
 									confirm-title="请确认删除积分 "
 						            confirm-content="您确定删除积分 <strong><?=$rs['name=coin_id']?>(<?=$rs['coin_id']?> )</strong>"
 						            confirm-dismiss = "取消"
@@ -203,7 +204,8 @@ use \Xpmse\T;
 										<i class="fa fa-minus-circle push-5-r"></i> 删除
 								</button>
 
-							</div>
+                            </div>
+                            <!-- @KEEP END -->
 						</div>
 						<div class="bg-primary text-white text-center bottom-line"></div>	
 					</div>
