@@ -4,7 +4,7 @@
  * 积分数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-28 12:25:49
+ * 最后修改: 2018-12-28 13:00:34
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;

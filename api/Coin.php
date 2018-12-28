@@ -4,7 +4,7 @@
  * 积分数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-28 12:25:48
+ * 最后修改: 2018-12-28 13:00:32
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;

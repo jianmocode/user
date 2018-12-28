@@ -39,7 +39,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="user_id">用户ID</label>
 		<div class="col-xs-8"> 
-			<select class="js-select2 form-control input-lg" style="width: 100%;" 
+			<select class="js-select2 form-control input-lg disabled" disabled style="width: 100%;" 
 					id="user_id" name="user_id" 
 					data-language="zh-CN"
 					data-param-cancelable="0"
@@ -57,14 +57,13 @@ use \Xpmse\T;
 			</select>
 			<div class="help-block"></div>
 		</div>
-		 
-	</div><!-- END 下拉选择(动态数据): 用户ID (user_id) -->
+			</div><!-- END 下拉选择(动态数据): 用户ID (user_id) -->
 
 	<!-- 单行文本: 数量 (quantity) 开始  -->
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="quantity">数量</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg disabled"  disabled
 				type="text" 
 				id="quantity" name="quantity" 
 				placeholder=""  
@@ -75,12 +74,12 @@ use \Xpmse\T;
 
 
 	<!-- 单选框: 类型 (type) 开始  -->
-	<div class="form-group   ">
+	<div class="form-group    ">
 		<label class="col-xs-2 control-label" for="type">类型</label>
 		<div class="col-xs-8">
-			<?php if (is_null($rs["type"])) { $rs["type"] = "decrease"; } ?>
-<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="type" data-uncheck-value="increase" value="increase" <?=("increase" == $rs["type"]) ? "checked" : ""?> > <span></span> 增加</label>
-<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="type" data-uncheck-value="decrease" value="decrease" <?=("decrease" == $rs["type"]) ? "checked" : ""?> > <span></span> 减少</label>
+			
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input disabled name="type" value="increase" type="radio" data-uncheck-value="increase"  /> <span></span> 增加</label>
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input disabled name="type" value="decrease" type="radio" data-uncheck-value="decrease" checked /> <span></span> 减少</label>
 			<div class="help-block"></div>
 		</div>
 	</div><!-- END 单选框: 类型 (type) 开始  -->
@@ -99,7 +98,8 @@ use \Xpmse\T;
 		<div class="form-group">
 			<label class="col-xs-2 control-label">数据快照</label>
 			<div class="col-xs-8">
-				<textarea class="form-control input-lg" name="snapshot"  type="text"  rows="6" 
+                <textarea class="form-control input-lg disabled" name="snapshot"  type="text"  rows="6" 
+                    disabled
                     placeholder="请填写自定义JavaScript代码"><?=T::v('<%=snapshot | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
                 <input type="hidden" name="__json_cols[]" value="snapshot" />
 			</div>
@@ -126,6 +126,7 @@ use \Xpmse\T;
 			CodeMirror.fromTextArea(document.getElementById(txt_id), {
 				lineNumbers: true,
 				mode: "text/javascript",
+                readOnly: true,
 				viewportMargin: Infinity
 			}).on('change', function( cm ){ // 更新 txt 数据
 				document.getElementById(txt_id).value = cm.getValue();
