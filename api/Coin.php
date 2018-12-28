@@ -4,7 +4,7 @@
  * 积分数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-23 18:11:37
+ * 最后修改: 2018-12-28 12:25:48
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
@@ -89,7 +89,8 @@ class Coin extends Api {
 	*               	["user_idtype"], // user.idtype
 	*/
 	protected function get( $query, $data ) {
- 
+
+
 		// 支持POST和GET查询
 		$data = array_merge( $query, $data );
 
