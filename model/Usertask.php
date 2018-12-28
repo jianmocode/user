@@ -1,14 +1,14 @@
 <?php
 /**
  * Class Usertask 
- * 任务数据模型
+ * 任务副本数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-23 22:55:39
+ * 最后修改: 2018-12-28 18:15:18
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
-         
+          
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
@@ -22,7 +22,7 @@ class Usertask extends Model {
 
 
 	/**
-	 * 任务数据模型
+	 * 任务副本数据模型
 	 * @param array $param 配置参数
 	 *              $param['prefix']  数据表前缀，默认为 xpmsns_user_
 	 */
@@ -54,6 +54,8 @@ class Usertask extends Model {
 		$this->putColumn( 'process', $this->type("integer", ["length"=>1, "index"=>true, "null"=>true]));
 		// 状态
 		$this->putColumn( 'status', $this->type("string", ["length"=>32, "index"=>true, "null"=>true]));
+		// 数据
+		$this->putColumn( 'data', $this->type("text", ["json"=>true, "null"=>true]));
 
 		return $this;
 	}
@@ -99,7 +101,7 @@ class Usertask extends Model {
 
 	
 	/**
-	 * 按用户任务ID查询一条任务记录
+	 * 按用户任务ID查询一条任务副本记录
 	 * @param string $usertask_id 唯一主键
 	 * @return array $rs 结果集 
 	 *          	  $rs["usertask_id"],  // 用户任务ID 
@@ -109,6 +111,7 @@ class Usertask extends Model {
 	 *                $rs["task_task_id"], // task.task_id
 	 *          	  $rs["process"],  // 进度 
 	 *          	  $rs["status"],  // 状态 
+	 *          	  $rs["data"],  // 数据 
 	 *          	  $rs["created_at"],  // 创建时间 
 	 *          	  $rs["updated_at"],  // 更新时间 
 	 *                $rs["user_created_at"], // user.created_at
@@ -205,11 +208,11 @@ class Usertask extends Model {
 		
 
 	/**
-	 * 按用户任务ID查询一组任务记录
+	 * 按用户任务ID查询一组任务副本记录
 	 * @param array   $usertask_ids 唯一主键数组 ["$usertask_id1","$usertask_id2" ...]
 	 * @param array   $order        排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @param array   $select       选取字段，默认选取所有
-	 * @return array 任务记录MAP {"usertask_id1":{"key":"value",...}...}
+	 * @return array 任务副本记录MAP {"usertask_id1":{"key":"value",...}...}
 	 */
 	public function getInByUsertaskId($usertask_ids, $select=["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.status"], $order=["usertask.created_at"=>"desc"] ) {
 		
@@ -249,7 +252,7 @@ class Usertask extends Model {
 
 
 	/**
-	 * 按用户任务ID保存任务记录。(记录不存在则创建，存在则更新)
+	 * 按用户任务ID保存任务副本记录。(记录不存在则创建，存在则更新)
 	 * @param array $data 记录数组 (key:value 结构)
 	 * @param array $select 返回的字段，默认返回全部
 	 * @return array 数据记录数组
@@ -269,7 +272,7 @@ class Usertask extends Model {
 
 
 	/**
-	 * 添加任务记录
+	 * 添加任务副本记录
 	 * @param  array $data 记录数组  (key:value 结构)
 	 * @return array 数据记录数组 (key:value 结构)
 	 */
@@ -282,11 +285,11 @@ class Usertask extends Model {
 
 
 	/**
-	 * 查询前排任务记录
+	 * 查询前排任务副本记录
 	 * @param integer $limit 返回记录数，默认100
 	 * @param array   $select  选取字段，默认选取所有
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
-	 * @return array 任务记录数组 [{"key":"value",...}...]
+	 * @return array 任务副本记录数组 [{"key":"value",...}...]
 	 */
 	public function top( $limit=100, $select=["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.status"], $order=["usertask.created_at"=>"desc"] ) {
 
@@ -324,7 +327,7 @@ class Usertask extends Model {
 
 
 	/**
-	 * 按条件检索任务记录
+	 * 按条件检索任务副本记录
 	 * @param  array  $query
 	 *         	      $query['select'] 选取字段，默认选择 ["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.status"]
 	 *         	      $query['page'] 页码，默认为 1
@@ -338,7 +341,7 @@ class Usertask extends Model {
 	 *			      $query["orderby_created_at_desc"]  按name=created_at DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按name=updated_at DESC 排序
 	 *           
-	 * @return array 任务记录集 {"total":100, "page":1, "perpage":20, data:[{"key":"val"}...], "from":1, "to":1, "prev":false, "next":1, "curr":10, "last":20}
+	 * @return array 任务副本记录集 {"total":100, "page":1, "perpage":20, data:[{"key":"val"}...], "from":1, "to":1, "prev":false, "next":1, "curr":10, "last":20}
 	 *               	["usertask_id"],  // 用户任务ID 
 	 *               	["user_id"],  // 用户ID 
 	 *               	["user_user_id"], // user.user_id
@@ -346,6 +349,7 @@ class Usertask extends Model {
 	 *               	["task_task_id"], // task.task_id
 	 *               	["process"],  // 进度 
 	 *               	["status"],  // 状态 
+	 *               	["data"],  // 数据 
 	 *               	["created_at"],  // 创建时间 
 	 *               	["updated_at"],  // 更新时间 
 	 *               	["user_created_at"], // user.created_at
@@ -599,6 +603,7 @@ class Usertask extends Model {
 			"task_id",  // 任务ID
 			"process",  // 进度
 			"status",  // 状态
+			"data",  // 数据
 			"created_at",  // 创建时间
 			"updated_at",  // 更新时间
 		];

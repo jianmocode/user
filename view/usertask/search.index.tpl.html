@@ -10,7 +10,7 @@ use \Xpmse\T;
 		<div class="row" >
 			<div  class="col-lg-8 col-md-8 col-sm-8">
 				<div class="input-group input-group-lg">
-					<div class="input-group-addon font-w300"> 任务检索 </div> 
+					<div class="input-group-addon font-w300"> 任务副本检索 </div> 
 					<input class="js-icon-search form-control keyword" type="text" placeholder="输入关键词" value="<?=$query['keyword']?>">
 					<span class="input-group-btn">
 						<button class="btn btn-primary font-w300 search" type="button"><i class=" si si-magnifier"></i> 搜索 </button>
@@ -22,7 +22,7 @@ use \Xpmse\T;
 				<a 
 					href="<?=App::R('usertask','detail')?>" 
 					class="btn btn-primary btn-lg font-w300 pull-right push-15-l" 
-					><i class="fa fa-plus"></i> 新建任务</a>
+					><i class="fa fa-plus"></i> 新建任务副本</a>
 
 			</div>
 		</div>
@@ -33,7 +33,7 @@ use \Xpmse\T;
 			<ul class="nav nav-tabs nav-tabs-alt" data-toggle="tabs">
 				<li class="active"> 
 					<a id="tabs-document" href="#tabs-status-0"  class="font-w300 tabs-menu"> 
-					   <i class="fa  fa-th-list push-5-r"></i> 任务列表
+					   <i class="fa  fa-th-list push-5-r"></i> 任务副本列表
 					</a>
 				</li> 
 				<li class="pull-right">
@@ -56,7 +56,7 @@ use \Xpmse\T;
 					<div class="row items-push remove-margin">
 						
 						<div class="col-xs-5">
-							<span class="text-muted">共找到 <?=intval($response['total'])?> 条任务</span>
+							<span class="text-muted">共找到 <?=intval($response['total'])?> 条任务副本</span>
 						</div> <!-- END col-xs-5 -->
 						
 						<div class="col-xs-7">
@@ -100,19 +100,19 @@ use \Xpmse\T;
 								</ul>
 							</div> <!-- END 结果集排序 -->
 						
-							<!-- 任务状态过滤 -->
+							<!-- 任务副本状态过滤 -->
 							<div class="btn-group pull-right push-20-l" role="group">  
 								<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" >
 									<i class="glyphicon glyphicon-list-alt"></i> 
 									<?=($query['status'] == 'accepted') ? '已接受' : '' ?>
 									<?=($query['status'] == 'completed') ? '已完成' : '' ?>
 									<?=($query['status'] == 'canceled') ? '已取消' : '' ?>
-									<?=(empty($query['status'])) ? '任务状态' : '' ?>
+									<?=(empty($query['status'])) ? '任务副本状态' : '' ?>
 									<span class="caret"></span> 
 								</button>
 
 								<ul class="dropdown-menu dropdown-menu-right"  style="min-width: 87px;">
-									<li class="dropdown-header">任务状态</li>
+									<li class="dropdown-header">任务副本状态</li>
 									<li>
 										<a href="javascript:search('status','')">
 										   全部
@@ -134,7 +134,7 @@ use \Xpmse\T;
 										</a>
 									</li>
 								</ul>
-							</div> <!-- END 任务状态过滤 -->
+							</div> <!-- END 任务副本状态过滤 -->
 
 
 						</div><!-- END col-xs-7 -->
@@ -142,7 +142,7 @@ use \Xpmse\T;
 					</div> <!-- END 信息过滤(高级搜索)栏位 -->
 					
 					<?php if ($response['total'] > 0): ?>
-					<!-- 任务列表 -->
+					<!-- 任务副本列表 -->
 					<table class="js-table-checkable table table-hover remove-margin">
 						<thead>
 							<tr>
@@ -207,10 +207,10 @@ use \Xpmse\T;
 								</ul>
 							</nav></td></tr>
 						</tfoot>
-					</table><!-- END 任务列表 -->
+					</table><!-- END 任务副本列表 -->
 					<?php else: // 无数据时呈现 ?>
 					<span class="push-15-l"> 
-						<a href="<?=App::R('usertask', 'detail')?>"> 新建任务 </a>
+						<a href="<?=App::R('usertask', 'detail')?>"> 新建任务副本 </a>
 					</span>
 					<?php endif; // 如果没有数据则不显示 ?>
 			

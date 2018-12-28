@@ -19,7 +19,7 @@ use \Xpmse\T;
 			<h3 class="block-title" >
 				<a href="<?=App::R('usertask', 'index')?>" class="text-default">
                     <i class="fa fa-arrow-circle-o-left"></i> 
-                    任务列表 
+                    任务副本列表 
                 </a> / <?=$action_name?> 
 			</h3>
 			
@@ -35,11 +35,11 @@ use \Xpmse\T;
 
 
  
-	<!-- 下拉选择(动态数据): 用户ID (user_id) 开始  -->
+	<!-- 下拉选择(动态数据): 用户 (user_id) 开始  -->
 	<div class="form-group   ">
-		<label class="col-xs-2 control-label" for="user_id">用户ID</label>
+		<label class="col-xs-2 control-label" for="user_id">用户</label>
 		<div class="col-xs-8"> 
-			<select class="js-select2 form-control input-lg" style="width: 100%;" 
+			<select class="js-select2 form-control input-lg "  style="width: 100%;" 
 					id="user_id" name="user_id" 
 					data-language="zh-CN"
 					data-param-cancelable="0"
@@ -57,17 +57,16 @@ use \Xpmse\T;
 			</select>
 			<div class="help-block"></div>
 		</div>
-		 
-	</div><!-- END 下拉选择(动态数据): 用户ID (user_id) -->
+			</div><!-- END 下拉选择(动态数据): 用户 (user_id) -->
 
 
 
  
-	<!-- 下拉选择(动态数据): 任务ID (task_id) 开始  -->
+	<!-- 下拉选择(动态数据): 任务 (task_id) 开始  -->
 	<div class="form-group   ">
-		<label class="col-xs-2 control-label" for="task_id">任务ID</label>
+		<label class="col-xs-2 control-label" for="task_id">任务</label>
 		<div class="col-xs-8"> 
-			<select class="js-select2 form-control input-lg" style="width: 100%;" 
+			<select class="js-select2 form-control input-lg "  style="width: 100%;" 
 					id="task_id" name="task_id" 
 					data-language="zh-CN"
 					data-param-cancelable="0"
@@ -85,34 +84,83 @@ use \Xpmse\T;
 			</select>
 			<div class="help-block"></div>
 		</div>
-		 
-	</div><!-- END 下拉选择(动态数据): 任务ID (task_id) -->
+			</div><!-- END 下拉选择(动态数据): 任务 (task_id) -->
 
-	<!-- 单行文本: 进度 (process) 开始  -->
+	<!-- 单行文本: 当前进度 (process) 开始  -->
 	<div class="form-group   ">
-		<label class="col-xs-2 control-label" for="process">进度</label>
+		<label class="col-xs-2 control-label" for="process">当前进度</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="process" name="process" 
 				placeholder="请填写完成进度"  
 				value="<?=T::v('<%=process | e(\'html\')%>', $rs )?>" /> 
 			<div class="help-block"></div>
 		</div>
-	</div><!-- END 单行文本: 进度 (process) -->
+	</div><!-- END 单行文本: 当前进度 (process) -->
 
 
 	<!-- 单选框: 状态 (status) 开始  -->
-	<div class="form-group   ">
+	<div class="form-group    ">
 		<label class="col-xs-2 control-label" for="status">状态</label>
 		<div class="col-xs-8">
-			<?php if (is_null($rs["status"])) { $rs["status"] = "accepted"; } ?>
-<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="status" data-uncheck-value="accepted" value="accepted" <?=("accepted" == $rs["status"]) ? "checked" : ""?> > <span></span> 已接受</label>
-<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="status" data-uncheck-value="completed" value="completed" <?=("completed" == $rs["status"]) ? "checked" : ""?> > <span></span> 已完成</label>
-<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="status" data-uncheck-value="canceled" value="canceled" <?=("canceled" == $rs["status"]) ? "checked" : ""?> > <span></span> 已取消</label>
+			
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="status" value="accepted" type="radio" data-uncheck-value="accepted" checked /> <span></span> 已接受</label>
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="status" value="completed" type="radio" data-uncheck-value="completed"  /> <span></span> 已完成</label>
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="status" value="canceled" type="radio" data-uncheck-value="canceled"  /> <span></span> 已取消</label>
 			<div class="help-block"></div>
 		</div>
 	</div><!-- END 单选框: 状态 (status) 开始  -->
+
+
+
+
+    <!-- JSON编辑器(json-editor): 数据 (data) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="data" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">数据</label>
+			<div class="col-xs-8">
+                <textarea class="form-control input-lg " name="data"  type="text"  rows="6" 
+                    
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=data | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols" value="data" />
+			</div>
+			<div class="col-xs-2 push-10-t"></div>
+		</div>
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block"></div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 数据 (data)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="data"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
 
 				<!--  提交按钮 -->
 				<div class="block block-quickpanel sidebar-mini">
@@ -123,7 +171,7 @@ use \Xpmse\T;
 							<div class="col-xs-2 push-20-t text-left">
 								<a href="<?=App::R('usertask', 'index')?>"
 									class="btn btn-lg btn-primary font-w300 btn-minw push-20-l user-action fn-back" >
-									<i class="fa fa-angle-double-left push-5-r"></i> 任务列表 
+									<i class="fa fa-angle-double-left push-5-r"></i> 任务副本列表 
 								</a>
 							</div>
 							<div class="col-xs-8 push-20-t text-center">
@@ -143,8 +191,8 @@ use \Xpmse\T;
 								<button 
 									type="button"
 									class="btn btn-lg btn-danger btn-minw ajax-confirm fn-action fn-saved-only fn-remove"
-									confirm-title="请确认删除任务 "
-						            confirm-content="您确定删除任务 <strong><?=$rs['name=usertask_id']?>(<?=$rs['usertask_id']?> )</strong>"
+									confirm-title="请确认删除任务副本 "
+						            confirm-content="您确定删除任务副本 <strong><?=$rs['name=usertask_id']?>(<?=$rs['usertask_id']?> )</strong>"
 						            confirm-dismiss = "取消"
 						            confirm-submit= "确定"
 						            confirm-action="<?=App::NR('usertask','remove')?>"
@@ -164,7 +212,7 @@ use \Xpmse\T;
 									"
 							        event-success="
 										function(btn, modal) {
-											success('任务删除成功');
+											success('任务副本删除成功');
 											setTimeout(function(){
 												window.location = '<?=App::R('usertask','index')?>';
 											}, 1000);
@@ -172,7 +220,7 @@ use \Xpmse\T;
 									"
 									event-error="
 										function( data, btn, modal) {
-											failure( '任务删除失败 ('+ data['message'] + ')');
+											failure( '任务副本删除失败 ('+ data['message'] + ')');
 											return true;
 										}
 									"
