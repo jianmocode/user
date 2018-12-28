@@ -36,7 +36,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="slug">别名</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="slug" name="slug" 
 				placeholder="请输入别名,一般便于程序调用，对接其他系统."  
@@ -49,7 +49,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="name">名称</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="name" name="name" 
 				placeholder="请输入积分任务名称"  
@@ -62,7 +62,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="process">步骤</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="process" name="process" 
 				placeholder="完成任务一共有多少步骤"  
@@ -73,12 +73,12 @@ use \Xpmse\T;
 
 
 	<!-- 单选框: 类型 (type) 开始  -->
-	<div class="form-group   ">
+	<div class="form-group    ">
 		<label class="col-xs-2 control-label" for="type">类型</label>
 		<div class="col-xs-8">
-			<?php if (is_null($rs["type"])) { $rs["type"] = "repeatable"; } ?>
-<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="type" data-uncheck-value="repeatable" value="repeatable" <?=("repeatable" == $rs["type"]) ? "checked" : ""?> > <span></span> 可重复</label>
-<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="type" data-uncheck-value="once" value="once" <?=("once" == $rs["type"]) ? "checked" : ""?> > <span></span> 一次性</label>
+			
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="type" value="repeatable" type="radio" data-uncheck-value="repeatable" checked /> <span></span> 可重复</label>
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="type" value="once" type="radio" data-uncheck-value="once"  /> <span></span> 一次性</label>
 			<div class="help-block"></div>
 		</div>
 	</div><!-- END 单选框: 类型 (type) 开始  -->
@@ -118,7 +118,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="quantity">积分数量</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="quantity" name="quantity" 
 				placeholder="完成该任务可以赚取的积分"  
@@ -129,23 +129,59 @@ use \Xpmse\T;
 
 
 
-	<!-- 文本域: 奖励公式 (formula) 开始  -->
-	<div class="form-group   ">
-		<label class="col-xs-2 control-label" for="formula">奖励公式</label>
-		<div class="col-xs-8">
-			<textarea class="form-control input-lg"  
-				type="text" 
-				id="formula" name="formula" rows="4"
-				placeholder="完成该任务可以赚取的积分计算公式"><?=T::v('<%=formula  | e(\'html\')%>', $rs )?></textarea> 
-			<div class="help-block">由工程师填写</div>
+
+    <!-- JSON编辑器(json-editor): 奖励公式 (formula) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="formula" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">奖励公式</label>
+			<div class="col-xs-8">
+                <textarea class="form-control input-lg " name="formula"  type="text"  rows="6" 
+                    
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=formula | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols[]" value="formula" />
+			</div>
+			<div class="col-xs-2 push-10-t"></div>
 		</div>
-	</div><!-- END 文本域: 奖励公式 (formula) -->
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block">由工程师填写</div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 奖励公式 (formula)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="formula"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
 
 	<!-- 单行文本: 时限额 (hourly_limit) 开始  -->
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="hourly_limit">时限额</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="hourly_limit" name="hourly_limit" 
 				placeholder="每小时可接次数"  
@@ -158,7 +194,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="daily_limit">日限额</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="daily_limit" name="daily_limit" 
 				placeholder="每天可接次数"  
@@ -171,7 +207,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="weekly_limit">周限额</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="weekly_limit" name="weekly_limit" 
 				placeholder="每周可接次数"  
@@ -184,7 +220,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="monthly_limit">月限额</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="monthly_limit" name="monthly_limit" 
 				placeholder="每月可接次数"  
@@ -197,7 +233,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="yearly_limit">年限额</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="yearly_limit" name="yearly_limit" 
 				placeholder="每年可接次数"  
@@ -210,7 +246,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="time_limit">完成时限</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg"  
+			<input class="form-control input-lg "  
 				type="text" 
 				id="time_limit" name="time_limit" 
 				placeholder="必须在此时间内完成"  
@@ -221,54 +257,162 @@ use \Xpmse\T;
 
 
 
-	<!-- 文本域: 接受条件 (accept) 开始  -->
-	<div class="form-group   ">
-		<label class="col-xs-2 control-label" for="accept">接受条件</label>
-		<div class="col-xs-8">
-			<textarea class="form-control input-lg"  
-				type="text" 
-				id="accept" name="accept" rows="4"
-				placeholder="任务接收条件"><?=T::v('<%=accept  | e(\'html\')%>', $rs )?></textarea> 
-			<div class="help-block">由工程师填写</div>
+
+    <!-- JSON编辑器(json-editor): 接受条件 (accept) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="accept" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">接受条件</label>
+			<div class="col-xs-8">
+                <textarea class="form-control input-lg " name="accept"  type="text"  rows="6" 
+                    
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=accept | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols[]" value="accept" />
+			</div>
+			<div class="col-xs-2 push-10-t"></div>
 		</div>
-	</div><!-- END 文本域: 接受条件 (accept) -->
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block">由工程师填写</div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 接受条件 (accept)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="accept"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
 
 
 
-	<!-- 文本域: 达成条件 (complete) 开始  -->
-	<div class="form-group   ">
-		<label class="col-xs-2 control-label" for="complete">达成条件</label>
-		<div class="col-xs-8">
-			<textarea class="form-control input-lg"  
-				type="text" 
-				id="complete" name="complete" rows="4"
-				placeholder="任务达成条件"><?=T::v('<%=complete  | e(\'html\')%>', $rs )?></textarea> 
-			<div class="help-block">由工程师填写</div>
+
+    <!-- JSON编辑器(json-editor): 达成条件 (complete) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="complete" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">达成条件</label>
+			<div class="col-xs-8">
+                <textarea class="form-control input-lg " name="complete"  type="text"  rows="6" 
+                    
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=complete | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols[]" value="complete" />
+			</div>
+			<div class="col-xs-2 push-10-t"></div>
 		</div>
-	</div><!-- END 文本域: 达成条件 (complete) -->
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block">由工程师填写</div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 达成条件 (complete)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="complete"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
 
 
 
-	<!-- 文本域: 事件 (events) 开始  -->
-	<div class="form-group   ">
-		<label class="col-xs-2 control-label" for="events">事件</label>
-		<div class="col-xs-8">
-			<textarea class="form-control input-lg"  
-				type="text" 
-				id="events" name="events" rows="4"
-				placeholder=""><?=T::v('<%=events  | e(\'html\')%>', $rs )?></textarea> 
-			<div class="help-block">由工程师填写</div>
+
+    <!-- JSON编辑器(json-editor): 事件 (events) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="events" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">事件</label>
+			<div class="col-xs-8">
+                <textarea class="form-control input-lg " name="events"  type="text"  rows="6" 
+                    
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=events | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols[]" value="events" />
+			</div>
+			<div class="col-xs-2 push-10-t"></div>
 		</div>
-	</div><!-- END 文本域: 事件 (events) -->
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block">由工程师填写</div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 事件 (events)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="events"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
 
 
 	<!-- 单选框: 状态 (status) 开始  -->
-	<div class="form-group   ">
+	<div class="form-group    ">
 		<label class="col-xs-2 control-label" for="status">状态</label>
 		<div class="col-xs-8">
-			<?php if (is_null($rs["status"])) { $rs["status"] = "online"; } ?>
-<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="status" data-uncheck-value="online" value="online" <?=("online" == $rs["status"]) ? "checked" : ""?> > <span></span> 上线</label>
-<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input  type="radio" name="status" data-uncheck-value="offline" value="offline" <?=("offline" == $rs["status"]) ? "checked" : ""?> > <span></span> 下线</label>
+			
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="status" value="online" type="radio" data-uncheck-value="online" checked /> <span></span> 上线</label>
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="status" value="offline" type="radio" data-uncheck-value="offline"  /> <span></span> 下线</label>
 			<div class="help-block"></div>
 		</div>
 	</div><!-- END 单选框: 状态 (status) 开始  -->
