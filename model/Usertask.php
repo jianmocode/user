@@ -37,6 +37,61 @@ class Usertask extends Model {
 	 * 自定义函数 
 	 */
 
+    // @KEEP BEGIN
+
+    /**
+     * 接受指定任务(创建任务副本)
+     * @param string $task  任务结构体
+     * @param string $user_id  用户ID
+     * @return array 任务副本结构体
+     */
+    private function accept( $task, $user_id ) {
+
+    }
+
+    /**
+     * 接受指定ID任务(创建任务副本)
+     * @param string $task_id  任务ID
+     * @param string $user_id  用户ID
+     * @return array 任务副本结构体
+     */
+    public function acceptByTaskId( $task_id, $user_id ) {
+
+        $t = new Task;
+        $task = $t->getByTaskId( $task_id );
+        if ( empty($task) ) {
+            throw new Excp("任务不存在", 404, ["task_id"=>$task_id]);
+        }
+
+        if ( $task["status"] != "online" ) {
+            throw new Excp("任务已下线", 403, ["task"=>$task]);
+        }
+
+        return $this->accept( $task, $user_id );
+
+    }
+
+    /**
+     * 接受指定SLUG的任务(创建任务副本)
+     * @param string $slug 任务别名
+     * @param string $user_id  用户ID
+     */
+    public function acceptBySlug( $slug, $user_id ) {
+        $t = new Task;
+        $task = $t->getByTaskSlug( $slug );
+        if ( empty($task) ) {
+            throw new Excp("任务不存在", 404, ["slug"=>$slug]);
+        }
+
+        if ( $task["status"] != "online" ) {
+            throw new Excp("任务已下线", 403, ["task"=>$task]);
+        }
+
+        return $this->accept( $task, $user_id );
+    }
+   
+    // @KEEP END
+
 
 	/**
 	 * 创建数据表
