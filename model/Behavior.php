@@ -19,8 +19,6 @@ use \Xpmse\Loader\App as App;
 class Behavior extends Model {
 
 
-
-
 	/**
 	 * 行为数据模型
 	 * @param array $param 配置参数
@@ -29,13 +27,86 @@ class Behavior extends Model {
 	function __construct( $param=[] ) {
 
 		parent::__construct(array_merge(['prefix'=>'xpmsns_user_'],$param));
-		$this->table('behavior'); // 数据表名称 xpmsns_user_behavior
+        $this->table('behavior'); // 数据表名称 xpmsns_user_behavior
+        
+        // @KEEP BEGIN
+        $this->cache = new \Xpmse\Mem(true, "Behavior:");
+        // @KEEP END
 
 	}
 
 	/**
 	 * 自定义函数 
 	 */
+
+    // @KEEP BEGIN
+
+    
+    /**
+     * 执行指定SLUG行为(通知所有该行为订阅者)
+     * @param string $slug 行为slug
+     * @param string $user_id 用户ID 
+     * @param array $data 行为数据
+     * @return 成功返回 true ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
+     */
+    function runBySlug( $slug, $user_id, $data=[]) {
+        $cache_name = "{$slug}:detail";
+        $behavior = $this->cache->getJSON( $cache_name );
+        if ( $behavior === false ) {
+            $behavior = $this->getBySlug($slug);
+            if ( empty($behavior) ) {
+                throw new Excp("用户行为数据不存在", 404, ["slug"=>$slug, "user_id"=>$user_id, "data"=>$data]);
+            }
+            $this->cache->setJSON( $cache_name, $behavior );
+        }
+
+        return $this->run( $behavior, $user_id, $data );
+    }
+
+
+    /**
+     * 执行指定ID行为(通知所有该行为订阅者)
+     * @param string $behavior_id 行为ID
+     * @param string $user_id 用户ID 
+     * @param array $data 行为数据
+     * @return 成功返回 true ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
+     */
+    function runByBehaviorID( $behavior_id, $user_id, $data=[]) {
+        $cache_name = "{$behavior_id}:detail";
+        $behavior = $this->cache->getJSON( $cache_name );
+        if ( $behavior === false ) {
+            $behavior = $this->getByBehaviorId($behavior_id);
+            if ( empty($behavior) ) {
+                throw new Excp("用户行为数据不存在", 404, ["slug"=>$slug, "user_id"=>$user_id, "data"=>$data]);
+            }
+            $this->cache->setJSON( $cache_name, $behavior );
+        }
+
+        return $this->run( $behavior, $user_id, $data );
+    }
+
+
+    /**
+     * 执行行为(通知所有该行为订阅者)
+     * @param string $behavior 行为结构体
+     * @param string $user_id 用户ID 
+     * @param array $data 行为数据
+     * @return 成功返回 true ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
+     */
+    function run( $behavior, $user_id, $data=[] ) {
+        print_r( $behavior );
+        print_r( $data ) ;
+        print_r( $user_id );
+    }
+
+    /**
+     * 清理行为数据缓存
+     */
+    function clearCache( $behavior = null ) {
+
+    }
+
+    // @KEEP END
 
 
 	/**
