@@ -42,11 +42,223 @@ class Usertask extends Model {
     /**
      * 接受指定任务(创建任务副本)
      * @param string $task  任务结构体
+     *                  task_id         required
+     *                  type            required
+     *                  hourly_limit    ( type == repeatable) ? required
+     *                  daily_limit     ( type == repeatable) ? required
+     *                  weekly_limit    ( type == repeatable) ? required
+     *                  monthly_limit   ( type == repeatable) ? required
+     *                  yearly_limit    ( type == repeatable) ? required
+     *                  time_limit      ( type == repeatable) ? required
+     *                  accept          required
+     *                  complete        required
+     *                  events          required
+     * 
      * @param string $user_id  用户ID
      * @return array 任务副本结构体
      */
     private function accept( $task, $user_id ) {
 
+        // 校验任务是否已被接受
+        if ( $this->hasAccepted($task, $user_id) ) {
+            throw new Excp("用户已接受此项任务", 404, ["task"=>$task, "user_id"=>$user_id]);
+        }
+        
+        // 校验冷却时间
+        $err = $this->validateLimit($task, $user_id);
+        if ( $err !== true ){
+            throw new Excp("达到限额({$err["message"]})", 404, ["task"=>$task, "user_id"=>$user_id, "error"=>$err]);
+        }
+
+        // 校验接受条件
+        $err = $this->runAcceptScript($task, $user_id);
+        if( $err !== true ) {
+            throw new Excp("未达到接收条件({$err["message"]})", 404, ["task"=>$task, "user_id"=>$user_id, "error"=>$err]);
+        }
+
+        // 创建任务副本
+        return $this->create([
+            "user_id"=>$user_id,
+            "task_id" => $task["task_id"],
+            "process" => 0,
+            "status" => "accepted"
+        ]);
+    }
+
+
+    /**
+     * 运行接受任务脚本, 校验是否达成触发条件
+     * @param string $task  任务结构体
+     *                  task_id         required
+     *                  type            required
+     *                  hourly_limit    ( type == repeatable) ? required
+     *                  daily_limit     ( type == repeatable) ? required
+     *                  weekly_limit    ( type == repeatable) ? required
+     *                  monthly_limit   ( type == repeatable) ? required
+     *                  yearly_limit    ( type == repeatable) ? required
+     *                  time_limit      ( type == repeatable) ? required
+     *                  accept          required
+     *                  complete        required
+     *                  events          required
+     * 
+     * @param string $user_id  用户ID
+     * @return bool 符合条件返回true, 不符合条件返回错误结描述 ["code"=>1024, "message"=>"用户等级不符合要求", "extra"=>[...]]
+     */
+    private function runAcceptScript( $task, $user_id ) {
+        return true;
+    }
+
+
+    /**
+     * 校验任务冷却时间
+     * @param string $task  任务结构体
+     *                  task_id         required
+     *                  type            required
+     *                  hourly_limit    ( type == repeatable) ? required 
+     *                  daily_limit     ( type == repeatable) ? required
+     *                  weekly_limit    ( type == repeatable) ? required
+     *                  monthly_limit   ( type == repeatable) ? required
+     *                  yearly_limit    ( type == repeatable) ? required
+     *                  time_limit      ( type == repeatable) ? required
+     * 
+     * @param string $user_id  用户ID
+     * @return mix 未触发配额 true 触发配额 ["limit"=>"hourly", "count"=5, "message"=>"1小时内超过5次"];
+     */
+    private function validateLimit( $task, $user_id ) {
+
+        if ( $task["type"] == "once") {
+            return true;
+        }
+
+         // 校验一小时内已接受的任务数量 
+         if( $task["hourly_limit"] > 0 ) {
+            $cnt = $this->query()
+                        ->where("task_id", "=", $task["task_id"])
+                        ->where("user_id", "=", $user_id )
+                        ->where("created_at" ,">" ,date('Y-m-d H:i:s', time()-3600) )
+                        ->count("usertask_id");
+            if ($cnt >= $task["hourly_limit"]) {
+                return ["limit"=>"hourly", "count"=>$cnt, "message"=>"一小时内不能超过{$task["hourly_limit"]}次" ];
+            }
+            return true;
+        }
+
+         // 校验一天内已接受的任务数量 
+         if( $task["daily_limit"] > 0 ) {
+            $cnt = $this->query()
+                        ->where("task_id", "=",$task["task_id"])
+                        ->where("user_id", "=",$user_id )
+                        ->where("created_at", ">", date('Y-m-d 00:00:00') )
+                        ->where("created_at", "<", date('Y-m-d 23:59:59') )
+                        ->count("usertask_id");
+            
+            if ($cnt >= $task["daily_limit"]) {
+                return ["limit"=>"daily", "count"=>$cnt, "message"=>"一天内不能超过{$task["daily_limit"]}次"];
+            }
+            return true;
+        }
+
+        // 校验一周内已接受的任务数量 
+        if( $task["weekly_limit"] > 0 ) {
+            $cnt = $this->query()
+                        ->where("task_id", "=",$task["task_id"])
+                        ->where("user_id", "=",$user_id )
+                        ->where("created_at", ">", date('Y-m-d 00:00:00', strtotime('monday this week')) )
+                        ->where("created_at", "<", date('Y-m-d 23:59:59', strtotime('sunday this week')) )
+                        ->count("usertask_id");
+            if ($cnt >= $task["weekly_limit"]) {
+                return ["limit"=>"weekly", "count"=>$cnt, "message"=>"一周内不能超过{$task["weekly_limit"]}次"];
+            }
+            return true;
+        }
+
+        // 校验一月内已接受的任务数量 
+        if( $task["monthly_limit"] > 0 ) {
+            $cnt = $this->query()
+                        ->where("task_id", "=",$task["task_id"])
+                        ->where("user_id", "=",$user_id )
+                        ->where("created_at", ">", date('Y-m-01 00:00:00') )
+                        ->where("created_at", "<", date('Y-m-t 23:59:59') )
+                        ->count("usertask_id");
+            if ($cnt >= $task["monthly_limit"]) {
+                return ["limit"=>"monthly", "count"=>$cnt, "message"=>"一月内不能超过{$task["monthly_limit"]}次"];
+            }
+            return true;
+        }
+
+        // 校验一年内已接受的任务数量 
+        if( $task["yearly_limit"] > 0 ) {
+            $cnt = $this->query()
+                        ->where("task_id", "=",$task["task_id"])
+                        ->where("user_id", "=",$user_id )
+                        ->where("created_at", ">", date('Y-01-01 00:00:00') )
+                        ->where("created_at", "<", date('Y-12-31 23:59:59') )
+                        ->count("usertask_id");
+            if ($cnt >= $task["yearly_limit"]) {
+                return ["limit"=>"yearly", "count"=>$cnt, "message"=>"一年内不能超过{$task["yearly_limit"]}次"];
+            }
+        }
+
+        return true;
+    }
+
+
+
+    /**
+     * 是否已经接受某项任务
+     * @param string $task  任务结构体
+     *                  task_id         required
+     *                  type            required
+     * 
+     * @param string $user_id  用户ID
+     * @return bool 已接受返回true,  未接受返回false
+     */
+    private function hasAccepted( $task, $user_id ) {
+        // 根据任务类型校验任务是否可接受
+
+        // 单次任务 
+        if ( $task["type"] == "once") {
+            $rows = $this->query()
+                         ->where("task_id", "=", $task["task_id"])
+                         ->where("user_id", "=", $user_id )
+                         ->limit(1)
+                         ->select("usertask_id")
+                         ->get()->toArray();
+            return !empty($rows);
+        }
+
+        // 可重复任务
+        $rows = $this->query()
+                     ->where("task_id", "=", $task["task_id"])
+                     ->where("user_id", "=", $user_id )
+                     ->orderBy("created_at","desc")
+                     ->limit(1)
+                     ->select("usertask_id", "created_at", "updated_at", "status")
+                     ->get()->toArray();
+        
+        // 从未接受任务
+        if ( empty($rows) ) {
+            return false;
+        }
+
+        $usertask = current( $rows );
+        $timeago = time() - strtotime($usertask["created_at"]);
+
+        // 已接受任务，且未完成
+        if ($usertask["status"] == "accepted") {
+            
+            // 未设定任务完成时限
+            if ( $task["time_limit"] <= 0 ) {
+                return true;
+            }
+
+            // 设定完成实现, 但尚未到达任务时限
+            if ( $timeago < $task["time_limit"] ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -78,7 +290,7 @@ class Usertask extends Model {
      */
     public function acceptBySlug( $slug, $user_id ) {
         $t = new Task;
-        $task = $t->getByTaskSlug( $slug );
+        $task = $t->getBySlug( $slug );
         if ( empty($task) ) {
             throw new Excp("任务不存在", 404, ["slug"=>$slug]);
         }

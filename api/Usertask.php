@@ -59,7 +59,7 @@ class Usertask extends Api {
             return $utask->acceptByTaskId( $task_id, $user_id);
         } 
         
-        return $utask->acceptBySlug($task_id, $slug);
+        return $utask->acceptBySlug($slug, $user_id);
     }
 
 
