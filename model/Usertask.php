@@ -87,7 +87,7 @@ class Usertask extends Model {
 
 
     /**
-     * 运行接受任务脚本, 校验是否达成触发条件
+     * 运行接受任务脚本, 校验是否达成接受条件
      * @param string $task  任务结构体
      *                  task_id         required
      *                  type            required
