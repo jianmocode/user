@@ -73,7 +73,7 @@ class Usertask extends Model {
         // 校验接受条件
         $err = $this->runAcceptScript($task, $user_id);
         if( $err !== true ) {
-            throw new Excp("未达到接收条件({$err["message"]})", 404, ["task"=>$task, "user_id"=>$user_id, "error"=>$err]);
+            throw new Excp("未达到接受条件({$err["message"]})", 404, ["task"=>$task, "user_id"=>$user_id, "error"=>$err]);
         }
 
         // 创建任务副本
