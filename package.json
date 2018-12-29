@@ -62,6 +62,32 @@
         "permission": "boss,admin,manager,user",
         "order":9999
     },{
+        "slug":"xpmsns/user/behavior",
+        "name":"行为",
+        "icon":{
+            "default":"/static/icons/behavior.svg"
+        },
+        "icontype": "img",
+        "linktype":"i",
+        "permission": "boss,admin,manager,user",
+        "order":9999,
+        "submenu":[
+            {
+				"slug":"xpmsns/user/subscribeBehavior/index",
+				"name":"订阅列表",
+				"link":"{subscribeBehavior,index}",
+				"permission": "boss,admin,manager,user",
+				"order":9999
+			},
+			{
+				"slug":"xpmsns/user/behavior/index",
+				"name":"行为列表",
+				"link":"{behavior,index}",
+				"permission": "boss,admin,manager,user",
+				"order":9999
+			}
+		]
+    },{
         "slug":"xpmsns/user/task",
         "name":"任务",
         "icon":{

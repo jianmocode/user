@@ -1,0 +1,500 @@
+<?php 
+use \Xpmse\Loader\App; 
+use \Xpmse\Utils;
+use \Xpmse\T;
+?>
+<style type="text/css">
+	.form {
+		padding-top: 60px;
+		padding-bottom: 60px;
+	}
+</style>
+
+
+<!-- Page Content -->
+<div class="content"> 
+	<div class="block block-bordered " >
+		<div class="block-header remove-margin" >
+
+			<h3 class="block-title" >
+				<a href="<?=App::R('behavior', 'index')?>" class="text-default">
+                    <i class="fa fa-arrow-circle-o-left"></i> 
+                    行为列表 
+                </a> / <?=$action_name?> 
+			</h3>
+			
+		</div> <!-- END block-header -->
+
+		<div class="block-content form behavior-content js-draggable-items" >
+
+			<form class="form-horizontal behavior-form form-lg" action= '<?=App::NR("behavior", "save");?>' >
+
+				<!-- 隐藏域 -->
+				<input type="hidden" name="behavior_id" value="<?=$rs['behavior_id']?>" >
+	
+	<!-- 单行文本: 名称 (name) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="name">名称</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="name" name="name" 
+				placeholder="请填写行为名称"  
+				value="<?=T::v('<%=name | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单行文本: 名称 (name) -->
+
+	<!-- 单行文本: 别名 (slug) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="slug">别名</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="slug" name="slug" 
+				placeholder="请填写行为别名"  
+				value="<?=T::v('<%=slug | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block">行为别名必须唯一</div>
+		</div>
+	</div><!-- END 单行文本: 别名 (slug) -->
+
+
+
+
+	<!-- 富文本(summernote): 介绍 (intro) 开始  -->
+	<div class="form-group     ">
+		<label class="col-xs-2 control-label" for="intro">介绍</label>
+		<div class="col-xs-8">
+			<textarea class="js-summernote" name="intro" id="intro" placeholder="" ><?=T::v('<%=intro | e(\'html\')%>', $rs )?></textarea>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 富文本(summernote): 介绍 (intro) -->
+	<script type="text/javascript">
+		// Init full text editor
+		$('.js-summernote[name=intro]').summernote({
+			lang: 'zh-CN',
+			height: 300,
+			minHeight: null,
+			maxHeight: null,
+			callbacks: {
+    			onImageUpload: function(files) {
+    				var that = this;
+    				for(var i = files.length - 1; i >= 0; i--) {
+    					var file = files[i];
+    					var form_data = new FormData();
+						form_data.append('file', file);
+						$.ajax({
+							data: form_data,
+							dataType:'json',
+							type: "POST",
+							url: '/_a/mina/uploader/upload?type=image',
+							cache: false,
+							contentType: false,
+							processData: false,
+							success: function( rs ) {
+							    $(that).summernote('editor.insertImage', rs['url']);
+							}
+						});
+    				}
+    			}
+    		}
+		});
+	</script>
+
+
+	<!-- 单选框: 状态 (status) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="status">状态</label>
+		<div class="col-xs-8">
+			
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input disabled name="status" value="online" type="radio" data-uncheck-value="online" checked /> <span></span> 上线</label>
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input disabled name="status" value="offline" type="radio" data-uncheck-value="offline"  /> <span></span>  下线</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 状态 (status) 开始  -->
+
+
+
+
+    <!-- JSON编辑器(json-editor): 参数表 (params) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="params" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">参数表</label>
+			<div class="col-xs-8">
+                <textarea class="form-control input-lg " name="params"  type="text"  rows="6" 
+                    
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=params | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols" value="params" />
+			</div>
+			<div class="col-xs-2 push-10-t"></div>
+		</div>
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block"></div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 参数表 (params)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="params"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
+
+
+
+
+    <!-- JSON编辑器(json-editor): 发生前 (before) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="before" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">发生前</label>
+			<div class="col-xs-8">
+                <textarea class="form-control input-lg " name="before"  type="text"  rows="6" 
+                    
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=before | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols" value="before" />
+			</div>
+			<div class="col-xs-2 push-10-t"></div>
+		</div>
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block"></div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 发生前 (before)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="before"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
+
+
+
+
+    <!-- JSON编辑器(json-editor): 发生后 (after) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="after" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">发生后</label>
+			<div class="col-xs-8">
+                <textarea class="form-control input-lg " name="after"  type="text"  rows="6" 
+                    
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=after | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols" value="after" />
+			</div>
+			<div class="col-xs-2 push-10-t"></div>
+		</div>
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block"></div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 发生后 (after)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="after"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
+
+				<!--  提交按钮 -->
+				<div class="block block-quickpanel sidebar-mini">
+					<div class="block-quickpanel-content" >
+						<div class="form-group">
+
+							<!-- 功能组 -->
+							<div class="col-xs-2 push-20-t text-left">
+								<a href="<?=App::R('behavior', 'index')?>"
+									class="btn btn-lg btn-primary font-w300 btn-minw push-20-l user-action fn-back" >
+									<i class="fa fa-angle-double-left push-5-r"></i> 行为列表 
+								</a>
+							</div>
+							<div class="col-xs-8 push-20-t text-center">
+								<button  
+									type="submit" 
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-20-r fn-action fn-save  ">
+										<i class="fa fa-save push-5-r"></i> 保存
+								</button>
+
+								<button  
+									type="button" 
+									data-param-id="<?=$rs['behavior_id']?>"
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate  ">
+										<i class="fa fa-files-o push-5-r"></i> 复制
+								</button>
+
+								<button 
+									type="button"
+									class="btn btn-lg btn-danger btn-minw ajax-confirm fn-action fn-saved-only fn-remove"
+									confirm-title="请确认删除行为 "
+						            confirm-content="您确定删除行为 <strong><?=$rs['name=name']?>(<?=$rs['behavior_id']?> )</strong>"
+						            confirm-dismiss = "取消"
+						            confirm-submit= "确定"
+						            confirm-action="<?=App::NR('behavior','remove')?>"
+						            event-before="
+										function( btn, modal ) {
+											$('button', modal)
+												.addClass('disabled')
+												.attr('disabled', 'disabled');
+										}
+									"
+									event-done="
+										function( data, btn, modal) {
+											$('button', modal)
+												.removeClass('disabled')
+												.removeAttr('disabled');
+										}
+									"
+							        event-success="
+										function(btn, modal) {
+											success('行为删除成功');
+											setTimeout(function(){
+												window.location = '<?=App::R('behavior','index')?>';
+											}, 1000);
+										}
+									"
+									event-error="
+										function( data, btn, modal) {
+											failure( '行为删除失败 ('+ data['message'] + ')');
+											return true;
+										}
+									"
+
+									data-param-behavior_id="<?=$rs['behavior_id']?>" 
+	
+									 >
+										<i class="fa fa-minus-circle push-5-r"></i> 删除
+								</button>
+
+							</div>
+						</div>
+						<div class="bg-primary text-white text-center bottom-line"></div>	
+					</div>
+				</div> <!-- END 提交按钮 -->
+
+			</form>
+		</div> <!-- END block-content form -->
+	</div> <!-- END block block-bordered -->
+</div><!-- END content -->
+
+
+
+
+
+<script type="text/javascript">
+function pending( message ) {
+	$('.fn-action')
+		.addClass('disabled')
+		.attr('disabled', 'disabled');
+	App.loading({message:message}).show();
+}
+
+
+function success( message ) {
+	App.notify( message );
+}
+
+function failure( message,  validation ) {
+	validation = validation  || null;
+	message = message || null;
+
+	if ( typeof message == 'object' ) {
+		validation.showErrors(message);
+		return;
+	}
+
+	if ( message != null ) {
+		App.notify( message, 'fa fa-times', 'danger' );
+	}
+}
+
+function done() {
+	App.loading().hide();
+	$('.fn-action')
+		.removeClass('disabled')
+		.removeAttr('disabled');
+}
+
+
+/**
+ * 保存表单
+ */
+function save( form, validation ) {
+
+	var api =$(form).attr("action");
+
+	try {
+		var data = $(form).serializeData(true);
+	} catch( e  ){
+		console.log( e );
+		return ;
+	}
+
+	pending('保存中, 请稍候...');
+	// POST 数据
+	jQuery.post( api, data, function( data, textStatus, xhr) {
+
+		done();
+
+		if ( typeof data['code'] == 'string' ) {
+			data['code'] = parseInt(data['code']);
+		}
+
+		// 返回数据异常
+		if ( typeof data['code'] == 'number' && data['code'] !== 0 ) {
+
+			if ( typeof data['extra'] == 'object' && typeof data['extra']['errors'] == 'object'  ) {
+				failure( data['extra']['errors'], validation );
+				return;
+			}
+
+			var message = data['message'] || "未知错误";
+			failure( message );
+			return;
+		}
+
+		if ( typeof  data['behavior_id'] == 'undefined' ) {
+			var message = data['message'] || "未知错误";
+			failure( message );
+			return;
+		}
+		
+
+		// 更新ID
+		$('input[name=behavior_id]').val( data['behavior_id'] );
+		$('.fn-saved-only').removeClass('hidden');
+		$('.fn-saved-only').attr('data-param-id', data['behavior_id']);
+
+		// 保存成功
+		success('保存成功');
+
+	}, 'json')
+
+	.error(function( xhr, status, message) {
+		failure("保存失败, 网络错误 ( " + xhr.status + ' ' + message+" )");
+		console.log( status, xhr.status, ' message=', message );
+	});
+}
+
+
+$(function(){
+
+	// 设定高度
+	$('.behavior-content').css('minHeight', $(document).outerHeight() );
+	
+	App.initHelpers(['datepicker','select2', 'js-draggable-items', 'masked-inputs','tags-inputs',  'ajax-confirm', 'slimscroll', 'file-uploader', 'image-crop']);
+
+	// 表单验证
+	$('.behavior-form').validate({
+		errorClass: 'help-block animated fadeInDown',
+		errorElement: 'div',
+		errorPlacement: function(error, e) {				
+			jQuery(e).parents('.form-group .col-xs-8').append(error);
+		},
+		highlight: function(e) {
+			jQuery(e).closest('.form-group .col-xs-8').parent().removeClass('has-error').addClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+		unhighlight:function(e){
+			jQuery(e).closest('.form-group .col-xs-8').parent().removeClass('has-error');
+			jQuery(e).closest('.help-block .col-xs-8').remove();
+		},
+		success: function(e) {
+			jQuery(e).closest('.form-group .col-xs-8').parent().removeClass('has-error');
+			jQuery(e).closest('.help-block').remove();
+		},
+
+		submitHandler: function(form) {
+			save( form, this);
+			return false;
+		},
+
+		rules: {},
+		messages: {}
+
+	});
+
+
+	$('.fn-duplicate').click(function(){
+		var api = "<?=App::R('behavior','duplicate', ['behavior_id'=>''])?>";
+		var id = $(this).attr('data-param-id');
+		var url = api + id;
+		window.location = url;
+	})
+
+	if ( $('input[name="behavior_id"]').val() == '' || $('input[name="behavior_id"]').val() == undefined ) {
+		$('.fn-saved-only').addClass('hidden');
+	}
+
+// 自定义代码
+
+
+})
+	
+</script>
