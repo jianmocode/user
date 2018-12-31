@@ -52,8 +52,24 @@ class SetupController extends \Xpmse\Loader\Controller {
 				],
 				90
 			);
-		}
+        }
+        
 
+        // 用户为收集队列
+		if ( $opt->get("user/server/behavior") === null ) {
+			$opt->register(
+				"用户行为收集队列", 
+				"user/server/behavior", 
+				[
+					"host" => "127.0.0.1",
+					"home" => Utils::getHome(),
+					"port" => 7749,
+                    "user" => 0,
+                    "worker_num" =>1
+				],
+				91
+			);
+		}
 
 		// 是否开启短信验证码登录
 		$sms_on = $opt->get("user/sms/on");		
