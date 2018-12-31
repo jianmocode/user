@@ -4,7 +4,7 @@
  * 邀请数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 21:22:49
+ * 最后修改: 2018-12-31 22:16:01
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -95,7 +95,7 @@ class Invite extends Model {
 		// 资源ID
 		$this->putColumn( 'outer_id', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 来源
-		$this->putColumn( 'orgin', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
+		$this->putColumn( 'origin', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 地址
 		$this->putColumn( 'url', $this->type("string", ["length"=>600, "null"=>true]));
 		// 是否跳转
@@ -153,7 +153,7 @@ class Invite extends Model {
 	 *                $rs["user_user_id"], // user.user_id
 	 *          	  $rs["user_slug"],  // 唯一别名 
 	 *          	  $rs["outer_id"],  // 资源ID 
-	 *          	  $rs["orgin"],  // 来源 
+	 *          	  $rs["origin"],  // 来源 
 	 *          	  $rs["url"],  // 地址 
 	 *          	  $rs["redirect"],  // 是否跳转 
 	 *          	  $rs["expired_at"],  // 过期时间 
@@ -239,7 +239,7 @@ class Invite extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 邀请记录MAP {"invite_id1":{"key":"value",...}...}
 	 */
-	public function getInByInviteId($invite_ids, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at"], $order=["invite.created_at"=>"desc"] ) {
+	public function getInByInviteId($invite_ids, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.origin","invite.outer_id","invite.expired_at"], $order=["invite.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -304,7 +304,7 @@ class Invite extends Model {
 	 *                $rs["user_user_id"], // user.user_id
 	 *          	  $rs["user_slug"],  // 唯一别名 
 	 *          	  $rs["outer_id"],  // 资源ID 
-	 *          	  $rs["orgin"],  // 来源 
+	 *          	  $rs["origin"],  // 来源 
 	 *          	  $rs["url"],  // 地址 
 	 *          	  $rs["redirect"],  // 是否跳转 
 	 *          	  $rs["expired_at"],  // 过期时间 
@@ -390,7 +390,7 @@ class Invite extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 邀请记录MAP {"user_slug1":{"key":"value",...}...}
 	 */
-	public function getInByUserSlug($user_slugs, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at"], $order=["invite.created_at"=>"desc"] ) {
+	public function getInByUserSlug($user_slugs, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.origin","invite.outer_id","invite.expired_at"], $order=["invite.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -473,7 +473,7 @@ class Invite extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 邀请记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at"], $order=["invite.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.origin","invite.outer_id","invite.expired_at"], $order=["invite.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -510,14 +510,14 @@ class Invite extends Model {
 	/**
 	 * 按条件检索邀请记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at"]
+	 *         	      $query['select'] 选取字段，默认选择 ["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.origin","invite.outer_id","invite.expired_at"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keywords"] 按关键词查询
 	 *			      $query["invite_id"] 按邀请ID查询 ( = )
 	 *			      $query["slug"] 按别名查询 ( = )
 	 *			      $query["user_user_id"] 按查询 ( = )
-	 *			      $query["orgin"] 按来源查询 ( = )
+	 *			      $query["origin"] 按来源查询 ( = )
 	 *			      $query["outer_id"] 按资源ID查询 ( = )
 	 *			      $query["redirect"] 按是否跳转查询 ( = )
 	 *			      $query["expired_at"] 按过期时间查询 ( < )
@@ -533,7 +533,7 @@ class Invite extends Model {
 	 *               	["user_user_id"], // user.user_id
 	 *               	["user_slug"],  // 唯一别名 
 	 *               	["outer_id"],  // 资源ID 
-	 *               	["orgin"],  // 来源 
+	 *               	["origin"],  // 来源 
 	 *               	["url"],  // 地址 
 	 *               	["redirect"],  // 是否跳转 
 	 *               	["expired_at"],  // 过期时间 
@@ -582,7 +582,7 @@ class Invite extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at"] : $query['select'];
+		$select = empty($query['select']) ? ["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.origin","invite.outer_id","invite.expired_at"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
@@ -601,7 +601,6 @@ class Invite extends Model {
 				$qb->where("invite.invite_id", "like", "%{$query['keywords']}%");
 				$qb->orWhere("invite.slug","like", "%{$query['keywords']}%");
 				$qb->orWhere("invite.outer_id","like", "%{$query['keywords']}%");
-				$qb->orWhere("invite.orgin","like", "%{$query['keywords']}%");
 				$qb->orWhere("user.user_id","like", "%{$query['keywords']}%");
 				$qb->orWhere("user.mobile_full","like", "%{$query['keywords']}%");
 				$qb->orWhere("user.name","like", "%{$query['keywords']}%");
@@ -626,8 +625,8 @@ class Invite extends Model {
 		}
 		  
 		// 按来源查询 (=)  
-		if ( array_key_exists("orgin", $query) &&!empty($query['orgin']) ) {
-			$qb->where("invite.orgin", '=', "{$query['orgin']}" );
+		if ( array_key_exists("origin", $query) &&!empty($query['origin']) ) {
+			$qb->where("invite.origin", '=', "{$query['origin']}" );
 		}
 		  
 		// 按资源ID查询 (=)  
@@ -759,7 +758,7 @@ class Invite extends Model {
 			"user_id",  // 用户ID
 			"user_slug",  // 唯一别名
 			"outer_id",  // 资源ID
-			"orgin",  // 来源
+			"origin",  // 来源
 			"url",  // 地址
 			"redirect",  // 是否跳转
 			"expired_at",  // 过期时间

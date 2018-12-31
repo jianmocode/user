@@ -4,7 +4,7 @@
  * 邀请控制器
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 21:22:49
+ * 最后修改: 2018-12-31 22:16:01
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/controller/Name.php
  */
 
