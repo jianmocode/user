@@ -31,7 +31,11 @@ class Checkin extends Api {
     // @KEEP BEGIN
 
 
-    function mark($query, $data ) {
+    /**
+     * 签到
+     * @method POST /_api/xpmsns/user/checkin/create
+     */
+    function create($query, $data ) {
 
         $u = new \Xpmsns\User\Model\User;
         $user = $u->getUserInfo();
@@ -63,7 +67,7 @@ class Checkin extends Api {
                 throw new Excp("本周已经签过了, 下周再试.", 403, ["rows"=>$rows, "user_id"=>$user_id]);
             }
 
-        } elseif ( $data["limit"] === "monthly_limit") { // 按月
+        } elseif ( $data["limit"] === "monthly") { // 按月
             $rows = $ci->search(["user_id"=>$user_id, "time_after"=>date('Y-m-01 00:00:00')]);
             if ( $rows["total"] > 0 ) {
                 throw new Excp("本月已经签过了, 下月再试.", 403, ["rows"=>$rows, "user_id"=>$user_id]);
@@ -80,9 +84,27 @@ class Checkin extends Api {
 
         return $ci->create( $data );
 
-
     }
 
+    /**
+     * 查询签到记录
+     * @method GET /_api/xpmsns/user/checkin/search
+     * @see \Xpmsns\User\Model\Checkin
+     */
+    function search( $query, $data ) {
+        $u = new \Xpmsns\User\Model\User;
+        $user = $u->getUserInfo();
+        $user_id = $user["user_id"];
+
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $query["user_id"] = $user_id;
+        $ci = new \Xpmsns\User\Model\Checkin;
+        return $rows = $ci->search( $query );
+
+    }
 
     // @KEEP END
 
