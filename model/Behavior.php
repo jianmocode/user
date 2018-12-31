@@ -4,7 +4,7 @@
  * 行为数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-29 15:45:09
+ * 最后修改: 2018-12-31 12:22:31
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -17,6 +17,8 @@ use \Xpmse\Loader\App as App;
 
 
 class Behavior extends Model {
+
+
 
 
 	/**
@@ -41,6 +43,16 @@ class Behavior extends Model {
 
     // @KEEP BEGIN
 
+    /**
+     * 收集环境信息(建议单独调用)
+     */
+    function getEnv() {
+        return [
+            "session_id" => session_id(),
+            "client_ip" => Utils::getClientIP(),
+            "time" => time()
+        ];
+    }
     
     /**
      * 执行指定SLUG行为(通知所有该行为订阅者)
@@ -49,7 +61,7 @@ class Behavior extends Model {
      * @param array $data 行为数据
      * @return 成功返回 true ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
      */
-    function runBySlug( $slug, $user_id, $data=[]) {
+    function runBySlug( $slug, $data=[], $env=[], $user_id=null ) {
         $cache_name = "{$slug}:detail";
         $behavior = $this->cache->getJSON( $cache_name );
         if ( $behavior === false ) {
@@ -60,7 +72,7 @@ class Behavior extends Model {
             $this->cache->setJSON( $cache_name, $behavior );
         }
 
-        return $this->run( $behavior, $user_id, $data );
+        return $this->run( $behavior, $data, $env, $user_id );
     }
 
 
@@ -71,7 +83,7 @@ class Behavior extends Model {
      * @param array $data 行为数据
      * @return 成功返回 true ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
      */
-    function runByBehaviorID( $behavior_id, $user_id, $data=[]) {
+    function runByBehaviorID( $behavior_id,$data=[], $env=[], $user_id=null) {
         $cache_name = "{$behavior_id}:detail";
         $behavior = $this->cache->getJSON( $cache_name );
         if ( $behavior === false ) {
@@ -82,7 +94,7 @@ class Behavior extends Model {
             $this->cache->setJSON( $cache_name, $behavior );
         }
 
-        return $this->run( $behavior, $user_id, $data );
+        return $this->run( $behavior, $data, $env, $user_id );
     }
 
 
@@ -93,9 +105,10 @@ class Behavior extends Model {
      * @param array $data 行为数据
      * @return 成功返回 true ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
      */
-    function run( $behavior, $user_id, $data=[] ) {
+    function run( $behavior,$data=[], $env=[], $user_id=null ) {
         print_r( $behavior );
         print_r( $data ) ;
+        print_r( $env );
         print_r( $user_id );
     }
 

@@ -4,7 +4,7 @@
  * 订阅数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 11:45:41
+ * 最后修改: 2018-12-31 12:22:05
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
