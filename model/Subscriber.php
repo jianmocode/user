@@ -38,6 +38,47 @@ class Subscriber extends Model {
 	 */
 
 
+    // @KEEP BEGIN
+    
+    /**
+     * 重载SaveBy
+     */
+    public function saveBy( $uniqueKey,  $data,  $keys=null , $select=["*"]) {
+        if ( !empty($data["origin"]) &&  !empty($data["ourter_id"]) ) {
+            $data["origin_ourter_id"] = "DB::RAW(CONCAT(`origin`,'_',`ourter_id`))";
+        }
+        return parent::saveBy( $uniqueKey,  $data,  $keys , $select );
+    }
+
+
+	/**
+	 * 重载Remove
+	 * @return [type] [description]
+	 */
+	function remove( $data_key, $uni_key="_id", $mark_only=true ){ 
+		
+		
+		if ( $mark_only === true ) {
+
+			$time = date('Y-m-d H:i:s');
+			$_id = $this->getVar("_id", "WHERE {$uni_key}=? LIMIT 1", [$data_key]);
+			$row = $this->update( $_id, [
+				"deleted_at"=>$time, 
+				"origin_ourter_id"=>"DB::RAW(CONCAT('_','".time() . rand(10000,99999). "_', `origin_ourter_id`))"
+			]);
+
+			if ( $row['deleted_at'] == $time ) {	
+				return true;
+			}
+			return false;
+		}
+
+		return parent::remove($data_key, $uni_key, $mark_only);
+	}
+
+    // @KEEP END
+    
+
 	/**
 	 * 创建数据表
 	 * @return $this
@@ -351,48 +392,6 @@ class Subscriber extends Model {
         // @KEEP END
 		return parent::create( $data );
     }
-
-
-    // @KEEP BEGIN
-    
-    /**
-     * 重载SaveBy
-     */
-    public function saveBy( $uniqueKey,  $data,  $keys=null , $select=["*"]) {
-        if ( !empty($data["origin"]) &&  !empty($data["ourter_id"]) ) {
-            $data["origin_ourter_id"] = "DB::RAW(CONCAT(`origin`,'_',`ourter_id`))";
-        }
-        return parent::saveBy( $uniqueKey,  $data,  $keys , $select );
-    }
-
-
-	/**
-	 * 重载Remove
-	 * @return [type] [description]
-	 */
-	function remove( $data_key, $uni_key="_id", $mark_only=true ){ 
-		
-		
-		if ( $mark_only === true ) {
-
-			$time = date('Y-m-d H:i:s');
-			$_id = $this->getVar("_id", "WHERE {$uni_key}=? LIMIT 1", [$data_key]);
-			$row = $this->update( $_id, [
-				"deleted_at"=>$time, 
-				"origin_ourter_id"=>"DB::RAW(CONCAT('_','".time() . rand(10000,99999). "_', `origin_ourter_id`))"
-			]);
-
-			if ( $row['deleted_at'] == $time ) {	
-				return true;
-			}
-			return false;
-		}
-
-		return parent::remove($data_key, $uni_key, $mark_only);
-	}
-
-    // @KEEP END
-    
 
 
 
