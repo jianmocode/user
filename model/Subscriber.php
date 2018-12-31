@@ -4,11 +4,11 @@
  * 订阅数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 11:45:41
+ * 最后修改: 2018-12-31 12:40:02
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
-            
+             
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
@@ -97,6 +97,8 @@ class Subscriber extends Model {
 		$this->putColumn( 'origin_ourter_id', $this->type("string", ["length"=>128, "unique"=>true, "null"=>true]));
 		// 处理器
 		$this->putColumn( 'handler', $this->type("text", ["json"=>true, "null"=>true]));
+		// 超时时长
+		$this->putColumn( 'timeout', $this->type("text", ["null"=>true]));
 		// 状态
 		$this->putColumn( 'status', $this->type("string", ["length"=>32, "index"=>true, "default"=>"on", "null"=>true]));
 
@@ -149,6 +151,7 @@ class Subscriber extends Model {
 	 *          	  $rs["origin"],  // 来源 
 	 *          	  $rs["origin_ourter_id"],  // 唯一来源ID 
 	 *          	  $rs["handler"],  // 处理器 
+	 *          	  $rs["timeout"],  // 超时时长 
 	 *          	  $rs["status"],  // 状态 
 	 *          	  $rs["created_at"],  // 创建时间 
 	 *          	  $rs["updated_at"],  // 更新时间 
@@ -267,6 +270,7 @@ class Subscriber extends Model {
 	 *          	  $rs["origin"],  // 来源 
 	 *          	  $rs["origin_ourter_id"],  // 唯一来源ID 
 	 *          	  $rs["handler"],  // 处理器 
+	 *          	  $rs["timeout"],  // 超时时长 
 	 *          	  $rs["status"],  // 状态 
 	 *          	  $rs["created_at"],  // 创建时间 
 	 *          	  $rs["updated_at"],  // 更新时间 
@@ -459,6 +463,7 @@ class Subscriber extends Model {
 	 *               	["origin"],  // 来源 
 	 *               	["origin_ourter_id"],  // 唯一来源ID 
 	 *               	["handler"],  // 处理器 
+	 *               	["timeout"],  // 超时时长 
 	 *               	["status"],  // 状态 
 	 *               	["created_at"],  // 创建时间 
 	 *               	["updated_at"],  // 更新时间 
@@ -629,6 +634,7 @@ class Subscriber extends Model {
 			"origin",  // 来源
 			"origin_ourter_id",  // 唯一来源ID
 			"handler",  // 处理器
+			"timeout",  // 超时时长
 			"status",  // 状态
 			"created_at",  // 创建时间
 			"updated_at",  // 更新时间

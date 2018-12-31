@@ -4,11 +4,11 @@
  * 订阅数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 12:22:05
+ * 最后修改: 2018-12-31 12:40:01
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
-            
+             
 
 use \Xpmse\Loader\App;
 use \Xpmse\Excp;
@@ -47,6 +47,7 @@ class Subscriber extends Api {
 	 *               	["origin"],  // 来源 
 	 *               	["origin_ourter_id"],  // 唯一来源ID 
 	 *               	["handler"],  // 处理器 
+	 *               	["timeout"],  // 超时时长 
 	 *               	["status"],  // 状态 
 	 *               	["created_at"],  // 创建时间 
 	 *               	["updated_at"],  // 更新时间 
@@ -131,6 +132,7 @@ class Subscriber extends Api {
 	 *               	["origin"],  // 来源 
 	 *               	["origin_ourter_id"],  // 唯一来源ID 
 	 *               	["handler"],  // 处理器 
+	 *               	["timeout"],  // 超时时长 
 	 *               	["status"],  // 状态 
 	 *               	["created_at"],  // 创建时间 
 	 *               	["updated_at"],  // 更新时间 
