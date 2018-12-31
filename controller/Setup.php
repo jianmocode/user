@@ -18,6 +18,7 @@ class SetupController extends \Xpmse\Loader\Controller {
             '\\Xpmsns\\User\\Model\\Coin',
             '\\Xpmsns\\User\\Model\\Balance',
             '\\Xpmsns\\User\\Model\\Behavior',
+            '\\Xpmsns\\User\\Model\\Subscriber',
             '\\Xpmsns\\User\\Model\\Task',
             '\\Xpmsns\\User\\Model\\UserTask',
 		];

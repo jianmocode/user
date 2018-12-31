@@ -73,9 +73,9 @@
         "order":9999,
         "submenu":[
             {
-				"slug":"xpmsns/user/subscribeBehavior/index",
+				"slug":"xpmsns/user/subscriber/index",
 				"name":"订阅列表",
-				"link":"{subscribeBehavior,index}",
+				"link":"{subscriber,index}",
 				"permission": "boss,admin,manager,user",
 				"order":9999
 			},
