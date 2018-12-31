@@ -44,14 +44,32 @@ class Behavior extends Model {
     // @KEEP BEGIN
 
     /**
-     * 收集环境信息(建议单独调用)
+     * 收集环境信息
+     * @param array $data 扩展数据
+     * @return array $env 
+     *                string session_id 会话ID
+     *                string user_id    用户ID
+     *                array  user       用户资料
+     *                array  cookies    COOKIES
+     *                array  client_ip  访问者IP地址
+     *                array  time       触发时间
      */
-    function getEnv() {
-        return [
+    function getEnv( $data = [] ) {
+
+         // 创建用户对象
+         try {
+            $u = new User;
+            $uinfo = $u->getUserInfo();
+        } catch( Excp $e) {}
+               
+        return array_merge([
             "session_id" => session_id(),
+            "user_id" => $uinfo["user_id"],
+            "user" => $uinfo,
+            "cookies" => $_COOKIE,
             "client_ip" => Utils::getClientIP(),
             "time" => time()
-        ];
+        ],$data);
     }
     
     /**
@@ -59,19 +77,10 @@ class Behavior extends Model {
      * @param string $slug 行为slug
      * @param string $user_id 用户ID 
      * @param array $data 行为数据
-     * @return 成功返回 true ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
+     * @return 成功返回 null ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
      */
     function runBySlug( $slug, $data=[], $env=[], $user_id=null ) {
-        $cache_name = "{$slug}:detail";
-        $behavior = $this->cache->getJSON( $cache_name );
-        if ( $behavior === false ) {
-            $behavior = $this->getBySlug($slug);
-            if ( empty($behavior) ) {
-                throw new Excp("用户行为数据不存在", 404, ["slug"=>$slug, "user_id"=>$user_id, "data"=>$data]);
-            }
-            $this->cache->setJSON( $cache_name, $behavior );
-        }
-
+        $behavior = $this->getBySlug($slug);
         return $this->run( $behavior, $data, $env, $user_id );
     }
 
@@ -81,19 +90,10 @@ class Behavior extends Model {
      * @param string $behavior_id 行为ID
      * @param string $user_id 用户ID 
      * @param array $data 行为数据
-     * @return 成功返回 true ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
+     * @return 成功返回 null ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
      */
     function runByBehaviorID( $behavior_id,$data=[], $env=[], $user_id=null) {
-        $cache_name = "{$behavior_id}:detail";
-        $behavior = $this->cache->getJSON( $cache_name );
-        if ( $behavior === false ) {
-            $behavior = $this->getByBehaviorId($behavior_id);
-            if ( empty($behavior) ) {
-                throw new Excp("用户行为数据不存在", 404, ["slug"=>$slug, "user_id"=>$user_id, "data"=>$data]);
-            }
-            $this->cache->setJSON( $cache_name, $behavior );
-        }
-
+        $behavior = $this->getByBehaviorId($behavior_id);
         return $this->run( $behavior, $data, $env, $user_id );
     }
 
@@ -103,13 +103,66 @@ class Behavior extends Model {
      * @param string $behavior 行为结构体
      * @param string $user_id 用户ID 
      * @param array $data 行为数据
-     * @return 成功返回 true ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
+     * @return 成功返回 null ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
      */
-    function run( $behavior,$data=[], $env=[], $user_id=null ) {
-        print_r( $behavior );
-        print_r( $data ) ;
-        print_r( $env );
-        print_r( $user_id );
+    function run( $behavior,$data=[], $env=[], $user_id=null, $page=1 ) {
+        
+        $behavior_slug = $behavior["slug"];
+
+        // 读取所有订阅者(这里应该处理分页)
+        $subs = new Subscriber();
+        $response = $subs->search([
+            "select"=>"subscriber.*",
+            "behavior_slug"=>$behavior_slug, 
+            "status" => "on",
+            "perpage"=>1, 
+            "page"=>$page
+        ]);
+        $subscribers = $response["data"];
+
+        // 调用Hander
+        foreach( $subscribers as $subscriber ) {
+
+            $handler = $subscriber["handler"];
+            
+            // 运行 Model
+            // {
+            //     "class": "\\xpmsns\\user\\model\\task",
+            //     "method": "onBehaviorTrigger"
+            // }
+            if ( 
+                !empty($handler["class"]) && 
+                !empty($handler["method"]) &&
+                method_exists( $handler["class"], $handler["method"] )
+            ){
+                try {
+                    $method = $handler['method'];
+                    (new $handler['class'])->$method( $behavior, $subscriber, $data, $env );
+                }catch( Excp $e ) { $e->log();}
+            }
+
+            // 调用云端API ( 下一版本支持 )
+            // {
+            //     "url": "https:\/\/root.tt.com\/_api\/xpmsns\/pages\/article\/subcate",
+            //     "method": "POST",
+            //     "query":{
+            //           "articleId": 6008738132134424
+            //     },
+            //     "data": {
+            //         "name":"trying"
+            //     },
+            //     "auth": {
+            //         "scheme": "basic"
+            //     }
+            // }
+
+        }
+
+
+        // 处理下一页订阅数据
+        if (  $response["next"] !== false ) {
+            $this->run( $behavior,$data, $env, $user_id, $response["next"] );
+        }
     }
 
     /**

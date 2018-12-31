@@ -49,6 +49,14 @@ class Task extends Model {
 	 * 自定义函数 
 	 */
 
+    // @KEEP BEGIN
+    public function onBehaviorTrigger( $behavior, $subscriber, $data, $env ) {
+        // print_r( $data );
+    }
+
+
+    // @KEEP END
+
 
 	/**
 	 * 创建数据表
