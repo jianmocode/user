@@ -75,24 +75,50 @@ class Behavior extends Model {
     /**
      * 执行指定SLUG行为(通知所有该行为订阅者)
      * @param string $slug 行为slug
-     * @param string $user_id 用户ID 
-     * @param array $data 行为数据
+     * @param array $data  行为数据
+     * @param array $env   环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     * @param bool  $daemon  是否后台运行( 默认为true )
      * @return 成功返回 null ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
      */
-    function runBySlug( $slug, $data=[], $env=[], $user_id=null ) {
+    function runBySlug( $slug, $data=[], $env=[], $daemon=true ) {
+
+        if ( $daemon === true ) {
+            $job_slug =  "{$slug}::{$env['session_id']}";
+            $job = new \Xpmse\Job(["name"=>"Behavior"]);
+            if ( $job->isRunning($slug) ) {
+                return ["code"=>503, "message"=>"任务正在运行", "extra"=>["slug"=>$slug, "data"=>$data, "env"=>$env] ];
+            }
+            $job->call( $job_slug, "\\Xpmsns\\User\\Model\\Behavior", "runBySlug", $slug, $data, $env, false );
+            return;
+        }
+
+        // 触发指定SLUG用户行为
         $behavior = $this->getBySlug($slug);
         return $this->run( $behavior, $data, $env, $user_id );
+        
     }
 
 
     /**
      * 执行指定ID行为(通知所有该行为订阅者)
      * @param string $behavior_id 行为ID
-     * @param string $user_id 用户ID 
-     * @param array $data 行为数据
+     * @param array $data  行为数据
+     * @param array $env   环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     * @param bool  $daemon  是否后台运行( 默认为true )
      * @return 成功返回 null ,  失败返回错误结构体 ["code"=>xxx, "message"=>"xxx", "extra"=>[...]]
      */
-    function runByBehaviorID( $behavior_id,$data=[], $env=[], $user_id=null) {
+    function runByBehaviorID( $behavior_id,$data=[], $env=[], $daemon=true) {
+
+        if ( $daemon === true ) {
+            $job_slug =  "{$behavior_id}::{$env['session_id']}";
+            $job = new \Xpmse\Job(["name"=>"Behavior"]);
+            if ( $job->isRunning($slug) ) {
+                return ["code"=>503, "message"=>"任务正在运行", "extra"=>["slug"=>$slug, "data"=>$data, "env"=>$env] ];
+            }
+            $job->call( $job_slug, "\\Xpmsns\\User\\Model\\Behavior", "runByBehaviorID", $behavior_id, $data, $env, false );
+            return;
+        }
+
         $behavior = $this->getByBehaviorId($behavior_id);
         return $this->run( $behavior, $data, $env, $user_id );
     }

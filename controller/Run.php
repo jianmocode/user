@@ -33,7 +33,7 @@ class RunController extends \Xpmse\Loader\Controller {
      *       // job is running
      *       return true;
      *   }
-     *   $job_id = $job->call( $slug, "\\SomeOrg\\SomeApp\\Model\\SomeMethod", "Behavior", $args... );
+     *   $job_id = $job->call( $slug, "SomeModel", "SomeMethod", $args... );
      */
     function BehaviorServer() {
         
