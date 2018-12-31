@@ -4,7 +4,7 @@
  * 行为数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 12:22:31
+ * 最后修改: 2018-12-31 12:31:17
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -237,7 +237,7 @@ class Behavior extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 行为记录MAP {"behavior_id1":{"key":"value",...}...}
 	 */
-	public function getInByBehaviorId($behavior_ids, $select=["behavior.behavior_id","behavior.name","behavior.params","behavior.status"], $order=["behavior.created_at"=>"desc"] ) {
+	public function getInByBehaviorId($behavior_ids, $select=["behavior.behavior_id","behavior.name","behavior.slug","behavior.params","behavior.status"], $order=["behavior.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -344,7 +344,7 @@ class Behavior extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 行为记录MAP {"slug1":{"key":"value",...}...}
 	 */
-	public function getInBySlug($slugs, $select=["behavior.behavior_id","behavior.name","behavior.params","behavior.status"], $order=["behavior.created_at"=>"desc"] ) {
+	public function getInBySlug($slugs, $select=["behavior.behavior_id","behavior.name","behavior.slug","behavior.params","behavior.status"], $order=["behavior.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -418,7 +418,7 @@ class Behavior extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 行为记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["behavior.behavior_id","behavior.name","behavior.params","behavior.status"], $order=["behavior.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["behavior.behavior_id","behavior.name","behavior.slug","behavior.params","behavior.status"], $order=["behavior.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -454,7 +454,7 @@ class Behavior extends Model {
 	/**
 	 * 按条件检索行为记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["behavior.behavior_id","behavior.name","behavior.params","behavior.status"]
+	 *         	      $query['select'] 选取字段，默认选择 ["behavior.behavior_id","behavior.name","behavior.slug","behavior.params","behavior.status"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keywords"] 按关键词查询
@@ -479,7 +479,7 @@ class Behavior extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["behavior.behavior_id","behavior.name","behavior.params","behavior.status"] : $query['select'];
+		$select = empty($query['select']) ? ["behavior.behavior_id","behavior.name","behavior.slug","behavior.params","behavior.status"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
