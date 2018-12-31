@@ -4,7 +4,7 @@
  * 邀请数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 21:08:39
+ * 最后修改: 2018-12-31 21:22:49
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -239,7 +239,7 @@ class Invite extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 邀请记录MAP {"invite_id1":{"key":"value",...}...}
 	 */
-	public function getInByInviteId($invite_ids, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at","invite.redirect"], $order=["invite.created_at"=>"desc"] ) {
+	public function getInByInviteId($invite_ids, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at"], $order=["invite.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -390,7 +390,7 @@ class Invite extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 邀请记录MAP {"user_slug1":{"key":"value",...}...}
 	 */
-	public function getInByUserSlug($user_slugs, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at","invite.redirect"], $order=["invite.created_at"=>"desc"] ) {
+	public function getInByUserSlug($user_slugs, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at"], $order=["invite.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -473,7 +473,7 @@ class Invite extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 邀请记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at","invite.redirect"], $order=["invite.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at"], $order=["invite.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -510,7 +510,7 @@ class Invite extends Model {
 	/**
 	 * 按条件检索邀请记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at","invite.redirect"]
+	 *         	      $query['select'] 选取字段，默认选择 ["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keywords"] 按关键词查询
@@ -582,7 +582,7 @@ class Invite extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at","invite.redirect"] : $query['select'];
+		$select = empty($query['select']) ? ["invite.invite_id","invite.slug","user.user_id","user.name","user.nickname","user.mobile","invite.orgin","invite.outer_id","invite.expired_at"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}

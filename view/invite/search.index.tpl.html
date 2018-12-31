@@ -114,18 +114,18 @@ use \Xpmse\T;
 								</ul>
 							</div> <!-- END 结果集排序 -->
 						
-							<!-- 邀请状态过滤 -->
+							<!-- 跳转过滤 -->
 							<div class="btn-group pull-right push-20-l" role="group">  
 								<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" >
 									<i class="glyphicon glyphicon-list-alt"></i> 
 									<?=($query['redirect'] == '0') ? '不跳转' : '' ?>
 									<?=($query['redirect'] == '1') ? '自动跳转' : '' ?>
-									<?=(empty($query['redirect'])) ? '邀请状态' : '' ?>
+									<?=(empty($query['redirect'])) ? '跳转' : '' ?>
 									<span class="caret"></span> 
 								</button>
 
 								<ul class="dropdown-menu dropdown-menu-right"  style="min-width: 87px;">
-									<li class="dropdown-header">邀请状态</li>
+									<li class="dropdown-header">跳转</li>
 									<li>
 										<a href="javascript:search('redirect','')">
 										   全部
@@ -142,7 +142,7 @@ use \Xpmse\T;
 										</a>
 									</li>
 								</ul>
-							</div> <!-- END 邀请状态过滤 -->
+							</div> <!-- END 跳转过滤 -->
 
 
 						</div><!-- END col-xs-7 -->
@@ -160,7 +160,6 @@ use \Xpmse\T;
 								<th class="font-w300"> 来源 </th>
 								<th class="font-w300"> 资源ID </th>
 								<th class="font-w300"> 过期时间 </th>
-								<th class="font-w300"> 是否跳转 </th>
 							</tr>
 						</thead>
 
@@ -186,16 +185,13 @@ use \Xpmse\T;
 								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{expired_at}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
-								<td class="font-w300">
-									<span class="text-<?=$rs['_redirect']['style']?>"><?=$rs['_redirect']['name'] ? $rs['_redirect']['name']  : $rs['redirect'] ?></span>
-								</td>
 							</tr>
 							<?php endforeach;?>
 
 						</tbody>
 
 						<tfoot>
-							<tr><td colspan="7"> <nav class="pull-right">
+							<tr><td colspan="6"> <nav class="pull-right">
 
 								<ul class="pagination">
 									<?php if ($response['prev'] !== false): ?>
