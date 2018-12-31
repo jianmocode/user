@@ -51,7 +51,7 @@ class Task extends Model {
 
     // @KEEP BEGIN
     public function onBehaviorTrigger( $behavior, $subscriber, $data, $env ) {
-        // print_r( $data );
+        print_r( $data );
     }
 
 

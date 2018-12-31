@@ -21,6 +21,7 @@ class SetupController extends \Xpmse\Loader\Controller {
             '\\Xpmsns\\User\\Model\\Subscriber',
             '\\Xpmsns\\User\\Model\\Task',
             '\\Xpmsns\\User\\Model\\UserTask',
+            '\\Xpmsns\\User\\Model\\Checkin',
 		];
 	}
 
