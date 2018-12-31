@@ -4,11 +4,11 @@
  * 收藏数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 18:46:01
+ * 最后修改: 2018-12-31 18:55:47
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
-            
+             
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
@@ -92,6 +92,8 @@ class Favorite extends Model {
 		$this->putColumn( 'outer_id', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 来源
 		$this->putColumn( 'origin', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
+		// 地址
+		$this->putColumn( 'url', $this->type("string", ["length"=>600, "null"=>true]));
 		// 收藏唯一ID
 		$this->putColumn( 'origin_outer_id', $this->type("string", ["length"=>128, "unique"=>true, "null"=>true]));
 		// 标题
@@ -127,6 +129,7 @@ class Favorite extends Model {
 	 *                $rs["user_user_id"], // user.user_id
 	 *          	  $rs["outer_id"],  // 资源ID 
 	 *          	  $rs["origin"],  // 来源 
+	 *          	  $rs["url"],  // 地址 
 	 *          	  $rs["origin_outer_id"],  // 收藏唯一ID 
 	 *          	  $rs["title"],  // 标题 
 	 *          	  $rs["summary"],  // 摘要 
@@ -275,6 +278,7 @@ class Favorite extends Model {
 	 *                $rs["user_user_id"], // user.user_id
 	 *          	  $rs["outer_id"],  // 资源ID 
 	 *          	  $rs["origin"],  // 来源 
+	 *          	  $rs["url"],  // 地址 
 	 *          	  $rs["origin_outer_id"],  // 收藏唯一ID 
 	 *          	  $rs["title"],  // 标题 
 	 *          	  $rs["summary"],  // 摘要 
@@ -498,6 +502,7 @@ class Favorite extends Model {
 	 *               	["user_user_id"], // user.user_id
 	 *               	["outer_id"],  // 资源ID 
 	 *               	["origin"],  // 来源 
+	 *               	["url"],  // 地址 
 	 *               	["origin_outer_id"],  // 收藏唯一ID 
 	 *               	["title"],  // 标题 
 	 *               	["summary"],  // 摘要 
@@ -706,6 +711,7 @@ class Favorite extends Model {
 			"user_id",  // 用户ID
 			"outer_id",  // 资源ID
 			"origin",  // 来源
+			"url",  // 地址
 			"origin_outer_id",  // 收藏唯一ID
 			"title",  // 标题
 			"summary",  // 摘要

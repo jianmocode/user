@@ -85,6 +85,19 @@ use \Xpmse\T;
 		</div>
 	</div><!-- END 单行文本: 来源 (origin) -->
 
+	<!-- 单行文本: 地址 (url) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="url">地址</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="url" name="url" 
+				placeholder=""  
+				value="<?=T::v('<%=url | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单行文本: 地址 (url) -->
+
 	<!-- 单行文本: 标题 (title) 开始  -->
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="title">标题</label>
