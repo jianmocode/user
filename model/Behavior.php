@@ -67,7 +67,7 @@ class Behavior extends Model {
             "user_id" => $uinfo["user_id"],
             "user" => $uinfo,
             "cookies" => $_COOKIE,
-            "client_ip" => Utils::getClientIP(),
+            "client_ip" => Utils::clientIP(),
             "time" => time()
         ],$data);
     }
