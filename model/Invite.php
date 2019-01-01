@@ -38,6 +38,45 @@ class Invite extends Model {
 	 */
 
     // @KEEP BEGIN
+
+    /**
+     * 设定邀请人信息 Session 
+     * @param string $user_id 用户ID
+     */
+    public function setInviter( $user_id ) {
+
+        $u = new User();
+        $uinfo = $u->getByUid($user_id, [ 
+            "user.user_id", "user.name", "user.nickname", "user.mobile",
+            "user.sex", "user.province", "user.city", "user.bio", "user.country",
+            "user.headimgurl", "user.headimgurl", "user.bgimgurl",
+            "user.status"
+        ]);
+
+        if ( empty($uinfo) ) {
+            throw new Excp("未找到用户信息", 404, ["user_id"=>$user_id]);
+        }
+
+        @session_start();
+        $_SESSION["INVITER:info"] = $uinfo;
+        return $uinfo;
+    }
+
+
+    /**
+     * 读取邀请人信息
+     */
+    public function getInviter() {
+
+        @session_start();
+        $uinfo = $_SESSION["INVITER:info"];
+        if ( empty($uinfo) ) {
+            return [];
+        }
+        return $uinfo;
+    }
+
+
     
     /**
      * 重载SaveBy

@@ -68,9 +68,13 @@ class Invite extends Api {
         $u = new \Xpmsns\User\Model\User;
         $user = $u->getUserInfo();
 
-        // 防止作弊
+        // ?防止作弊
+
+        // 设定邀请者身份
+        $inviter = $inst->setInviter( $invite["user_id"] );
 
         // 记录当前访问者身份
+        $invite["inviter"] = $inviter;
         $invite["visitor"] = $user;
         $invite["visitor"]["is_self"] = ($user["user_id"] === $invite["user_id"]);
         return $invite;
@@ -78,6 +82,15 @@ class Invite extends Api {
     }
 
 
+    /**
+     * 读取邀请人信息
+     * @method GET /_api/xpmsns/user/invite/getInviter
+     */
+    public function getInviter( $query, $data ) {
+        $inst = new \Xpmsns\User\Model\Invite;
+        return $inst->getInviter();
+    }
+    
 
     /**
      * 创建邀请
