@@ -37,6 +37,52 @@ class Checkin extends Model {
 	 * 自定义函数 
 	 */
 
+    // @KEEP BEGIN
+    
+    /**
+     * 签到初始化( 注册行为/注册任务/设置默认值等... )
+     */
+    public function __defaults() {
+
+        // 注册任务
+        $tasks = [
+            [
+                "name"=>"签到任务", "slug"=>"checkin", "type"=>"repeatable",
+                "daily_limit"=>1, "process"=>7, 
+                "quantity" => [100,200,300,400,500,600,700],
+                "auto_accept" => 1,
+                "accept" => ["\\xpmsns\\user\\model\\checkin", "onCheckinAccpet"],
+                "status" => "online",
+            ]
+        ];
+
+        // 注册行为
+        $behaviors =[
+            [
+                "name" => "用户签到", "slug"=>"xpmsns/user/checkin/create",
+                "intro" =>  "本行为当用户签到成功后触发",
+                "params" => ["time"=>"签到时间", "history"=>"一周签到记录"],
+                "status" => "online",
+            ]
+        ];
+
+        // 订阅行为
+        $subscribers =[
+            [
+                "name" => "签到任务订阅",
+                "behavior_slug"=>"xpmsns/user/checkin/create",
+                "ourter_id" => "checkin",
+                "origin" => "task",
+                "timeout" => 30,
+                "handler" => ["\\xpmsns\\user\\model\\checkin", "onCheckinChange"],
+                "status" => "on",
+            ]
+        ];
+
+    }
+
+    // @KEEP END
+
 
 	/**
 	 * 创建数据表
