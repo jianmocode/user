@@ -4,7 +4,7 @@
  * 任务数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-01 20:15:59
+ * 最后修改: 2019-01-01 20:31:43
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -71,7 +71,7 @@ class Task extends Model {
 		// 名称
 		$this->putColumn( 'name', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 类目
-		$this->putColumn( 'categories', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
+		$this->putColumn( 'categories', $this->type("text", ["json"=>true, "null"=>true]));
 		// 类型
 		$this->putColumn( 'type', $this->type("string", ["length"=>32, "index"=>true, "null"=>true]));
 		// 简介

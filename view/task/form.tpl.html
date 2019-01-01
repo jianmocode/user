@@ -275,7 +275,7 @@ use \Xpmse\T;
 
 
 
-    <!-- JSON编辑器(json-editor): 接受条件 (accept) 开始  -->
+    <!-- JSON编辑器(json-editor): 接受处理器 (accept) 开始  -->
 	<style type="text/css">
 		.CodeMirror {
 			border: 1px solid #e6e6e6;
@@ -284,7 +284,7 @@ use \Xpmse\T;
 	<div class="json-editor draggable-item" data-name="accept" >
 
 		<div class="form-group">
-			<label class="col-xs-2 control-label">接受条件</label>
+			<label class="col-xs-2 control-label">接受处理器</label>
 			<div class="col-xs-8">
                 <textarea class="form-control input-lg disabled" name="accept"  type="text"  rows="6" 
                     disabled
@@ -298,11 +298,11 @@ use \Xpmse\T;
 		<div class="form-group helper"> 
 			<label class="col-xs-2 control-label" for="schedule"></label>
 			<div class="col-xs-9">
-				<div class="help-block">由工程师填写</div>
+				<div class="help-block">任务接受处理器, 由工程师填写</div>
 			</div>
 		</div><!-- end helper -->
 	</div>
-    <!-- END 代码编辑器(json-editor): 接受条件 (accept)  -->
+    <!-- END 代码编辑器(json-editor): 接受处理器 (accept)  -->
 
     <script type="text/javascript">
     
@@ -407,10 +407,7 @@ use \Xpmse\T;
 									class="btn btn-lg btn-primary font-w300 btn-minw push-20-l user-action fn-back" >
 									<i class="fa fa-angle-double-left push-5-r"></i> 任务列表 
 								</a>
-                            </div>
-                            
-                            <!-- @KEEP BEGIN -->
-
+							</div>
 							<div class="col-xs-8 push-20-t text-center">
 								<button  
 									type="submit" 
@@ -421,7 +418,7 @@ use \Xpmse\T;
 								<button  
 									type="button" 
 									data-param-id="<?=$rs['task_id']?>"
-									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate hidden ">
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate  hidden ">
 										<i class="fa fa-files-o push-5-r"></i> 复制
 								</button>
 
@@ -468,11 +465,7 @@ use \Xpmse\T;
 										<i class="fa fa-minus-circle push-5-r"></i> 删除
 								</button>
 
-                            </div>
-                            
-                            <!-- @KEEP END -->
-
-
+							</div>
 						</div>
 						<div class="bg-primary text-white text-center bottom-line"></div>	
 					</div>
