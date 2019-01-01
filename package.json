@@ -107,7 +107,7 @@
 			},
 			{
 				"slug":"xpmsns/user/task/index",
-				"name":"任务设定",
+				"name":"任务列表",
 				"link":"{task,index}",
 				"permission": "boss,admin,manager,user",
 				"order":9999
