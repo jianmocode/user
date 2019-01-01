@@ -28,6 +28,49 @@ class Task extends Api {
 	 * 自定义函数 
 	 */
 
+    // @KEEP BEGIN
+    
+    /**
+     * 接受任务
+     * @method POST 
+     * @param string task_id  [选填]任务ID ( task_id/slug 必填一项 )
+     * @param string slug [选填]任务别名( task_id/slug 必填一项 )
+     * @return array 任务副本结构体
+     */
+    function accept( $query, $data ) {
+
+        $u = new \Xpmsns\User\Model\User;
+        $user = $u->getUserInfo();
+        $user_id = $user["user_id"];
+
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $task_id = $data["task_id"];
+        $slug = $data["slug"];
+
+        if ( empty($slug) && empty( $task_id ) ) {
+              throw new Excp("请提供任务ID或者任务别名", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $utask = new \Xpmsns\User\Model\UserTask;
+        if ( !empty($task_id) ) {
+            return $utask->acceptByTaskId( $task_id, $user_id);
+        } 
+        
+        return $utask->acceptBySlug($slug, $user_id);
+    }
+
+
+    /**
+     * 取消任务
+     */
+    function cancel( $query, $data ) {
+
+    }
+
+    // @KEEP END
 
 	/**
 	 * 查询一条任务记录
