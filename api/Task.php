@@ -67,8 +67,38 @@ class Task extends Api {
      * 取消任务
      */
     function cancel( $query, $data ) {
+        $u = new \Xpmsns\User\Model\User;
+        $user = $u->getUserInfo();
+        $user_id = $user["user_id"];
 
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $usertask_id = $data["usertask_id"];
+        if ( empty($usertask_id) ) {
+            throw new Excp("请提供任务副本ID", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $utask = new \Xpmsns\User\Model\UserTask;
+        $usertask = $utask->getByUsertaskId($usertask_id, ["user_id"]);
+        if ( empty($usertask) ) {
+            throw new Excp("用户尚未接受此项任务", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        if( $user_id != $usertask["user_id"])  {
+            throw new Excp("当前用户没有该项任务的管理权限", 402, ["query"=>$query, "data"=>$data]);
+        } 
+
+        $rs = $utask->cancel( $usertask_id );
+        if ( $rs["status"] == "canceled" ){
+            return ["code"=>0, "message"=>"操作成功,任务已取消", "rs"=>$rs];
+        }
+        
+        throw new Excp("取消失败,未知错误", 500, ["query"=>$query, "data"=>$data, "response"=>$rs]);
     }
+
+    
 
     // @KEEP END
 

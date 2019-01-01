@@ -87,6 +87,21 @@ class Usertask extends Model {
 
 
     /**
+     * 取消指定任务(任务副本)
+     * @param string $task_id  任务ID
+     * @param string $user_id  用户ID
+     * @return array 任务副本结构体
+     */
+    public function cancel( $usertask_id ) {
+        // 取消任务副本
+        return $this->updateBy("usertask_id",[
+            "usertask_id"=>$usertask_id,
+            "status" => "canceled"
+        ]);
+    }
+
+
+    /**
      * 运行接受任务脚本, 校验是否达成接受条件
      * @param string $task  任务结构体
      *                  task_id         required
@@ -282,6 +297,7 @@ class Usertask extends Model {
         return $this->accept( $task, $user_id );
 
     }
+
 
     /**
      * 接受指定SLUG的任务(创建任务副本)
