@@ -176,6 +176,7 @@ use \Xpmse\T;
 								<th class="font-w300"> 封面 </th>
 								<th class="font-w300"> 别名 </th>
 								<th class="font-w300"> 名称 </th>
+								<th class="font-w300"> 分类 </th>
 								<th class="font-w300"> 类型 </th>
 								<th class="font-w300"> 步骤 </th>
 								<th class="font-w300"> 积分数量 </th>
@@ -204,6 +205,9 @@ use \Xpmse\T;
 									<?php $v=null; $v=T::s("{{name}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
+									<?php $v=null; $v=T::s("{{category_name}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
+								</td>
+								<td class="font-w300">
 									<span class="text-<?=$rs['_type']['style']?>"><?=$rs['_type']['name'] ? $rs['_type']['name']  : $rs['type'] ?></span>
 								</td>
 								<td class="font-w300">
@@ -221,7 +225,7 @@ use \Xpmse\T;
 						</tbody>
 
 						<tfoot>
-							<tr><td colspan="8"> <nav class="pull-right">
+							<tr><td colspan="9"> <nav class="pull-right">
 
 								<ul class="pagination">
 									<?php if ($response['prev'] !== false): ?>

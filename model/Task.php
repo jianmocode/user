@@ -4,7 +4,7 @@
  * 任务数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-28 16:22:26
+ * 最后修改: 2019-01-01 20:15:59
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -70,6 +70,8 @@ class Task extends Model {
 		$this->putColumn( 'slug', $this->type("string", ["length"=>128, "unique"=>true, "null"=>true]));
 		// 名称
 		$this->putColumn( 'name', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
+		// 类目
+		$this->putColumn( 'categories', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 类型
 		$this->putColumn( 'type', $this->type("string", ["length"=>32, "index"=>true, "null"=>true]));
 		// 简介
@@ -77,9 +79,7 @@ class Task extends Model {
 		// 封面
 		$this->putColumn( 'cover', $this->type("text", ["json"=>true, "null"=>true]));
 		// 积分数量
-		$this->putColumn( 'quantity', $this->type("integer", ["length"=>1, "null"=>true]));
-		// 奖励公式
-		$this->putColumn( 'formula', $this->type("text", ["json"=>true, "null"=>true]));
+		$this->putColumn( 'quantity', $this->type("text", ["json"=>true, "null"=>true]));
 		// 时限额
 		$this->putColumn( 'hourly_limit', $this->type("integer", ["length"=>1, "null"=>true]));
 		// 日限额
@@ -94,14 +94,14 @@ class Task extends Model {
 		$this->putColumn( 'time_limit', $this->type("integer", ["length"=>1, "null"=>true]));
 		// 步骤
 		$this->putColumn( 'process', $this->type("integer", ["length"=>1, "null"=>true]));
+		// 自动接受
+		$this->putColumn( 'auto_accept', $this->type("integer", ["length"=>1, "index"=>true, "null"=>true]));
 		// 接受条件
 		$this->putColumn( 'accept', $this->type("text", ["json"=>true, "null"=>true]));
-		// 达成条件
-		$this->putColumn( 'complete', $this->type("text", ["json"=>true, "null"=>true]));
-		// 事件
-		$this->putColumn( 'events', $this->type("text", ["json"=>true, "null"=>true]));
 		// 状态
 		$this->putColumn( 'status', $this->type("string", ["length"=>32, "index"=>true, "default"=>"online", "null"=>true]));
+		// 事件
+		$this->putColumn( 'events', $this->type("text", ["json"=>true, "null"=>true]));
 
 		return $this;
 	}
@@ -188,11 +188,12 @@ class Task extends Model {
 	 *          	  $rs["task_id"],  // 任务ID 
 	 *          	  $rs["slug"],  // 别名 
 	 *          	  $rs["name"],  // 名称 
+	 *          	  $rs["categories"],  // 类目 
+	 *                $rs["_map_category"][$categories[n]]["category_id"], // category.category_id
 	 *          	  $rs["type"],  // 类型 
 	 *          	  $rs["summary"],  // 简介 
 	 *          	  $rs["cover"],  // 封面 
 	 *          	  $rs["quantity"],  // 积分数量 
-	 *          	  $rs["formula"],  // 奖励公式 
 	 *          	  $rs["hourly_limit"],  // 时限额 
 	 *          	  $rs["daily_limit"],  // 日限额 
 	 *          	  $rs["weekly_limit"],  // 周限额 
@@ -200,12 +201,33 @@ class Task extends Model {
 	 *          	  $rs["yearly_limit"],  // 年限额 
 	 *          	  $rs["time_limit"],  // 完成时限 
 	 *          	  $rs["process"],  // 步骤 
+	 *          	  $rs["auto_accept"],  // 自动接受 
 	 *          	  $rs["accept"],  // 接受条件 
-	 *          	  $rs["complete"],  // 达成条件 
-	 *          	  $rs["events"],  // 事件 
 	 *          	  $rs["status"],  // 状态 
+	 *          	  $rs["events"],  // 事件 
 	 *          	  $rs["created_at"],  // 创建时间 
 	 *          	  $rs["updated_at"],  // 更新时间 
+	 *                $rs["_map_category"][$categories[n]]["created_at"], // category.created_at
+	 *                $rs["_map_category"][$categories[n]]["updated_at"], // category.updated_at
+	 *                $rs["_map_category"][$categories[n]]["slug"], // category.slug
+	 *                $rs["_map_category"][$categories[n]]["project"], // category.project
+	 *                $rs["_map_category"][$categories[n]]["page"], // category.page
+	 *                $rs["_map_category"][$categories[n]]["wechat"], // category.wechat
+	 *                $rs["_map_category"][$categories[n]]["wechat_offset"], // category.wechat_offset
+	 *                $rs["_map_category"][$categories[n]]["name"], // category.name
+	 *                $rs["_map_category"][$categories[n]]["fullname"], // category.fullname
+	 *                $rs["_map_category"][$categories[n]]["link"], // category.link
+	 *                $rs["_map_category"][$categories[n]]["root_id"], // category.root_id
+	 *                $rs["_map_category"][$categories[n]]["parent_id"], // category.parent_id
+	 *                $rs["_map_category"][$categories[n]]["priority"], // category.priority
+	 *                $rs["_map_category"][$categories[n]]["hidden"], // category.hidden
+	 *                $rs["_map_category"][$categories[n]]["isnav"], // category.isnav
+	 *                $rs["_map_category"][$categories[n]]["param"], // category.param
+	 *                $rs["_map_category"][$categories[n]]["status"], // category.status
+	 *                $rs["_map_category"][$categories[n]]["issubnav"], // category.issubnav
+	 *                $rs["_map_category"][$categories[n]]["highlight"], // category.highlight
+	 *                $rs["_map_category"][$categories[n]]["isfootnav"], // category.isfootnav
+	 *                $rs["_map_category"][$categories[n]]["isblank"], // category.isblank
 	 */
 	public function getByTaskId( $task_id, $select=['*']) {
 		
@@ -219,9 +241,8 @@ class Task extends Model {
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 
 		// 创建查询构造器
-		$qb = $this->query();
-		// $qb = Utils::getTab("xpmsns_user_task as task", "{none}")->query();
-		$qb->where('task_id', '=', $task_id );
+		$qb = Utils::getTab("xpmsns_user_task as task", "{none}")->query();
+ 		$qb->where('task_id', '=', $task_id );
 		$qb->limit( 1 );
 		$qb->select($select);
 		$rows = $qb->get()->toArray();
@@ -232,7 +253,15 @@ class Task extends Model {
 		$rs = current( $rows );
 		$this->format($rs);
 
+ 		$category_ids = []; // 读取 inWhere category 数据
+		$category_ids = array_merge($category_ids, is_array($rs["categories"]) ? $rs["categories"] : [$rs["categories"]]);
 
+ 		// 读取 inWhere category 数据
+		if ( !empty($inwhereSelect["category"]) && method_exists("\\Xpmsns\\Pages\\Model\\Category", 'getInByCategoryId') ) {
+			$category_ids = array_unique($category_ids);
+			$selectFields = $inwhereSelect["category"];
+			$rs["_map_category"] = (new \Xpmsns\Pages\Model\Category)->getInByCategoryId($category_ids, $selectFields);
+		}
 
 		return $rs;
 	}
@@ -246,7 +275,7 @@ class Task extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 任务记录MAP {"task_id1":{"key":"value",...}...}
 	 */
-	public function getInByTaskId($task_ids, $select=["task.task_id","task.cover","task.slug","task.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
+	public function getInByTaskId($task_ids, $select=["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -257,7 +286,8 @@ class Task extends Model {
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 
 		// 创建查询构造器
-		$qb = $this->query()->whereIn('task_id', $task_ids);;
+		$qb = Utils::getTab("xpmsns_user_task as task", "{none}")->query();
+ 		$qb->whereIn('task.task_id', $task_ids);
 		
 		// 排序
 		foreach ($order as $field => $order ) {
@@ -268,12 +298,21 @@ class Task extends Model {
 
 		$map = [];
 
+ 		$category_ids = []; // 读取 inWhere category 数据
 		foreach ($data as & $rs ) {
 			$this->format($rs);
 			$map[$rs['task_id']] = $rs;
 			
+ 			// for inWhere category
+			$category_ids = array_merge($category_ids, is_array($rs["categories"]) ? $rs["categories"] : [$rs["categories"]]);
 		}
 
+ 		// 读取 inWhere category 数据
+		if ( !empty($inwhereSelect["category"]) && method_exists("\\Xpmsns\\Pages\\Model\\Category", 'getInByCategoryId') ) {
+			$category_ids = array_unique($category_ids);
+			$selectFields = $inwhereSelect["category"];
+			$map["_map_category"] = (new \Xpmsns\Pages\Model\Category)->getInByCategoryId($category_ids, $selectFields);
+		}
 
 
 		return $map;
@@ -306,11 +345,12 @@ class Task extends Model {
 	 *          	  $rs["task_id"],  // 任务ID 
 	 *          	  $rs["slug"],  // 别名 
 	 *          	  $rs["name"],  // 名称 
+	 *          	  $rs["categories"],  // 类目 
+	 *                $rs["_map_category"][$categories[n]]["category_id"], // category.category_id
 	 *          	  $rs["type"],  // 类型 
 	 *          	  $rs["summary"],  // 简介 
 	 *          	  $rs["cover"],  // 封面 
 	 *          	  $rs["quantity"],  // 积分数量 
-	 *          	  $rs["formula"],  // 奖励公式 
 	 *          	  $rs["hourly_limit"],  // 时限额 
 	 *          	  $rs["daily_limit"],  // 日限额 
 	 *          	  $rs["weekly_limit"],  // 周限额 
@@ -318,12 +358,33 @@ class Task extends Model {
 	 *          	  $rs["yearly_limit"],  // 年限额 
 	 *          	  $rs["time_limit"],  // 完成时限 
 	 *          	  $rs["process"],  // 步骤 
+	 *          	  $rs["auto_accept"],  // 自动接受 
 	 *          	  $rs["accept"],  // 接受条件 
-	 *          	  $rs["complete"],  // 达成条件 
-	 *          	  $rs["events"],  // 事件 
 	 *          	  $rs["status"],  // 状态 
+	 *          	  $rs["events"],  // 事件 
 	 *          	  $rs["created_at"],  // 创建时间 
 	 *          	  $rs["updated_at"],  // 更新时间 
+	 *                $rs["_map_category"][$categories[n]]["created_at"], // category.created_at
+	 *                $rs["_map_category"][$categories[n]]["updated_at"], // category.updated_at
+	 *                $rs["_map_category"][$categories[n]]["slug"], // category.slug
+	 *                $rs["_map_category"][$categories[n]]["project"], // category.project
+	 *                $rs["_map_category"][$categories[n]]["page"], // category.page
+	 *                $rs["_map_category"][$categories[n]]["wechat"], // category.wechat
+	 *                $rs["_map_category"][$categories[n]]["wechat_offset"], // category.wechat_offset
+	 *                $rs["_map_category"][$categories[n]]["name"], // category.name
+	 *                $rs["_map_category"][$categories[n]]["fullname"], // category.fullname
+	 *                $rs["_map_category"][$categories[n]]["link"], // category.link
+	 *                $rs["_map_category"][$categories[n]]["root_id"], // category.root_id
+	 *                $rs["_map_category"][$categories[n]]["parent_id"], // category.parent_id
+	 *                $rs["_map_category"][$categories[n]]["priority"], // category.priority
+	 *                $rs["_map_category"][$categories[n]]["hidden"], // category.hidden
+	 *                $rs["_map_category"][$categories[n]]["isnav"], // category.isnav
+	 *                $rs["_map_category"][$categories[n]]["param"], // category.param
+	 *                $rs["_map_category"][$categories[n]]["status"], // category.status
+	 *                $rs["_map_category"][$categories[n]]["issubnav"], // category.issubnav
+	 *                $rs["_map_category"][$categories[n]]["highlight"], // category.highlight
+	 *                $rs["_map_category"][$categories[n]]["isfootnav"], // category.isfootnav
+	 *                $rs["_map_category"][$categories[n]]["isblank"], // category.isblank
 	 */
 	public function getBySlug( $slug, $select=['*']) {
 		
@@ -337,9 +398,8 @@ class Task extends Model {
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 
 		// 创建查询构造器
-		$qb = $this->query();
-		// $qb = Utils::getTab("xpmsns_user_task as task", "{none}")->query();
-		$qb->where('slug', '=', $slug );
+		$qb = Utils::getTab("xpmsns_user_task as task", "{none}")->query();
+ 		$qb->where('slug', '=', $slug );
 		$qb->limit( 1 );
 		$qb->select($select);
 		$rows = $qb->get()->toArray();
@@ -350,7 +410,15 @@ class Task extends Model {
 		$rs = current( $rows );
 		$this->format($rs);
 
+ 		$category_ids = []; // 读取 inWhere category 数据
+		$category_ids = array_merge($category_ids, is_array($rs["categories"]) ? $rs["categories"] : [$rs["categories"]]);
 
+ 		// 读取 inWhere category 数据
+		if ( !empty($inwhereSelect["category"]) && method_exists("\\Xpmsns\\Pages\\Model\\Category", 'getInByCategoryId') ) {
+			$category_ids = array_unique($category_ids);
+			$selectFields = $inwhereSelect["category"];
+			$rs["_map_category"] = (new \Xpmsns\Pages\Model\Category)->getInByCategoryId($category_ids, $selectFields);
+		}
 
 		return $rs;
 	}
@@ -364,7 +432,7 @@ class Task extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 任务记录MAP {"slug1":{"key":"value",...}...}
 	 */
-	public function getInBySlug($slugs, $select=["task.task_id","task.cover","task.slug","task.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
+	public function getInBySlug($slugs, $select=["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -375,7 +443,8 @@ class Task extends Model {
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 
 		// 创建查询构造器
-		$qb = $this->query()->whereIn('slug', $slugs);;
+		$qb = Utils::getTab("xpmsns_user_task as task", "{none}")->query();
+ 		$qb->whereIn('task.slug', $slugs);
 		
 		// 排序
 		foreach ($order as $field => $order ) {
@@ -386,12 +455,21 @@ class Task extends Model {
 
 		$map = [];
 
+ 		$category_ids = []; // 读取 inWhere category 数据
 		foreach ($data as & $rs ) {
 			$this->format($rs);
 			$map[$rs['slug']] = $rs;
 			
+ 			// for inWhere category
+			$category_ids = array_merge($category_ids, is_array($rs["categories"]) ? $rs["categories"] : [$rs["categories"]]);
 		}
 
+ 		// 读取 inWhere category 数据
+		if ( !empty($inwhereSelect["category"]) && method_exists("\\Xpmsns\\Pages\\Model\\Category", 'getInByCategoryId') ) {
+			$category_ids = array_unique($category_ids);
+			$selectFields = $inwhereSelect["category"];
+			$map["_map_category"] = (new \Xpmsns\Pages\Model\Category)->getInByCategoryId($category_ids, $selectFields);
+		}
 
 
 		return $map;
@@ -488,7 +566,7 @@ class Task extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 任务记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["task.task_id","task.cover","task.slug","task.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -499,8 +577,8 @@ class Task extends Model {
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 
 		// 创建查询构造器
-		$qb = $this->query();
-
+		$qb = Utils::getTab("xpmsns_user_task as task", "{none}")->query();
+ 
 
 		foreach ($order as $field => $order ) {
 			$qb->orderBy( $field, $order );
@@ -510,11 +588,20 @@ class Task extends Model {
 		$data = $qb->get()->toArray();
 
 
+ 		$category_ids = []; // 读取 inWhere category 数据
 		foreach ($data as & $rs ) {
 			$this->format($rs);
 			
+ 			// for inWhere category
+			$category_ids = array_merge($category_ids, is_array($rs["categories"]) ? $rs["categories"] : [$rs["categories"]]);
 		}
 
+ 		// 读取 inWhere category 数据
+		if ( !empty($inwhereSelect["category"]) && method_exists("\\Xpmsns\\Pages\\Model\\Category", 'getInByCategoryId') ) {
+			$category_ids = array_unique($category_ids);
+			$selectFields = $inwhereSelect["category"];
+			$data["_map_category"] = (new \Xpmsns\Pages\Model\Category)->getInByCategoryId($category_ids, $selectFields);
+		}
 
 		return $data;
 	
@@ -524,7 +611,7 @@ class Task extends Model {
 	/**
 	 * 按条件检索任务记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["task.task_id","task.cover","task.slug","task.name","task.type","task.process","task.quantity","task.status"]
+	 *         	      $query['select'] 选取字段，默认选择 ["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
@@ -533,6 +620,9 @@ class Task extends Model {
 	 *			      $query["name"] 按名称查询 ( = )
 	 *			      $query["status"] 按状态查询 ( = )
 	 *			      $query["type"] 按类型查询 ( = )
+	 *			      $query["auto_accept"] 按自动接受查询 ( = )
+	 *			      $query["category_category_id"] 按查询 ( IN )
+	 *			      $query["category_slug"] 按查询 ( IN )
 	 *			      $query["orderby_created_at_desc"]  按name=created_at DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按name=updated_at DESC 排序
 	 *           
@@ -540,11 +630,12 @@ class Task extends Model {
 	 *               	["task_id"],  // 任务ID 
 	 *               	["slug"],  // 别名 
 	 *               	["name"],  // 名称 
+	 *               	["categories"],  // 类目 
+	 *               	["category"][$categories[n]]["category_id"], // category.category_id
 	 *               	["type"],  // 类型 
 	 *               	["summary"],  // 简介 
 	 *               	["cover"],  // 封面 
 	 *               	["quantity"],  // 积分数量 
-	 *               	["formula"],  // 奖励公式 
 	 *               	["hourly_limit"],  // 时限额 
 	 *               	["daily_limit"],  // 日限额 
 	 *               	["weekly_limit"],  // 周限额 
@@ -552,16 +643,37 @@ class Task extends Model {
 	 *               	["yearly_limit"],  // 年限额 
 	 *               	["time_limit"],  // 完成时限 
 	 *               	["process"],  // 步骤 
+	 *               	["auto_accept"],  // 自动接受 
 	 *               	["accept"],  // 接受条件 
-	 *               	["complete"],  // 达成条件 
-	 *               	["events"],  // 事件 
 	 *               	["status"],  // 状态 
+	 *               	["events"],  // 事件 
 	 *               	["created_at"],  // 创建时间 
 	 *               	["updated_at"],  // 更新时间 
+	 *               	["category"][$categories[n]]["created_at"], // category.created_at
+	 *               	["category"][$categories[n]]["updated_at"], // category.updated_at
+	 *               	["category"][$categories[n]]["slug"], // category.slug
+	 *               	["category"][$categories[n]]["project"], // category.project
+	 *               	["category"][$categories[n]]["page"], // category.page
+	 *               	["category"][$categories[n]]["wechat"], // category.wechat
+	 *               	["category"][$categories[n]]["wechat_offset"], // category.wechat_offset
+	 *               	["category"][$categories[n]]["name"], // category.name
+	 *               	["category"][$categories[n]]["fullname"], // category.fullname
+	 *               	["category"][$categories[n]]["link"], // category.link
+	 *               	["category"][$categories[n]]["root_id"], // category.root_id
+	 *               	["category"][$categories[n]]["parent_id"], // category.parent_id
+	 *               	["category"][$categories[n]]["priority"], // category.priority
+	 *               	["category"][$categories[n]]["hidden"], // category.hidden
+	 *               	["category"][$categories[n]]["isnav"], // category.isnav
+	 *               	["category"][$categories[n]]["param"], // category.param
+	 *               	["category"][$categories[n]]["status"], // category.status
+	 *               	["category"][$categories[n]]["issubnav"], // category.issubnav
+	 *               	["category"][$categories[n]]["highlight"], // category.highlight
+	 *               	["category"][$categories[n]]["isfootnav"], // category.isfootnav
+	 *               	["category"][$categories[n]]["isblank"], // category.isblank
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["task.task_id","task.cover","task.slug","task.name","task.type","task.process","task.quantity","task.status"] : $query['select'];
+		$select = empty($query['select']) ? ["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
@@ -571,8 +683,8 @@ class Task extends Model {
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 
 		// 创建查询构造器
-		$qb = $this->query();
-
+		$qb = Utils::getTab("xpmsns_user_task as task", "{none}")->query();
+ 
 		// 按关键词查找
 		if ( array_key_exists("keyword", $query) && !empty($query["keyword"]) ) {
 			$qb->where(function ( $qb ) use($query) {
@@ -608,6 +720,27 @@ class Task extends Model {
 			$qb->where("task.type", '=', "{$query['type']}" );
 		}
 		  
+		// 按自动接受查询 (=)  
+		if ( array_key_exists("auto_accept", $query) &&!empty($query['auto_accept']) ) {
+			$qb->where("task.auto_accept", '=', "{$query['auto_accept']}" );
+		}
+		  
+		// 按查询 (IN)  
+		if ( array_key_exists("category_category_id", $query) &&!empty($query['category_category_id']) ) {
+			if ( is_string($query['category_category_id']) ) {
+				$query['category_category_id'] = explode(',', $query['category_category_id']);
+			}
+			$qb->whereIn("category.category_id",  $query['category_category_id'] );
+		}
+		  
+		// 按查询 (IN)  
+		if ( array_key_exists("category_slug", $query) &&!empty($query['category_slug']) ) {
+			if ( is_string($query['category_slug']) ) {
+				$query['category_slug'] = explode(',', $query['category_slug']);
+			}
+			$qb->whereIn("category.slug",  $query['category_slug'] );
+		}
+		  
 
 		// 按name=created_at DESC 排序
 		if ( array_key_exists("orderby_created_at_desc", $query) &&!empty($query['orderby_created_at_desc']) ) {
@@ -627,11 +760,20 @@ class Task extends Model {
 		// 读取数据并分页
 		$tasks = $qb->select( $select )->pgArray($perpage, ['task._id'], 'page', $page);
 
+ 		$category_ids = []; // 读取 inWhere category 数据
 		foreach ($tasks['data'] as & $rs ) {
 			$this->format($rs);
 			
+ 			// for inWhere category
+			$category_ids = array_merge($category_ids, is_array($rs["categories"]) ? $rs["categories"] : [$rs["categories"]]);
 		}
 
+ 		// 读取 inWhere category 数据
+		if ( !empty($inwhereSelect["category"]) && method_exists("\\Xpmsns\\Pages\\Model\\Category", 'getInByCategoryId') ) {
+			$category_ids = array_unique($category_ids);
+			$selectFields = $inwhereSelect["category"];
+			$tasks["category"] = (new \Xpmsns\Pages\Model\Category)->getInByCategoryId($category_ids, $selectFields);
+		}
 	
 		// for Debug
 		if ($_GET['debug'] == 1) { 
@@ -657,6 +799,18 @@ class Task extends Model {
 				$select[$idx] = "task." .$select[$idx];
 				continue;
 			}
+			
+			// 连接类目 (category as category )
+			if ( strpos( $fd, "category." ) === 0 || strpos("category.", $fd ) === 0  || trim($fd) == "*" ) {
+				$arr = explode( ".", $fd );
+				$arr[1]  = !empty($arr[1]) ? $arr[1] : "*";
+				$inwhereSelect["category"][] = trim($arr[1]);
+				$inwhereSelect["category"][] = "category_id";
+				if ( trim($fd) != "*" ) {
+					unset($select[$idx]);
+					array_push($linkSelect, "task.categories");
+				}
+			}
 		}
 
 		// filter 查询字段
@@ -679,11 +833,11 @@ class Task extends Model {
 			"task_id",  // 任务ID
 			"slug",  // 别名
 			"name",  // 名称
+			"categories",  // 类目
 			"type",  // 类型
 			"summary",  // 简介
 			"cover",  // 封面
 			"quantity",  // 积分数量
-			"formula",  // 奖励公式
 			"hourly_limit",  // 时限额
 			"daily_limit",  // 日限额
 			"weekly_limit",  // 周限额
@@ -691,10 +845,10 @@ class Task extends Model {
 			"yearly_limit",  // 年限额
 			"time_limit",  // 完成时限
 			"process",  // 步骤
+			"auto_accept",  // 自动接受
 			"accept",  // 接受条件
-			"complete",  // 达成条件
-			"events",  // 事件
 			"status",  // 状态
+			"events",  // 事件
 			"created_at",  // 创建时间
 			"updated_at",  // 更新时间
 		];

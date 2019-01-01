@@ -36,7 +36,7 @@ use \Xpmse\T;
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="slug">别名</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg "  
+			<input class="form-control input-lg disabled"  disabled
 				type="text" 
 				id="slug" name="slug" 
 				placeholder="请输入别名,一般便于程序调用，对接其他系统."  
@@ -58,16 +58,43 @@ use \Xpmse\T;
 		</div>
 	</div><!-- END 单行文本: 名称 (name) -->
 
+
+
+ 
+	<!-- 下拉选择(动态数据): 类目 (categories) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="categories">类目</label>
+		<div class="col-xs-8"> 
+			<select class="js-select2 form-control input-lg "  style="width: 100%;" 
+					id="categories" name="categories" 
+					data-language="zh-CN"
+					data-param-cancelable="0"
+					data-param-cancel="取消选择"
+					data-param-model="\Xpmsns\Pages\Model\Category"
+					data-param-table="category"
+					data-param-fields="category_id,slug,name"
+					data-param-style="{{name}} ( ID: {{category_id}} 别名: {{slug}} )"
+					data-param-option="category_id"
+					data-param-default=""
+					data-ajax-url="/_a/mina/helper/select2?method=get"
+					data-preload-url="/_a/mina/helper/select2?method=get&preload=<?=T::v('<%=categories | join(\',\')%>', $rs )?>"
+					data-placeholder=""  multiple data-select2-multiple=1  >
+				<option></option>
+			</select>
+			<div class="help-block"></div>
+		</div>
+			</div><!-- END 下拉选择(动态数据): 类目 (categories) -->
+
 	<!-- 单行文本: 步骤 (process) 开始  -->
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="process">步骤</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg "  
+			<input class="form-control input-lg disabled"  disabled
 				type="text" 
 				id="process" name="process" 
 				placeholder="完成任务一共有多少步骤"  
 				value="<?=T::v('<%=process | e(\'html\')%>', $rs )?>" /> 
-			<div class="help-block">填写整数</div>
+			<div class="help-block"></div>
 		</div>
 	</div><!-- END 单行文本: 步骤 (process) -->
 
@@ -77,8 +104,8 @@ use \Xpmse\T;
 		<label class="col-xs-2 control-label" for="type">类型</label>
 		<div class="col-xs-8">
 			
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="type" value="repeatable" type="radio" data-uncheck-value="repeatable" checked /> <span></span> 可重复</label>
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="type" value="once" type="radio" data-uncheck-value="once"  /> <span></span> 一次性</label>
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input disabled name="type" value="repeatable" type="radio" data-uncheck-value="repeatable" checked /> <span></span> 可重复</label>
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input disabled name="type" value="once" type="radio" data-uncheck-value="once"  /> <span></span> 一次性</label>
 			<div class="help-block"></div>
 		</div>
 	</div><!-- END 单选框: 类型 (type) 开始  -->
@@ -112,70 +139,60 @@ use \Xpmse\T;
 		</div> 
 	</div><!-- END 单图上传: 封面 (cover) -->
 
-<!-- : summary 空值-->
 
-	<!-- 单行文本: 积分数量 (quantity) 开始  -->
+
+	<!-- 文本域: 简介 (summary) 开始  -->
 	<div class="form-group   ">
-		<label class="col-xs-2 control-label" for="quantity">积分数量</label>
+		<label class="col-xs-2 control-label" for="summary">简介</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg "  
+			<textarea class="form-control input-lg "   
 				type="text" 
-				id="quantity" name="quantity" 
-				placeholder="完成该任务可以赚取的积分"  
-				value="<?=T::v('<%=quantity | e(\'html\')%>', $rs )?>" /> 
-			<div class="help-block">单位: 个</div>
+				id="summary" name="summary" rows="6"
+				placeholder="请输入积分任务介绍"><?=T::v('<%=summary  | e(\'html\')%>', $rs )?></textarea> 
+			<div class="help-block"></div>
 		</div>
-	</div><!-- END 单行文本: 积分数量 (quantity) -->
+	</div><!-- END 文本域: 简介 (summary) -->
 
 
 
-
-    <!-- JSON编辑器(json-editor): 奖励公式 (formula) 开始  -->
-	<style type="text/css">
-		.CodeMirror {
-			border: 1px solid #e6e6e6;
-		}
-	</style>
-	<div class="json-editor draggable-item" data-name="formula" >
-
-		<div class="form-group">
-			<label class="col-xs-2 control-label">奖励公式</label>
-			<div class="col-xs-8">
-                <textarea class="form-control input-lg " name="formula"  type="text"  rows="6" 
-                    
-                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=formula | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
-                <input type="hidden" name="__json_cols" value="formula" />
-			</div>
-			<div class="col-xs-2 push-10-t"></div>
+	<!-- 多条文本: 积分数量 (quantity) <?=T::v('<%=quantity%>', $rs )?> 开始   minLength(1) -->
+	<div class="xpmse-inputs-panel">
+		<?php if(@count($rs['quantity']) < 1): ?><?php $steps = 1 -  @count($rs['quantity']); for( $i=0; $i<$steps; $i++){ $rs['quantity'][] = [];} ?><?php endif ?><?php if( is_array($rs['quantity']) && utils::array_depth($rs['quantity']) != 2): ?><?php foreach($rs['quantity'] as $idx=>$it ){ $rs['quantity'][$idx] = ['val'=>$it]; }?><?php endif ?><?php foreach ( $rs['quantity'] as $__key=>$val ): ?>		<div class="xpmse-inputs  " name="quantity">
+			<div class="form-group " >
+				<label class="col-xs-2 control-label" for="quantity">积分数量  </label>
+				<div class="col-xs-8">
+					<input class="form-control input-lg "   
+						type="text" 
+						id="quantity" name="quantity"
+						placeholder="完成该任务可以赚取的积分"  
+						value="<?=T::v('<%=val | e(\'html\')%>', $val )?>" /> 
+					<div class="help-block">单位:个, 若包含多个步骤, 每个步骤对应一个积分.</div>
+				</div>
+				<div class="col-xs-2 push-10-t">
+					<a href="javascript:void(0);" data-action="add"    class="text-success push-20-r"> <i class="fa fa-plus font-s20"></i> </a> 
+					<a href="javascript:void(0);" data-action="remove" class="text-danger"> <i class="fa fa-minus font-s20"></i> </a> 
+				</div>
+			</div> 
 		</div>
-
-		<!-- helper -->
-		<div class="form-group helper"> 
-			<label class="col-xs-2 control-label" for="schedule"></label>
-			<div class="col-xs-9">
-				<div class="help-block">由工程师填写</div>
-			</div>
-		</div><!-- end helper -->
+		<?php endforeach; ?> 
 	</div>
-    <!-- END 代码编辑器(json-editor): 奖励公式 (formula)  -->
-
-    <script type="text/javascript">
-    
-        // 载入代码编辑器
-		if ( typeof CodeMirror != 'undefined' ) {
-			
-			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
-			$('textarea[name="formula"]').attr('id', txt_id );
-			CodeMirror.fromTextArea(document.getElementById(txt_id), {
-				lineNumbers: true,
-				mode: "text/javascript",
-                readOnly: false,
-				viewportMargin: Infinity
-			}).on('change', function( cm ){ // 更新 txt 数据
-				document.getElementById(txt_id).value = cm.getValue();
-			});
-		}
-	</script>
+	<script type="text/javascript">
+		$('.xpmse-inputs[name="quantity"]').Multipliable({
+			initialized: function(elm, idx) {
+				$(elm).parent('.xpmse-inputs-panel') .find('.control-label').each( function(i, el ){
+					if (i >0) { $(el).html('');}
+				});
+			},
+			added: function( elm ) {},
+			removed: function(){},
+			html: function( elm ){ 
+				var html = $(elm).clone();
+				var resp = $(html);
+					resp.find('.control-label').html('');
+				return resp;
+			}
+		});
+	</script><!-- END 多条文本: 积分数量 (quantity) -->
 
 	<!-- 单行文本: 时限额 (hourly_limit) 开始  -->
 	<div class="form-group   ">
@@ -269,9 +286,9 @@ use \Xpmse\T;
 		<div class="form-group">
 			<label class="col-xs-2 control-label">接受条件</label>
 			<div class="col-xs-8">
-                <textarea class="form-control input-lg " name="accept"  type="text"  rows="6" 
-                    
-                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=accept | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
+                <textarea class="form-control input-lg disabled" name="accept"  type="text"  rows="6" 
+                    disabled
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=accept | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
                 <input type="hidden" name="__json_cols" value="accept" />
 			</div>
 			<div class="col-xs-2 push-10-t"></div>
@@ -297,57 +314,7 @@ use \Xpmse\T;
 			CodeMirror.fromTextArea(document.getElementById(txt_id), {
 				lineNumbers: true,
 				mode: "text/javascript",
-                readOnly: false,
-				viewportMargin: Infinity
-			}).on('change', function( cm ){ // 更新 txt 数据
-				document.getElementById(txt_id).value = cm.getValue();
-			});
-		}
-	</script>
-
-
-
-
-    <!-- JSON编辑器(json-editor): 达成条件 (complete) 开始  -->
-	<style type="text/css">
-		.CodeMirror {
-			border: 1px solid #e6e6e6;
-		}
-	</style>
-	<div class="json-editor draggable-item" data-name="complete" >
-
-		<div class="form-group">
-			<label class="col-xs-2 control-label">达成条件</label>
-			<div class="col-xs-8">
-                <textarea class="form-control input-lg " name="complete"  type="text"  rows="6" 
-                    
-                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=complete | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
-                <input type="hidden" name="__json_cols" value="complete" />
-			</div>
-			<div class="col-xs-2 push-10-t"></div>
-		</div>
-
-		<!-- helper -->
-		<div class="form-group helper"> 
-			<label class="col-xs-2 control-label" for="schedule"></label>
-			<div class="col-xs-9">
-				<div class="help-block">由工程师填写</div>
-			</div>
-		</div><!-- end helper -->
-	</div>
-    <!-- END 代码编辑器(json-editor): 达成条件 (complete)  -->
-
-    <script type="text/javascript">
-    
-        // 载入代码编辑器
-		if ( typeof CodeMirror != 'undefined' ) {
-			
-			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
-			$('textarea[name="complete"]').attr('id', txt_id );
-			CodeMirror.fromTextArea(document.getElementById(txt_id), {
-				lineNumbers: true,
-				mode: "text/javascript",
-                readOnly: false,
+                readOnly: true,
 				viewportMargin: Infinity
 			}).on('change', function( cm ){ // 更新 txt 数据
 				document.getElementById(txt_id).value = cm.getValue();
@@ -369,9 +336,9 @@ use \Xpmse\T;
 		<div class="form-group">
 			<label class="col-xs-2 control-label">事件</label>
 			<div class="col-xs-8">
-                <textarea class="form-control input-lg " name="events"  type="text"  rows="6" 
-                    
-                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=events | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
+                <textarea class="form-control input-lg disabled" name="events"  type="text"  rows="6" 
+                    disabled
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=events | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
                 <input type="hidden" name="__json_cols" value="events" />
 			</div>
 			<div class="col-xs-2 push-10-t"></div>
@@ -397,13 +364,25 @@ use \Xpmse\T;
 			CodeMirror.fromTextArea(document.getElementById(txt_id), {
 				lineNumbers: true,
 				mode: "text/javascript",
-                readOnly: false,
+                readOnly: true,
 				viewportMargin: Infinity
 			}).on('change', function( cm ){ // 更新 txt 数据
 				document.getElementById(txt_id).value = cm.getValue();
 			});
 		}
 	</script>
+
+
+	<!-- 单选框: 自动接受 (auto_accept) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="auto_accept">自动接受</label>
+		<div class="col-xs-8">
+			
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input disabled name="auto_accept" value="0" type="radio" data-uncheck-value="0" checked /> <span></span> 否</label>
+<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input disabled name="auto_accept" value="1" type="radio" data-uncheck-value="1"  /> <span></span>  是</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 自动接受 (auto_accept) 开始  -->
 
 
 	<!-- 单选框: 状态 (status) 开始  -->
@@ -429,11 +408,13 @@ use \Xpmse\T;
 									<i class="fa fa-angle-double-left push-5-r"></i> 任务列表 
 								</a>
                             </div>
+                            
                             <!-- @KEEP BEGIN -->
+
 							<div class="col-xs-8 push-20-t text-center">
 								<button  
 									type="submit" 
-									class="btn btn-lg btn-primary font-w300 btn-minw  push-20-r fn-action fn-save ">
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-20-r fn-action fn-save  ">
 										<i class="fa fa-save push-5-r"></i> 保存
 								</button>
 
@@ -488,7 +469,10 @@ use \Xpmse\T;
 								</button>
 
                             </div>
+                            
                             <!-- @KEEP END -->
+
+
 						</div>
 						<div class="bg-primary text-white text-center bottom-line"></div>	
 					</div>

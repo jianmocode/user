@@ -4,7 +4,7 @@
  * 任务数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-28 16:22:25
+ * 最后修改: 2019-01-01 20:15:58
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
@@ -118,11 +118,12 @@ class Task extends Api {
 	 *               	["task_id"],  // 任务ID 
 	 *               	["slug"],  // 别名 
 	 *               	["name"],  // 名称 
+	 *               	["categories"],  // 类目 
+	*               	["_map_category"][$categories[n]]["category_id"], // category.category_id
 	 *               	["type"],  // 类型 
 	 *               	["summary"],  // 简介 
 	 *               	["cover"],  // 封面 
 	 *               	["quantity"],  // 积分数量 
-	 *               	["formula"],  // 奖励公式 
 	 *               	["hourly_limit"],  // 时限额 
 	 *               	["daily_limit"],  // 日限额 
 	 *               	["weekly_limit"],  // 周限额 
@@ -130,12 +131,33 @@ class Task extends Api {
 	 *               	["yearly_limit"],  // 年限额 
 	 *               	["time_limit"],  // 完成时限 
 	 *               	["process"],  // 步骤 
+	 *               	["auto_accept"],  // 自动接受 
 	 *               	["accept"],  // 接受条件 
-	 *               	["complete"],  // 达成条件 
-	 *               	["events"],  // 事件 
 	 *               	["status"],  // 状态 
+	 *               	["events"],  // 事件 
 	 *               	["created_at"],  // 创建时间 
 	 *               	["updated_at"],  // 更新时间 
+	*               	["_map_category"][$categories[n]]["created_at"], // category.created_at
+	*               	["_map_category"][$categories[n]]["updated_at"], // category.updated_at
+	*               	["_map_category"][$categories[n]]["slug"], // category.slug
+	*               	["_map_category"][$categories[n]]["project"], // category.project
+	*               	["_map_category"][$categories[n]]["page"], // category.page
+	*               	["_map_category"][$categories[n]]["wechat"], // category.wechat
+	*               	["_map_category"][$categories[n]]["wechat_offset"], // category.wechat_offset
+	*               	["_map_category"][$categories[n]]["name"], // category.name
+	*               	["_map_category"][$categories[n]]["fullname"], // category.fullname
+	*               	["_map_category"][$categories[n]]["link"], // category.link
+	*               	["_map_category"][$categories[n]]["root_id"], // category.root_id
+	*               	["_map_category"][$categories[n]]["parent_id"], // category.parent_id
+	*               	["_map_category"][$categories[n]]["priority"], // category.priority
+	*               	["_map_category"][$categories[n]]["hidden"], // category.hidden
+	*               	["_map_category"][$categories[n]]["isnav"], // category.isnav
+	*               	["_map_category"][$categories[n]]["param"], // category.param
+	*               	["_map_category"][$categories[n]]["status"], // category.status
+	*               	["_map_category"][$categories[n]]["issubnav"], // category.issubnav
+	*               	["_map_category"][$categories[n]]["highlight"], // category.highlight
+	*               	["_map_category"][$categories[n]]["isfootnav"], // category.isfootnav
+	*               	["_map_category"][$categories[n]]["isblank"], // category.isblank
 	*/
 	protected function get( $query, $data ) {
 
@@ -196,6 +218,9 @@ class Task extends Api {
 	 *			      $query["name"] 按名称查询 ( AND = )
 	 *			      $query["status"] 按状态查询 ( AND = )
 	 *			      $query["type"] 按类型查询 ( AND = )
+	 *			      $query["auto_accept"] 按自动接受查询 ( AND = )
+	 *			      $query["category_category_id"] 按查询 ( AND IN )
+	 *			      $query["category_slug"] 按查询 ( AND IN )
 	 *			      $query["orderby_created_at_desc"]  按 DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按 DESC 排序
      *
@@ -209,6 +234,9 @@ class Task extends Api {
 	 *			      $data["name"] 按名称查询 ( AND = )
 	 *			      $data["status"] 按状态查询 ( AND = )
 	 *			      $data["type"] 按类型查询 ( AND = )
+	 *			      $data["auto_accept"] 按自动接受查询 ( AND = )
+	 *			      $data["category_category_id"] 按查询 ( AND IN )
+	 *			      $data["category_slug"] 按查询 ( AND IN )
 	 *			      $data["orderby_created_at_desc"]  按 DESC 排序
 	 *			      $data["orderby_updated_at_desc"]  按 DESC 排序
 	 *
@@ -217,11 +245,12 @@ class Task extends Api {
 	 *               	["task_id"],  // 任务ID 
 	 *               	["slug"],  // 别名 
 	 *               	["name"],  // 名称 
+	 *               	["categories"],  // 类目 
+	*               	["category"][$categories[n]]["category_id"], // category.category_id
 	 *               	["type"],  // 类型 
 	 *               	["summary"],  // 简介 
 	 *               	["cover"],  // 封面 
 	 *               	["quantity"],  // 积分数量 
-	 *               	["formula"],  // 奖励公式 
 	 *               	["hourly_limit"],  // 时限额 
 	 *               	["daily_limit"],  // 日限额 
 	 *               	["weekly_limit"],  // 周限额 
@@ -229,12 +258,33 @@ class Task extends Api {
 	 *               	["yearly_limit"],  // 年限额 
 	 *               	["time_limit"],  // 完成时限 
 	 *               	["process"],  // 步骤 
+	 *               	["auto_accept"],  // 自动接受 
 	 *               	["accept"],  // 接受条件 
-	 *               	["complete"],  // 达成条件 
-	 *               	["events"],  // 事件 
 	 *               	["status"],  // 状态 
+	 *               	["events"],  // 事件 
 	 *               	["created_at"],  // 创建时间 
 	 *               	["updated_at"],  // 更新时间 
+	*               	["category"][$categories[n]]["created_at"], // category.created_at
+	*               	["category"][$categories[n]]["updated_at"], // category.updated_at
+	*               	["category"][$categories[n]]["slug"], // category.slug
+	*               	["category"][$categories[n]]["project"], // category.project
+	*               	["category"][$categories[n]]["page"], // category.page
+	*               	["category"][$categories[n]]["wechat"], // category.wechat
+	*               	["category"][$categories[n]]["wechat_offset"], // category.wechat_offset
+	*               	["category"][$categories[n]]["name"], // category.name
+	*               	["category"][$categories[n]]["fullname"], // category.fullname
+	*               	["category"][$categories[n]]["link"], // category.link
+	*               	["category"][$categories[n]]["root_id"], // category.root_id
+	*               	["category"][$categories[n]]["parent_id"], // category.parent_id
+	*               	["category"][$categories[n]]["priority"], // category.priority
+	*               	["category"][$categories[n]]["hidden"], // category.hidden
+	*               	["category"][$categories[n]]["isnav"], // category.isnav
+	*               	["category"][$categories[n]]["param"], // category.param
+	*               	["category"][$categories[n]]["status"], // category.status
+	*               	["category"][$categories[n]]["issubnav"], // category.issubnav
+	*               	["category"][$categories[n]]["highlight"], // category.highlight
+	*               	["category"][$categories[n]]["isfootnav"], // category.isfootnav
+	*               	["category"][$categories[n]]["isblank"], // category.isblank
 	 */
 	protected function search( $query, $data ) {
 
