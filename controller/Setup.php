@@ -186,7 +186,8 @@ class SetupController extends \Xpmse\Loader\Controller {
 		
 		foreach ($insts as $inst ) {
 			try { $inst->__clear(); } catch( Excp $e) {echo $e->toJSON(); return;}
-			try { $inst->__schema(); } catch( Excp $e) {echo $e->toJSON(); return;}
+            try { $inst->__schema(); } catch( Excp $e) {echo $e->toJSON(); return;}
+            try { $inst->__defaults(); } catch( Excp $e) { echo $e->toJSON(); return; }  // 加载默认数据
 		}
 
 		// 创建配置项
@@ -220,7 +221,8 @@ class SetupController extends \Xpmse\Loader\Controller {
 		}
 		
 		foreach ($insts as $inst ) {
-			try { $inst->__schema(); } catch( Excp $e) {echo $e->toJSON(); return;}
+            try { $inst->__schema(); } catch( Excp $e) {echo $e->toJSON(); return;}
+            try { $inst->__defaults(); } catch( Excp $e) { echo $e->toJSON(); return; }  // 加载默认数据
 		}
 
 		// 创建配置项

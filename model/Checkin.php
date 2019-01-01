@@ -66,7 +66,7 @@ class Checkin extends Model {
             ]
         ];
 
-        // 订阅行为
+        // 订阅行为( 响应任务处理 )
         $subscribers =[
             [
                 "name" => "签到任务订阅",
@@ -79,6 +79,44 @@ class Checkin extends Model {
             ]
         ];
 
+        $t = new \Xpmsns\User\Model\Task();
+        $b = new \Xpmsns\User\Model\Behavior();
+        $s = new \Xpmsns\User\Model\Subscriber();
+
+        foreach( $tasks as $task ){
+            try { $t->create($task); } catch( Excp $e) { $e->log(); }
+        }
+
+        foreach( $behaviors as $behavior ){
+            try { $b->create($behavior); } catch( Excp $e) { $e->log(); }
+        }
+        foreach( $subscribers as $subscriber ){
+            try { $s->create($subscriber); } catch( Excp $e) { $e->log(); }
+        }
+        
+    }
+
+    
+    /**
+     * 签到任务接受响应 (验证是否符合接受条件)
+     * @return 符合返回 true, 不符合返回 false
+     */
+    public function onCheckinAccpet(){
+        return true;
+    }
+
+    /**
+     * 签到任务订阅器 (签到行为发生时, 触发此函数, 可在后台暂停或关闭)
+     * @param array $behavior  行为(用户签到)数据结构
+     * @param array $subscriber  订阅者(签到任务订阅) 数据结构
+     * @param array $data  行为数据 ["time"=>"签到时间", "history"=>"一周签到记录"]
+     * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     */
+    public function onCheckinChange( $behavior, $subscriber, $data, $env ) {
+
+        $task_slug = $subscriber["ourter_id"];
+        $user_id = $data["user_id"];
+        echo "onCheckinChange: {$task_slug} -> {$user_id} \n";
     }
 
     // @KEEP END
