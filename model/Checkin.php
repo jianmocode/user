@@ -51,7 +51,7 @@ class Checkin extends Model {
                 "daily_limit"=>1, "process"=>7, 
                 "quantity" => [100,200,300,400,500,600,700],
                 "auto_accept" => 1,
-                "accept" => ["\\xpmsns\\user\\model\\checkin", "onCheckinAccpet"],
+                "accept" => ["class"=>"\\xpmsns\\user\\model\\checkin", "method"=>"onCheckinAccpet"],
                 "status" => "online",
             ]
         ];
@@ -74,7 +74,7 @@ class Checkin extends Model {
                 "ourter_id" => "checkin",
                 "origin" => "task",
                 "timeout" => 30,
-                "handler" => ["\\xpmsns\\user\\model\\checkin", "onCheckinChange"],
+                "handler" => ["class"=>"\\xpmsns\\user\\model\\checkin", "method"=>"onCheckinChange"],
                 "status" => "on",
             ]
         ];
