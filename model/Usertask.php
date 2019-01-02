@@ -317,7 +317,46 @@ class Usertask extends Model {
 
         return $this->accept( $task, $user_id );
     }
-   
+
+
+    /**
+     * 读取任务清单
+     * @param array $query 查询条件( @see \Xpmsns\User\Model\Task )
+     * @param string $user_id  用户ID
+     */
+    public function getTasks( $query, $user_id ) {
+
+        $t = new Task();
+        $tasks = $t->search( $query );
+
+        if ( $tasks["total"] == 0 ) {
+            return $tasks;
+        }
+
+        $task_ids = array_column( $tasks["data"], "task_id");
+
+        // 读取任务副本信息
+        $qb = $this->query()
+                   ->where( "user_id", $user_id )
+                   ->whereIn("task_id", $task_ids)
+                   ->orderBy("created_at", "desc")     
+                ;
+         
+        $user_tasks = $qb->get()
+                        ->unique("task_id")
+                        ->toArray();
+        $map = [];
+        array_walk($user_tasks, function($task) use( &$map ) {
+            $map["{$task['task_id']}"] = $task;
+        });
+
+        foreach( $tasks["data"] as &$task ){
+            $user_task = $map["{$task['task_id']}"];
+            $task["usertask"] = $user_task;
+        }
+
+        return $tasks;
+    }
     // @KEEP END
 
 

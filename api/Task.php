@@ -98,6 +98,24 @@ class Task extends Api {
         throw new Excp("取消失败,未知错误", 500, ["query"=>$query, "data"=>$data, "response"=>$rs]);
     }
 
+
+    /**
+     * 读取任务清单
+     */
+    function getTasks( $query, $data ) {
+
+        $u = new \Xpmsns\User\Model\User;
+        $user = $u->getUserInfo();
+        $user_id = $user["user_id"];
+
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $utask = new \Xpmsns\User\Model\UserTask;
+        return $utask->getTasks( $query, $user_id );
+    }
+
     
 
     // @KEEP END
