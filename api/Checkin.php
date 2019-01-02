@@ -82,8 +82,17 @@ class Checkin extends Api {
         $data["user_id"] = $user_id;
         $data["time"] = date('Y-m-d H:i:s', $time);
 
-        return $ci->create( $data );
-
+        $rs = $ci->create( $data );
+        $history  = $ci->search([
+            "user_id" => $user_id,
+            "orderby_created_at_desc" => "1",
+            "perpage" => 7
+        ]);
+        $rs["history"] = $history["data"];
+        
+        // 触发行为
+        $ci->triggerBehavior("xpmsns/user/checkin/create",  $rs);
+        return $rs;
     }
 
     /**
