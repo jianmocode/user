@@ -108,18 +108,62 @@ class Checkin extends Model {
     /**
      * 签到任务订阅器 (签到行为发生时, 触发此函数, 可在后台暂停或关闭)
      * @param array $behavior  行为(用户签到)数据结构
-     * @param array $subscriber  订阅者(签到任务订阅) 数据结构
+     * @param array $subscriber  订阅者(签到任务订阅) 数据结构  ["origin_ourter_id"=>"任务SLUG", "origin"=>"task" ... ]
      * @param array $data  行为数据 ["checkin_id"=>"签到ID", "lng"=>"经度", "lat"=>"维度", "alt"=>"海拔", "time"=>"签到时刻", "device"=>"签到设备", "location"=>"位置", "history"=>"最近7条签到记录"]
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
     public function onCheckinChange( $behavior, $subscriber, $data, $env ) {
 
+        // echo "onCheckinChange: {$task_slug} -> {$user_id} \n";
         $task_slug = $subscriber["ourter_id"];
-        $user_id = $data["user_id"];
-        echo "onCheckinChange: {$task_slug} -> {$user_id} \n";
-        print_r( $data );
-        print_r( $env );
-        echo "----- end -----\n";
+        $user_id = $env["user_id"];
+
+        // 验证数据清单
+        if ( empty($data["history"]) || !is_array($data["history"] ) ) {
+            throw new Excp("签到数据异常", 402, ["task_slug"=>$task_slug, "user_id"=>$user_id, "history"=>$history]);
+        }
+
+        // 读取任务
+        $t = new \Xpmsns\User\Model\Usertask;
+        $task = $t->getByTaskSlugAndUserId( $task_slug, $user_id );
+        if ( empty($task) ) {
+            throw new Excp("未找到任务信息", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]);
+        }
+
+        // 计算当前累计步骤
+        $process = 1; $next = null; 
+        foreach( $data["history"] as $ci ){
+            $curr = strtotime(date("Y-m-d 00:00:00", strtotime($ci["time"])));
+            $curr_shouldbe = strtotime(date("Y-m-d 00:00:00", strtotime("-1d",$next)));
+            // echo  "\tcurr=".   date("Y-m-d H:i:s",$curr) .  "  curr_shouldbe=". date("Y-m-d H:i:s",$curr_shouldbe). " process={$process} \n";
+            if ( $next == null ) {
+                $next = $curr;
+                continue;
+            } else if ( intval($curr_shouldbe)  == intval($next) ) {
+                $process++;
+            } else {
+                break;
+            }
+        }
+
+
+        // 自动接受任务
+        $usertask = $task["usertask"];
+        if( 
+            $task["auto_accept"] == 1 &&
+            ( empty($usertask) || ( $usertask["status"] != "accepted" &&  $task["type"] == "repeatable" ) )
+        ) {
+            $task["usertask"] = $usertask = $t->acceptBySlug( $task_slug, $user_id );
+        }
+
+        // 设定进展并发放奖励
+        $t->processByUsertaskId( $usertask["usertask_id"], $process );
+        
+        // print_r( $usertask );
+        // print_r( $task );
+        // print_r( $data );
+        // print_r( $env );
+        // echo "\t----- end -----\n";
     }
 
 

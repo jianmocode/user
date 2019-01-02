@@ -360,6 +360,77 @@ class Usertask extends Model {
 
 
     /**
+     * 读取任务信息 (按任务别名和用户ID读取最后一条任务副本)
+     * @param string $task_slug  任务别名
+     * @param string $user_id  用户ID 
+     */
+    public function getByTaskSlugAndUserId( $task_slug, $user_id ) {
+
+        // 读取任务信息
+        $t = new Task();
+        $task = $t->getBySlug( $task_slug );
+        if ( empty($task) ) {
+            return [];
+        }
+
+        // 读取任务副本信息
+        $task_id = $task["task_id"];
+        $qb = $this->query()
+                    ->where( "user_id", "=", $user_id )
+                    ->where("task_id", "=", $task_id)
+                    ->orderBy("created_at", "desc") 
+                    ->limit(1)
+        ;
+
+        $usertasks = $qb->get()
+                ->unique("task_id")
+                ->toArray();
+            
+        $task["usertask"] = [];
+        if ( !empty($usertasks) ) {
+            $task["usertask"] = current($usertasks);
+        }
+       
+       return $task;
+   }
+
+    /**
+     * 读取任务信息 (按任务ID和用户ID读取最后一条任务副本)
+     * @param string $task_slug  任务别名
+     * @param string $user_id  用户ID 
+     */
+    public function getByTaskIdAndUserId( $task_id, $user_id ) {
+
+        // 读取任务信息
+        $t = new Task();
+        $task = $t->getByTaskId( $task_id );
+        if ( empty($task) ) {
+            return [];
+        }
+
+        // 读取任务副本信息
+        $task_id = $task["task_id"];
+        $qb = $this->query()
+                    ->where( "user_id", "=", $user_id )
+                    ->where("task_id", "=", $task_id)
+                    ->orderBy("created_at", "desc") 
+                    ->limit(1)
+        ;
+
+        $usertasks = $qb->get()
+                ->unique("task_id")
+                ->toArray();
+            
+        $task["usertask"] = [];
+        if ( !empty($usertasks) ) {
+            $task["usertask"] = current($usertasks);
+        }
+       
+       return $task;
+   }
+
+
+    /**
      * 设定任务副本进度并发放奖励 (按任务副本ID读取任务副本)
      * @param string $usertask_id  任务副本ID
      * @param int $process 新进度
@@ -385,9 +456,10 @@ class Usertask extends Model {
 
          // 读取任务副本信息
          $qb = $this->query()
-                    ->where( "user_id", $user_id )
-                    ->whereIn("task_id", $task_ids)
-                    ->orderBy("created_at", "desc")     
+                    ->where( "user_id", "=", $user_id )
+                    ->where("task_id", "=",$task_id)
+                    ->orderBy("created_at", "desc")   
+                    ->limit(1)  
         ;
 
         $usertasks = $qb->get()
@@ -413,9 +485,10 @@ class Usertask extends Model {
         // 读取任务副本信息
         $qb = $this->query()
                    ->leftJoin("task as task", "task.task_id", "=", "usertask.task_id")
-                   ->where( "user_id", $user_id )
-                   ->whereIn("task.slug", $task_slug)
+                   ->where( "user_id", "=", $user_id )
+                   ->where("task.slug", "=", $task_slug)
                    ->orderBy("usertask.created_at", "desc")     
+                   ->limit(1)
                    ->select( "usertask.*")
        ;
        $usertasks = $qb->get()
@@ -461,14 +534,19 @@ class Usertask extends Model {
         $t = new Task;
         $task = $t->getByTaskId( $task_id );
 
+        // 格式化数据
+        $process = intval($process);
+        $task["process"] = intval($task["process"]);
+        $usertask["process"] = intval($usertask["process"]);
+
         // 非法步骤
-        if ( $process > $task["process"] || $$process  < 1 ) {
-            throw new Excp("步骤信息不合法", 402, ["process"=>$process, "max"=>$task["process"], "current"=>$usertask["process"]]);
+        if ( $process > $task["process"] || $process  < 1 ) {
+            throw new Excp("步骤信息不合法 ( process = {$process}  process > {$task['process']} 或 process < 1 )", 402, ["process"=>$process, "max"=>$task["process"], "current"=>$usertask["process"]]);
         }
 
         // 不可以后退
         if ( $process <= $usertask["process"] ) {
-            throw new Excp("步骤信息不合法", 402, ["process"=>$process,"max"=>$task["process"], "current"=>$usertask["process"]]);
+            throw new Excp("步骤信息不合法  ( process = {$process}  process <= {$usertask['process']} ) ", 402, ["process"=>$process,"max"=>$task["process"], "current"=>$usertask["process"]]);
         }
 
         // 发放当前步骤奖励积分
