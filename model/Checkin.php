@@ -61,7 +61,7 @@ class Checkin extends Model {
             [
                 "name" => "用户签到", "slug"=>"xpmsns/user/checkin/create",
                 "intro" =>  "本行为当用户签到成功后触发",
-                "params" => ["checkin_id"=>"签到ID", "lng"=>"经度", "lat"=>"维度", "alt"=>"海拔", "time"=>"签到时刻", "device"=>"签到设备", "location"=>"位置", "history"=>"一周签到记录"],
+                "params" => ["checkin_id"=>"签到ID", "lng"=>"经度", "lat"=>"维度", "alt"=>"海拔", "time"=>"签到时刻", "device"=>"签到设备", "location"=>"位置", "history"=>"最近7条签到记录"],
                 "status" => "online",
             ]
         ];
@@ -109,7 +109,7 @@ class Checkin extends Model {
      * 签到任务订阅器 (签到行为发生时, 触发此函数, 可在后台暂停或关闭)
      * @param array $behavior  行为(用户签到)数据结构
      * @param array $subscriber  订阅者(签到任务订阅) 数据结构
-     * @param array $data  行为数据 ["checkin_id"=>"签到ID", "lng"=>"经度", "lat"=>"维度", "alt"=>"海拔", "time"=>"签到时刻", "device"=>"签到设备", "location"=>"位置", "history"=>"一周签到记录"]
+     * @param array $data  行为数据 ["checkin_id"=>"签到ID", "lng"=>"经度", "lat"=>"维度", "alt"=>"海拔", "time"=>"签到时刻", "device"=>"签到设备", "location"=>"位置", "history"=>"最近7条签到记录"]
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
     public function onCheckinChange( $behavior, $subscriber, $data, $env ) {
@@ -133,7 +133,7 @@ class Checkin extends Model {
 
         // 许可行为
         $allowed = [
-            // 用户签到 ["checkin_id"=>"签到ID", "lng"=>"经度", "lat"=>"维度", "alt"=>"海拔", "time"=>"签到时刻", "device"=>"签到设备", "location"=>"位置", "history"=>"一周签到记录"]
+            // 用户签到 ["checkin_id"=>"签到ID", "lng"=>"经度", "lat"=>"维度", "alt"=>"海拔", "time"=>"签到时刻", "device"=>"签到设备", "location"=>"位置", "history"=>"最近7条签到记录"]
             "xpmsns/user/checkin/create",
         ];
         if ( !in_array($slug,$allowed) ){
