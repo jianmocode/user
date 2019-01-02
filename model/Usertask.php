@@ -342,21 +342,166 @@ class Usertask extends Model {
                    ->orderBy("created_at", "desc")     
                 ;
          
-        $user_tasks = $qb->get()
+        $usertasks = $qb->get()
                         ->unique("task_id")
                         ->toArray();
         $map = [];
-        array_walk($user_tasks, function($task) use( &$map ) {
+        array_walk($usertasks, function($task) use( &$map ) {
             $map["{$task['task_id']}"] = $task;
         });
 
         foreach( $tasks["data"] as &$task ){
-            $user_task = $map["{$task['task_id']}"];
-            $task["usertask"] = $user_task;
+            $usertask = $map["{$task['task_id']}"];
+            $task["usertask"] = $usertasks;
         }
 
         return $tasks;
     }
+
+
+    /**
+     * 设定任务副本进度并发放奖励 (按任务副本ID读取任务副本)
+     * @param string $usertask_id  任务副本ID
+     * @param int $process 新进度
+     * @return array 任务副本结构体
+     */
+    public function processByUsertaskId( $usertask_id, $process ) {
+
+        $usertask = $this->getByUsertaskId( $usertask_id );
+        if ( empty($usertask) ) {
+            throw new Excp("未找到任务副本信息", 404, ["process"=>$process,"usertask_id"=>$usertask_id]);
+        }
+        $this->process( $usertask, $process );
+    }
+
+    /**
+     * 设定任务副本进度并发放奖励 (按任务ID和用户ID读取最后一条任务副本)
+     * @param string $task_id  任务ID
+     * @param string $user_id  用户ID 
+     * @param int $process 新进度
+     * @return array 任务副本结构体
+     */
+    public function processByTaskIdAndUserId( $task_id, $user_id, $process ) {
+
+         // 读取任务副本信息
+         $qb = $this->query()
+                    ->where( "user_id", $user_id )
+                    ->whereIn("task_id", $task_ids)
+                    ->orderBy("created_at", "desc")     
+        ;
+
+        $usertasks = $qb->get()
+                        ->unique("task_id")
+                        ->toArray();
+
+        if ( empty($usertasks) ) {
+            throw new Excp("未找到任务副本信息", 404, ["process"=>$process,"usertask_id"=>$usertask_id]);
+        }
+
+        $this->process( current($usertasks), $process );
+    }
+
+    /**
+     * 设定任务副本进度并发放奖励 (按任务别名和用户ID读取最后一条任务副本)
+     * @param string $task_slug  任务别名
+     * @param string $user_id  用户ID 
+     * @param int $process 新进度
+     * @return array 任务副本结构体
+     */
+    public function processByTaskSlugAndUserId( $task_slug, $user_id, $process ) {
+
+        // 读取任务副本信息
+        $qb = $this->query()
+                   ->leftJoin("task as task", "task.task_id", "=", "usertask.task_id")
+                   ->where( "user_id", $user_id )
+                   ->whereIn("task.slug", $task_slug)
+                   ->orderBy("usertask.created_at", "desc")     
+                   ->select( "usertask.*")
+       ;
+       $usertasks = $qb->get()
+                       ->unique("usertask.task_id")
+                       ->toArray();
+
+       if ( empty($usertasks) ) {
+           throw new Excp("未找到任务副本信息", 404, ["process"=>$process,"usertask_id"=>$usertask_id]);
+       }
+       
+       $this->process( current($usertasks), $process );
+   }
+
+
+    /**
+     * 设定任务副本进度并发放奖励
+     * @param array $usertask 任务副本结构体
+     *                  usertask_id required 任务副本ID
+     *                  task_id     required 任务ID
+     *                  user_id     required 用户ID 
+     *                  process     required 当前进度
+     * @param int $process 新进度
+     * @return array 任务副本结构体
+     */
+    private function process( $usertask, $process ) {
+
+        $usertask_id = $usertask["usertask_id"];
+        $user_id = $usertask["user_id"];
+        $task_id = $usertask["task_id"];
+
+        if ( empty($usertask_id) ){
+            throw new Excp("未提供任务副本ID", 402, ["process"=>$process,"usertask"=>$usertask]);
+        }
+
+        if ( empty($user_id) ){
+            throw new Excp("未提供用户ID", 402, ["process"=>$process,"usertask"=>$usertask]);
+        }
+
+        if ( empty($task_id) ){
+            throw new Excp("未提供任务ID", 402, ["process"=>$process,"usertask"=>$usertask]);
+        }
+
+        $t = new Task;
+        $task = $t->getByTaskId( $task_id );
+
+        // 非法步骤
+        if ( $process > $task["process"] || $$process  < 1 ) {
+            throw new Excp("步骤信息不合法", 402, ["process"=>$process, "max"=>$task["process"], "current"=>$usertask["process"]]);
+        }
+
+        // 不可以后退
+        if ( $process <= $usertask["process"] ) {
+            throw new Excp("步骤信息不合法", 402, ["process"=>$process,"max"=>$task["process"], "current"=>$usertask["process"]]);
+        }
+
+        // 发放当前步骤奖励积分
+        $current = $process - 1;
+        $quantity = intval($task["quantity"][$current]);
+        if ( $quantity  > 0 ) { // 增加积分
+            $pay = new \Xpmsns\User\Model\Coin();
+            $coin = $pay->create([
+                "user_id" => $user_id,
+                "quantity" => $quantity,
+                "type" => "increase",
+                "outer_id" => $usertask_id,
+                "origin" => "usertask",
+                "snapshot" => ["type"=>"task", "usertask_id"=>$usertask_id, "data"=>$usertask],
+            ]);
+        }
+
+        // 更新进度
+        $data = [
+            "usertask_id" => $usertask_id,
+            "process" => $process,
+        ];
+
+        // 标记为完成
+        if ( $process == $task["process"] ){
+            $data["status"] = "completed";
+        }
+
+        return $this->updateBy("usertask_id", $data );
+    }
+
+
+
     // @KEEP END
 
 
