@@ -30,7 +30,7 @@ class testArticleModel extends PHPUnit_Framework_TestCase {
 
         $user->onInviteChange(
             [],
-            ["ourter_id"=>"invite"],
+            ["outer_id"=>"invite"],
             ["inviter"=>$uinfo],
             []
         );
