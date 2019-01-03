@@ -116,9 +116,9 @@ use \Xpmse\T;
 	<div class="form-group    ">
 		<label class="col-xs-2 control-label" for="redirect">是否跳转</label>
 		<div class="col-xs-8">
-			
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="redirect" value="0" type="radio" data-uncheck-value="0" checked /> <span></span> 不跳转</label>
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="redirect" value="1" type="radio" data-uncheck-value="1"  /> <span></span> 自动跳转</label>
+			<?php if (is_null($rs["redirect"])) { $rs["redirect"] = "0"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="redirect" data-uncheck-value="0" value="0" <?=("0" == $rs["redirect"]) ? "checked" : ""?> > <span></span> 不跳转</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="redirect" data-uncheck-value="1" value="1" <?=("1" == $rs["redirect"]) ? "checked" : ""?> > <span></span> 自动跳转</label>
 			<div class="help-block"></div>
 		</div>
 	</div><!-- END 单选框: 是否跳转 (redirect) 开始  -->
