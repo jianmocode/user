@@ -69,7 +69,7 @@ class Checkin extends Model {
         // 订阅行为( 响应任务处理 )
         $subscribers =[
             [
-                "name" => "签到任务订阅",
+                "name" => "签到任务",
                 "behavior_slug"=>"xpmsns/user/checkin/create",
                 "ourter_id" => "checkin",
                 "origin" => "task",
