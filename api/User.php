@@ -667,7 +667,7 @@ class User extends Api {
         // 邀请注册
         $inviter = $u->getInviter();
         if ( !empty($inviter) ) {
-            $data["inviter"] = $inviter["inviter_id"];
+            $data["inviter"] = $inviter["user_id"];
         }
 
 		// 数据入库
