@@ -49,7 +49,10 @@ class Favorite extends Model {
             [
                 "name"=>"收藏任务", "slug"=>"favorite", "type"=>"repeatable",
                 "daily_limit"=>1, "process"=>3, 
-                "quantity" => [100,200,300],
+                "quantity" => [0,0,300],
+                "params" => [
+                    "count"=>3
+                ],
                 "auto_accept" => 0,
                 "accept" => ["class"=>"\\xpmsns\\user\\model\\favorite", "method"=>"onFavoriteAccpet"],
                 "status" => "online",
@@ -111,7 +114,67 @@ class Favorite extends Model {
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
     public function onFavoriteChange( $behavior, $subscriber, $data, $env ) {
-        echo "\t onFavoriteChange  {$data["favorite_id"]} {$data["outer_id"]} {$data["origin"]} \n";
+    
+        $task_slug = $subscriber["outer_id"];
+        $user_id = $env["user_id"];
+
+        $t = new \Xpmsns\User\Model\Usertask;
+        $task = $t->getByTaskSlugAndUserId( $task_slug, $user_id );
+        if ( empty($task) ) {
+            throw new Excp("未找到任务信息({$task_slug})", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]);
+        }
+
+        // 自动接受任务
+        $usertask = $task["usertask"];
+        if( 
+            $task["auto_accept"] == 1 &&
+            ( empty($usertask) || ( $usertask["status"] != "accepted" &&  $task["type"] == "repeatable" ) )
+        ) {
+            $task["usertask"] = $usertask = $t->acceptBySlug( $task_slug, $user_id );
+        }
+
+        if ( empty($task["usertask"]) ) {
+            throw new Excp("用户尚未接受该任务({$task_slug})", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]); 
+        }
+
+        // 扩展数量
+        $params = is_array($task["params"]) ? $task["params"] : [];
+        $params["count"] = empty($params["count"]) ?  intval($task["process"]) : intval($params["count"]);
+        if ( $params["count"] != intval($task["process"]) ) {
+            $tt = new  \Xpmsns\User\Model\Task;
+            $quantity = []; 
+            for( $i=0;$i<$params["count"]; $i++) {
+                $quantity[$i] = 0;
+            }
+            $quantity[$params["count"]-1] = end($task["quantity"]);
+
+            $tt->updateBy("task_id", [
+                "task_id"=>$task["task_id"],
+                "process" => $params["count"],
+                "quantity" => $quantity,
+            ]);
+        }
+
+
+        // 任务副本创建时间
+        if ( strtotime($data["created_at"]) < strtotime($usertask["created_at"]) ) {
+            $created_at = $data["created_at"];
+        } else {
+            $created_at = $usertask["created_at"];
+        }
+
+        // 检索自任务副本创建到当前时刻的收藏数量
+        $process = $this->query()
+                   ->where("user_id", "=",$user_id)
+                   ->where("created_at", ">=",$created_at)
+                   ->limit(3)
+                   ->count("favorite_id")
+                ;
+                
+        if ( $process > 0 ) {
+            $t->processByUsertaskId( $usertask["usertask_id"], $process );
+        }
+
     }
 
     /**

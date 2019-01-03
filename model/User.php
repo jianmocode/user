@@ -358,7 +358,6 @@ class User extends Model {
         // print_r( $defaults );
         // print_r( $params );
 
-        $params = $defaults;
         $user = $this->getByUid( $user_id );
 
         // 计算当前完成步骤
