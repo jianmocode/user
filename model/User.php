@@ -319,7 +319,31 @@ class User extends Model {
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
     public function onInviteChange( $behavior, $subscriber, $data, $env ) {
-        echo "\t onInviteChange  {$data["user_id"]} {$data["mobile"]} {$data["invite"]} \n";
+        if ( empty($data["inviter"]) ) {
+            return ;
+        }
+
+        // 读取任务
+        $inviter = $data["inviter"];
+        $task_slug = $subscriber["ourter_id"];
+        $user_id = $inviter["user_id"];
+        $t = new \Xpmsns\User\Model\Usertask;
+        $task = $t->getByTaskSlugAndUserId( $task_slug, $user_id );
+        if ( empty($task) ) {
+            throw new Excp("未找到任务信息({$task_slug})", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]);
+        }
+
+        // 自动接受任务
+        $usertask = $task["usertask"];
+        if( 
+            $task["auto_accept"] == 1 &&
+            ( empty($usertask) || ( $usertask["status"] != "accepted" &&  $task["type"] == "repeatable" ) )
+        ) {
+            $task["usertask"] = $usertask = $t->acceptBySlug( $task_slug, $user_id );
+        }
+  
+        // 设定进展并发放奖励
+        $t->processByUsertaskId( $usertask["usertask_id"], 1 );
     }
 
 
