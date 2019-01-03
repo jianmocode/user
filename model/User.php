@@ -144,8 +144,8 @@ class User extends Model {
             
             // 社会化
             ->putColumn( 'inviter', $this->type('string', ['length'=>128] ) ) // 邀请者 (user_id)
-            ->putColumn( 'follower_cnt', $this->type('string', ['length'=>128] ) )  // 粉丝数量 (缓存数据)
-            ->putColumn( 'following_cnt', $this->type('string', ['length'=>128] ) )  // 关注数量 (缓存数据)
+            ->putColumn( 'follower_cnt', $this->type('integer', ['length'=>1] ) )  // 粉丝数量 (缓存数据)
+            ->putColumn( 'following_cnt', $this->type('integer', ['length'=>1] ) )  // 关注数量 (缓存数据)
 		;
 
 		// 微信公众号授权表
