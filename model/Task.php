@@ -4,11 +4,11 @@
  * 任务数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-03 12:46:18
+ * 最后修改: 2019-01-03 22:51:58
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
-                         
+                          
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
@@ -70,6 +70,8 @@ class Task extends Model {
 		$this->putColumn( 'slug', $this->type("string", ["length"=>128, "unique"=>true, "null"=>true]));
 		// 名称
 		$this->putColumn( 'name', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
+		// 参数
+		$this->putColumn( 'params', $this->type("text", ["json"=>true, "null"=>true]));
 		// 类目
 		$this->putColumn( 'categories', $this->type("text", ["json"=>true, "null"=>true]));
 		// 类型
@@ -188,6 +190,7 @@ class Task extends Model {
 	 *          	  $rs["task_id"],  // 任务ID 
 	 *          	  $rs["slug"],  // 别名 
 	 *          	  $rs["name"],  // 名称 
+	 *          	  $rs["params"],  // 参数 
 	 *          	  $rs["categories"],  // 类目 
 	 *                $rs["_map_category"][$categories[n]]["category_id"], // category.category_id
 	 *          	  $rs["type"],  // 类型 
@@ -345,6 +348,7 @@ class Task extends Model {
 	 *          	  $rs["task_id"],  // 任务ID 
 	 *          	  $rs["slug"],  // 别名 
 	 *          	  $rs["name"],  // 名称 
+	 *          	  $rs["params"],  // 参数 
 	 *          	  $rs["categories"],  // 类目 
 	 *                $rs["_map_category"][$categories[n]]["category_id"], // category.category_id
 	 *          	  $rs["type"],  // 类型 
@@ -630,6 +634,7 @@ class Task extends Model {
 	 *               	["task_id"],  // 任务ID 
 	 *               	["slug"],  // 别名 
 	 *               	["name"],  // 名称 
+	 *               	["params"],  // 参数 
 	 *               	["categories"],  // 类目 
 	 *               	["category"][$categories[n]]["category_id"], // category.category_id
 	 *               	["type"],  // 类型 
@@ -833,6 +838,7 @@ class Task extends Model {
 			"task_id",  // 任务ID
 			"slug",  // 别名
 			"name",  // 名称
+			"params",  // 参数
 			"categories",  // 类目
 			"type",  // 类型
 			"summary",  // 简介

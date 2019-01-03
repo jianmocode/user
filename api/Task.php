@@ -4,11 +4,11 @@
  * 任务数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-03 12:46:17
+ * 最后修改: 2019-01-03 22:51:57
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
-                         
+                          
 
 use \Xpmse\Loader\App;
 use \Xpmse\Excp;
@@ -136,6 +136,7 @@ class Task extends Api {
 	 *               	["task_id"],  // 任务ID 
 	 *               	["slug"],  // 别名 
 	 *               	["name"],  // 名称 
+	 *               	["params"],  // 参数 
 	 *               	["categories"],  // 类目 
 	*               	["_map_category"][$categories[n]]["category_id"], // category.category_id
 	 *               	["type"],  // 类型 
@@ -263,6 +264,7 @@ class Task extends Api {
 	 *               	["task_id"],  // 任务ID 
 	 *               	["slug"],  // 别名 
 	 *               	["name"],  // 名称 
+	 *               	["params"],  // 参数 
 	 *               	["categories"],  // 类目 
 	*               	["category"][$categories[n]]["category_id"], // category.category_id
 	 *               	["type"],  // 类型 

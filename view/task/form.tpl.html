@@ -213,7 +213,8 @@ use \Xpmse\T;
 				<div class="col-xs-8">
 					<input class="form-control input-lg "   
 						type="text" 
-						id="quantity" name="quantity"
+                        id="quantity" name="quantity"
+                        data-multiple="1"
 						placeholder="完成该任务可以赚取的积分"  
 						value="<?=T::v('<%=val | e(\'html\')%>', $val )?>" /> 
 					<div class="help-block">单位:个, 若包含多个步骤, 每个步骤对应一个积分.</div>
@@ -323,6 +324,56 @@ use \Xpmse\T;
 	</div><!-- END 单行文本: 完成时限 (time_limit) -->
 
 
+
+
+    <!-- JSON编辑器(json-editor): 参数 (params) 开始  -->
+	<style type="text/css">
+		.CodeMirror {
+			border: 1px solid #e6e6e6;
+		}
+	</style>
+	<div class="json-editor draggable-item" data-name="params" >
+
+		<div class="form-group">
+			<label class="col-xs-2 control-label">参数</label>
+			<div class="col-xs-8">
+                <textarea class="form-control input-lg " name="params"  type="text"  rows="6" 
+                    
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=params | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
+                <input type="hidden" name="__json_cols" value="params" />
+			</div>
+			<div class="col-xs-2 push-10-t"></div>
+		</div>
+
+		<!-- helper -->
+		<div class="form-group helper"> 
+			<label class="col-xs-2 control-label" for="schedule"></label>
+			<div class="col-xs-9">
+				<div class="help-block">任务特别参数, 建议由工程师填写。</div>
+			</div>
+		</div><!-- end helper -->
+	</div>
+    <!-- END 代码编辑器(json-editor): 参数 (params)  -->
+
+    <script type="text/javascript">
+    
+        // 载入代码编辑器
+		if ( typeof CodeMirror != 'undefined' ) {
+			
+			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
+			$('textarea[name="params"]').attr('id', txt_id );
+			CodeMirror.fromTextArea(document.getElementById(txt_id), {
+				lineNumbers: true,
+				mode: "text/javascript",
+                readOnly: false,
+				viewportMargin: Infinity
+			}).on('change', function( cm ){ // 更新 txt 数据
+				document.getElementById(txt_id).value = cm.getValue();
+			});
+		}
+	</script>
+
+
 	<!-- 单选框: 自动接受 (auto_accept) 开始  -->
 	<div class="form-group    ">
 		<label class="col-xs-2 control-label" for="auto_accept">自动接受</label>
@@ -365,16 +416,16 @@ use \Xpmse\T;
 										<i class="fa fa-save push-5-r"></i> 保存
 								</button>
 
-								<button  
+								<!-- <button  
 									type="button" 
 									data-param-id="<?=$rs['task_id']?>"
-									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate hidden ">
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate  ">
 										<i class="fa fa-files-o push-5-r"></i> 复制
 								</button>
 
 								<button 
 									type="button"
-									class="btn btn-lg btn-danger btn-minw ajax-confirm fn-action fn-saved-only fn-remove hidden"
+									class="btn btn-lg btn-danger btn-minw ajax-confirm fn-action fn-saved-only fn-remove"
 									confirm-title="请确认删除任务 "
 						            confirm-content="您确定删除任务 <strong><?=$rs['name=name']?>(<?=$rs['task_id']?> )</strong>"
 						            confirm-dismiss = "取消"
@@ -413,7 +464,7 @@ use \Xpmse\T;
 	
 									 >
 										<i class="fa fa-minus-circle push-5-r"></i> 删除
-								</button>
+								</button> -->
 
 							</div>
 						</div>
