@@ -4,7 +4,7 @@
  * 订阅数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-03 11:38:33
+ * 最后修改: 2019-01-03 12:15:17
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;

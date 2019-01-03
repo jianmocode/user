@@ -166,7 +166,9 @@ use \Xpmse\T;
 	<div class="form-group    ">
 		<label class="col-xs-2 control-label" for="status">状态</label>
 		<div class="col-xs-8">
-			
+			<?php if (is_null($rs["status"])) { $rs["status"] = "on"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="on" value="on" <?=("on" == $rs["status"]) ? "checked" : ""?> > <span></span> 开启</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="off" value="off" <?=("off" == $rs["status"]) ? "checked" : ""?> > <span></span>  关闭</label>
 			<div class="help-block"></div>
 		</div>
 	</div><!-- END 单选框: 状态 (status) 开始  -->
