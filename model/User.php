@@ -299,7 +299,7 @@ class User extends Model {
     }
 
     /**
-     * 任务接受响应: 完善个人资料任务 (验证是否符合接受条件)
+     * 任务接受响应: 邀请注册任务 (验证是否符合接受条件)
      * @return 符合返回 true, 不符合返回 false
      */
     public function onInviteAccpet(){
