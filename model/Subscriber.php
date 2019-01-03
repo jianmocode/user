@@ -4,11 +4,11 @@
  * 订阅数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 12:41:33
+ * 最后修改: 2019-01-03 11:32:40
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
-             
+              
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
@@ -87,7 +87,9 @@ class Subscriber extends Model {
 
 		// 订阅者ID
 		$this->putColumn( 'subscriber_id', $this->type("string", ["length"=>128, "unique"=>true, "null"=>true]));
-		// 行为别名
+		// 名称
+		$this->putColumn( 'name', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
+		// 别名
 		$this->putColumn( 'behavior_slug', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 来源ID
 		$this->putColumn( 'ourter_id', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
@@ -145,7 +147,8 @@ class Subscriber extends Model {
 	 * @param string $subscriber_id 唯一主键
 	 * @return array $rs 结果集 
 	 *          	  $rs["subscriber_id"],  // 订阅者ID 
-	 *          	  $rs["behavior_slug"],  // 行为别名 
+	 *          	  $rs["name"],  // 名称 
+	 *          	  $rs["behavior_slug"],  // 别名 
 	 *                $rs["behavior_slug"], // behavior.slug
 	 *          	  $rs["ourter_id"],  // 来源ID 
 	 *          	  $rs["origin"],  // 来源 
@@ -204,7 +207,7 @@ class Subscriber extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 订阅记录MAP {"subscriber_id1":{"key":"value",...}...}
 	 */
-	public function getInBySubscriberId($subscriber_ids, $select=["subscriber.subscriber_id","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
+	public function getInBySubscriberId($subscriber_ids, $select=["subscriber.subscriber_id","subscriber.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -264,7 +267,8 @@ class Subscriber extends Model {
 	 * @param string $origin_ourter_id 唯一主键
 	 * @return array $rs 结果集 
 	 *          	  $rs["subscriber_id"],  // 订阅者ID 
-	 *          	  $rs["behavior_slug"],  // 行为别名 
+	 *          	  $rs["name"],  // 名称 
+	 *          	  $rs["behavior_slug"],  // 别名 
 	 *                $rs["behavior_slug"], // behavior.slug
 	 *          	  $rs["ourter_id"],  // 来源ID 
 	 *          	  $rs["origin"],  // 来源 
@@ -323,7 +327,7 @@ class Subscriber extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 订阅记录MAP {"origin_ourter_id1":{"key":"value",...}...}
 	 */
-	public function getInByOriginOurterId($origin_ourter_ids, $select=["subscriber.subscriber_id","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
+	public function getInByOriginOurterId($origin_ourter_ids, $select=["subscriber.subscriber_id","subscriber.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -406,7 +410,7 @@ class Subscriber extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 订阅记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["subscriber.subscriber_id","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["subscriber.subscriber_id","subscriber.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -443,21 +447,23 @@ class Subscriber extends Model {
 	/**
 	 * 按条件检索订阅记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["subscriber.subscriber_id","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"]
+	 *         	      $query['select'] 选取字段，默认选择 ["subscriber.subscriber_id","subscriber.name","subscriber.origin","subscriber.ourter_id","subscriber.status"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
 	 *			      $query["subscriber_id"] 按订阅者ID查询 ( = )
-	 *			      $query["behavior_slug"] 按行为别名查询 ( = )
+	 *			      $query["behavior_slug"] 按别名查询 ( = )
 	 *			      $query["ourter_id"] 按来源ID查询 ( = )
 	 *			      $query["origin"] 按来源查询 ( = )
 	 *			      $query["status"] 按状态查询 ( = )
+	 *			      $query["name"] 按名称查询 ( = )
 	 *			      $query["orderby_created_at_desc"]  按创建时间倒序 DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按更新时间倒序 DESC 排序
 	 *           
 	 * @return array 订阅记录集 {"total":100, "page":1, "perpage":20, data:[{"key":"val"}...], "from":1, "to":1, "prev":false, "next":1, "curr":10, "last":20}
 	 *               	["subscriber_id"],  // 订阅者ID 
-	 *               	["behavior_slug"],  // 行为别名 
+	 *               	["name"],  // 名称 
+	 *               	["behavior_slug"],  // 别名 
 	 *               	["behavior_slug"], // behavior.slug
 	 *               	["ourter_id"],  // 来源ID 
 	 *               	["origin"],  // 来源 
@@ -479,7 +485,7 @@ class Subscriber extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["subscriber.subscriber_id","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"] : $query['select'];
+		$select = empty($query['select']) ? ["subscriber.subscriber_id","subscriber.name","subscriber.origin","subscriber.ourter_id","subscriber.status"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
@@ -496,10 +502,10 @@ class Subscriber extends Model {
 		if ( array_key_exists("keyword", $query) && !empty($query["keyword"]) ) {
 			$qb->where(function ( $qb ) use($query) {
 				$qb->where("subscriber.subscriber_id", "like", "%{$query['keyword']}%");
+				$qb->orWhere("subscriber.name","like", "%{$query['keyword']}%");
 				$qb->orWhere("subscriber.behavior_slug","like", "%{$query['keyword']}%");
 				$qb->orWhere("subscriber.ourter_id","like", "%{$query['keyword']}%");
 				$qb->orWhere("subscriber.origin","like", "%{$query['keyword']}%");
-				$qb->orWhere("behavior.name","like", "%{$query['keyword']}%");
 			});
 		}
 
@@ -509,7 +515,7 @@ class Subscriber extends Model {
 			$qb->where("subscriber.subscriber_id", '=', "{$query['subscriber_id']}" );
 		}
 		  
-		// 按行为别名查询 (=)  
+		// 按别名查询 (=)  
 		if ( array_key_exists("behavior_slug", $query) &&!empty($query['behavior_slug']) ) {
 			$qb->where("subscriber.behavior_slug", '=', "{$query['behavior_slug']}" );
 		}
@@ -527,6 +533,11 @@ class Subscriber extends Model {
 		// 按状态查询 (=)  
 		if ( array_key_exists("status", $query) &&!empty($query['status']) ) {
 			$qb->where("subscriber.status", '=', "{$query['status']}" );
+		}
+		  
+		// 按名称查询 (=)  
+		if ( array_key_exists("name", $query) &&!empty($query['name']) ) {
+			$qb->where("subscriber.name", '=', "{$query['name']}" );
 		}
 		  
 
@@ -629,7 +640,8 @@ class Subscriber extends Model {
 	public static function getFields() {
 		return [
 			"subscriber_id",  // 订阅者ID
-			"behavior_slug",  // 行为别名
+			"name",  // 名称
+			"behavior_slug",  // 别名
 			"ourter_id",  // 来源ID
 			"origin",  // 来源
 			"origin_ourter_id",  // 唯一来源ID

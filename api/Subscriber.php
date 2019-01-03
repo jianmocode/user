@@ -4,11 +4,11 @@
  * 订阅数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 12:41:33
+ * 最后修改: 2019-01-03 11:32:39
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
-             
+              
 
 use \Xpmse\Loader\App;
 use \Xpmse\Excp;
@@ -32,16 +32,17 @@ class Subscriber extends Api {
 	/**
 	 * 查询一条订阅记录
 	 * @param  array $query GET 参数
-	 *               $query['select']  读取字段, 默认 ["subscriber.subscriber_id","subscriber.ourter_id","subscriber.origin","subscriber.status","subscriber.created_at","subscriber.updated_at","behavior.slug","behavior.name"]
+	 *               $query['select']  读取字段, 默认 ["subscriber.subscriber_id","subscriber.name","subscriber.ourter_id","subscriber.origin","subscriber.status","subscriber.created_at","subscriber.updated_at"]
 	 * 				 $query['subscriber_id']  按查询 (多条用 "," 分割)
      *
 	 * @param  array $data  POST 参数
-	 *               $data['select']  返回字段, 默认 ["subscriber.subscriber_id","subscriber.ourter_id","subscriber.origin","subscriber.status","subscriber.created_at","subscriber.updated_at","behavior.slug","behavior.name"]
+	 *               $data['select']  返回字段, 默认 ["subscriber.subscriber_id","subscriber.name","subscriber.ourter_id","subscriber.origin","subscriber.status","subscriber.created_at","subscriber.updated_at"]
 	 * 				 $data['subscriber_id']  按查询 (多条用 "," 分割)
 	 *
 	 * @return array 订阅记录 Key Value 结构数据 
 	 *               	["subscriber_id"],  // 订阅者ID 
-	 *               	["behavior_slug"],  // 行为别名 
+	 *               	["name"],  // 名称 
+	 *               	["behavior_slug"],  // 别名 
 	*               	["behavior_slug"], // behavior.slug
 	 *               	["ourter_id"],  // 来源ID 
 	 *               	["origin"],  // 来源 
@@ -68,7 +69,7 @@ class Subscriber extends Api {
 		$data = array_merge( $query, $data );
 
 		// 读取字段
-		$select = empty($data['select']) ? ["subscriber.subscriber_id","subscriber.ourter_id","subscriber.origin","subscriber.status","subscriber.created_at","subscriber.updated_at","behavior.slug","behavior.name"] : $data['select'];
+		$select = empty($data['select']) ? ["subscriber.subscriber_id","subscriber.name","subscriber.ourter_id","subscriber.origin","subscriber.status","subscriber.created_at","subscriber.updated_at"] : $data['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
@@ -98,35 +99,38 @@ class Subscriber extends Api {
 	/**
 	 * 根据条件检索订阅记录
 	 * @param  array $query GET 参数
-	 *         	      $query['select'] 选取字段，默认选择 ["subscriber.subscriber_id","subscriber.ourter_id","subscriber.origin","subscriber.status","subscriber.created_at","subscriber.updated_at","behavior.slug","behavior.name"]
+	 *         	      $query['select'] 选取字段，默认选择 ["subscriber.subscriber_id","subscriber.ourter_id","subscriber.origin","subscriber.status","subscriber.created_at","subscriber.updated_at"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
 	 *			      $query["subscriber_id"] 按订阅者ID查询 ( AND = )
-	 *			      $query["behavior_slug"] 按行为别名查询 ( AND = )
+	 *			      $query["behavior_slug"] 按别名查询 ( AND = )
 	 *			      $query["ourter_id"] 按来源ID查询 ( AND = )
 	 *			      $query["origin"] 按来源查询 ( AND = )
 	 *			      $query["status"] 按状态查询 ( AND = )
+	 *			      $query["name"] 按名称查询 ( AND = )
 	 *			      $query["orderby_created_at_desc"]  按创建时间倒序 DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按更新时间倒序 DESC 排序
      *
 	 * @param  array $data  POST 参数
-	 *         	      $data['select'] 选取字段，默认选择 ["name=subscriber_id","name=ourter_id","name=origin","name=status","name=created_at","name=updated_at","model=%5CXpmsns%5CUser%5CModel%5CBehavior&name=slug&table=behavior&prefix=xpmsns_user_&alias=behavior&type=join","model=%5CXpmsns%5CUser%5CModel%5CBehavior&name=name&table=behavior&prefix=xpmsns_user_&alias=behavior&type=join"]
+	 *         	      $data['select'] 选取字段，默认选择 ["name=subscriber_id","name=ourter_id","name=origin","name=status","name=created_at","name=updated_at"]
 	 *         	      $data['page'] 页码，默认为 1
 	 *         	      $data['perpage'] 每页显示记录数，默认为 20
 	 *			      $data["keyword"] 按关键词查询
 	 *			      $data["subscriber_id"] 按订阅者ID查询 ( AND = )
-	 *			      $data["behavior_slug"] 按行为别名查询 ( AND = )
+	 *			      $data["behavior_slug"] 按别名查询 ( AND = )
 	 *			      $data["ourter_id"] 按来源ID查询 ( AND = )
 	 *			      $data["origin"] 按来源查询 ( AND = )
 	 *			      $data["status"] 按状态查询 ( AND = )
+	 *			      $data["name"] 按名称查询 ( AND = )
 	 *			      $data["orderby_created_at_desc"]  按创建时间倒序 DESC 排序
 	 *			      $data["orderby_updated_at_desc"]  按更新时间倒序 DESC 排序
 	 *
 	 * @return array 订阅记录集 {"total":100, "page":1, "perpage":20, data:[{"key":"val"}...], "from":1, "to":1, "prev":false, "next":1, "curr":10, "last":20}
 	 *               data:[{"key":"val"}...] 字段
 	 *               	["subscriber_id"],  // 订阅者ID 
-	 *               	["behavior_slug"],  // 行为别名 
+	 *               	["name"],  // 名称 
+	 *               	["behavior_slug"],  // 别名 
 	*               	["behavior_slug"], // behavior.slug
 	 *               	["ourter_id"],  // 来源ID 
 	 *               	["origin"],  // 来源 
@@ -153,7 +157,7 @@ class Subscriber extends Api {
 		$data = array_merge( $query, $data );
 
 		// 读取字段
-		$select = empty($data['select']) ? ["subscriber.subscriber_id","subscriber.ourter_id","subscriber.origin","subscriber.status","subscriber.created_at","subscriber.updated_at","behavior.slug","behavior.name"] : $data['select'];
+		$select = empty($data['select']) ? ["subscriber.subscriber_id","subscriber.ourter_id","subscriber.origin","subscriber.status","subscriber.created_at","subscriber.updated_at"] : $data['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}

@@ -59,6 +59,19 @@ use \Xpmse\T;
 		</div>
 			</div><!-- END 下拉选择(动态数据): 行为 (behavior_slug) -->
 
+	<!-- 单行文本: 名称 (name) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="name">名称</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="name" name="name" 
+				placeholder=""  
+				value="<?=T::v('<%=name | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单行文本: 名称 (name) -->
+
 	<!-- 单行文本: 来源ID (ourter_id) 开始  -->
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="ourter_id">来源ID</label>
@@ -154,8 +167,6 @@ use \Xpmse\T;
 		<label class="col-xs-2 control-label" for="status">状态</label>
 		<div class="col-xs-8">
 			
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="status" value="on" type="radio" data-uncheck-value="on" checked /> <span></span> 开启</label>
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="status" value="off" type="radio" data-uncheck-value="off"  /> <span></span>  关闭</label>
 			<div class="help-block"></div>
 		</div>
 	</div><!-- END 单选框: 状态 (status) 开始  -->
@@ -190,7 +201,7 @@ use \Xpmse\T;
 									type="button"
 									class="btn btn-lg btn-danger btn-minw ajax-confirm fn-action fn-saved-only fn-remove"
 									confirm-title="请确认删除订阅 "
-						            confirm-content="您确定删除订阅 <strong><?=$rs['name=subscriber_id']?>(<?=$rs['subscriber_id']?> )</strong>"
+						            confirm-content="您确定删除订阅 <strong><?=$rs['name=name']?>(<?=$rs['subscriber_id']?> )</strong>"
 						            confirm-dismiss = "取消"
 						            confirm-submit= "确定"
 						            confirm-action="<?=App::NR('subscriber','remove')?>"

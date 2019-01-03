@@ -4,7 +4,7 @@
  * 订阅控制器
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 12:41:33
+ * 最后修改: 2019-01-03 11:32:40
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/controller/Name.php
  */
 
@@ -81,7 +81,7 @@ class SubscriberController extends \Xpmse\Loader\Controller {
 		if ( !empty($subscriber_id) ) {
 			$rs = $inst->getBySubscriberId($subscriber_id);
 			if ( !empty($rs) ) {
-				$action_name =  $rs['subscriber_id'];
+				$action_name =  $rs['name'];
 			}
 		}
 
@@ -196,7 +196,7 @@ class SubscriberController extends \Xpmse\Loader\Controller {
 		$subscriber_id = $_GET['subscriber_id'];
 		$inst = new \Xpmsns\User\Model\Subscriber;
 		$rs = $inst->getBySubscriberId( $subscriber_id );
-		$action_name =  $rs['subscriber_id'] . ' 副本';
+		$action_name =  $rs['name'] . ' 副本';
 
 		// 删除唯一索引字段
 		unset($rs['subscriber_id']);

@@ -141,6 +141,7 @@ use \Xpmse\T;
 						<thead>
 							<tr>
 								<th class="font-w300"> 订阅者ID </th>
+								<th class="font-w300"> 名称 </th>
 								<th class="font-w300"> 行为 </th>
 								<th class="font-w300"> 来源 </th>
 								<th class="font-w300"> 来源ID </th>
@@ -156,7 +157,10 @@ use \Xpmse\T;
 									<?php $v=null; $v=T::s("{{subscriber_id}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
-									<?php $v=null; $v=T::s("{{behavior_name}}({{behavior_slug}})", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
+									<?php $v=null; $v=T::s("{{name}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
+								</td>
+								<td class="font-w300">
+									<?=T::s("", $rs );?>
 								</td>
 								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{origin}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
@@ -173,7 +177,7 @@ use \Xpmse\T;
 						</tbody>
 
 						<tfoot>
-							<tr><td colspan="5"> <nav class="pull-right">
+							<tr><td colspan="6"> <nav class="pull-right">
 
 								<ul class="pagination">
 									<?php if ($response['prev'] !== false): ?>
