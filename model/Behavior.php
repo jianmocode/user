@@ -47,23 +47,26 @@ class Behavior extends Model {
      * 触发用户行为(通知所有该行为订阅者)
      * @param string $slug 用户行为别名
      * @param array $data 行为数据
+     * @param bool $user_only 只有登录用户才触发此行为
      * @return null
      */
-    static public function trigger( $slug, $data=[] ) {
+    static public function trigger( $slug, $data=[], $user_only=false ) {
 
         // 创建用户对象
         try {
             $u = new \Xpmsns\User\Model\User;
         } catch( Excp $e) { return; }
 
-        $uinfo = $u->getUserInfo();        
-        if ( empty($uinfo["user_id"]) ) {
-            return;
+        if ($user_only == true ) {
+            $uinfo = $u->getUserInfo();        
+            if ( empty($uinfo["user_id"]) ) {
+                return;
+            }
         }
- 
+
         // 执行行为(通知所有该行为订阅者)
         try {
-            $behavior = new Behavior();
+            $behavior = new Self();
             $env = $behavior->getEnv();
             $behavior->runBySlug($slug, $data, $env );
         }catch(Excp $e) { $e->log(); }
