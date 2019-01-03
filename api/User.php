@@ -62,7 +62,10 @@ class User extends Api {
 	protected function updateProfile( $query, $data ) {
 
 		// 许可字段清单
-		$allowed = ["extra", "mobile", "address", "bio", "sex", "nickname", "country", "city", "headimgurl", "bgimgurl", "birthday", "language"];
+		$allowed = [
+            "extra", "mobile", "bio", "sex", "nickname", "country", "province", "city", "headimgurl", "bgimgurl", "birthday", "language",
+            "contact_name", "contact_tel", "title","company","zip", "tag", "address",
+        ];
 
 		// 用户身份验证
 		$u = new UserModel();
@@ -92,9 +95,27 @@ class User extends Api {
 			$data['bgimgurl'] = json_decode($data['bgimgurl'], true);
 		}
 
+        // 处理标签
+        if ( !empty($data['tag']) ) {
+			$data['tag'] = json_decode($data['tag'], true);
+        }
 
-		$u->save( $data );
-		$u->loginSetSession($uinfo['user_id']);
+        // 处理生日
+        if ( !empty($data['birthday']) ) {
+			$data['birthday'] = date("Y-m-d H:i:s", strtotime($data['birthday']));
+        }
+
+        // 处理特别参数
+        if ( !empty($data['extra']) ) {
+			$data['extra'] = json_decode($data['extra'], true);
+        }
+
+		$resp = $u->save( $data );
+        $u->loginSetSession($uinfo['user_id']);
+
+        try {  // 触发用户个人资料更新行为
+            \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/profile", $resp);
+        }catch(Excp $e) { $e->log(); }
 
 		return ['code'=>0, 'message'=>'数据保存成功', 'user_info'=>$u->getUserInfo()];
 	}
@@ -746,8 +767,12 @@ class User extends Api {
 
 		// 数据入库
 		$u = new UserModel();
-		$u->updateBy('user_id', $data );
-		$u->login($data['mobile'], $data['password'], $data['mobile_nation'] );
+		$resp = $u->updateBy('user_id', $data );
+        $u->login($data['mobile'], $data['password'], $data['mobile_nation'] );
+        
+        try {  // 触发用户个人资料更新行为
+            \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/profile", $resp);
+        }catch(Excp $e) { $e->log(); }
 
 		return ["message"=>"绑定成功", "code"=>0 ];
 	}

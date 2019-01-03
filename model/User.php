@@ -307,7 +307,9 @@ class User extends Model {
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
     public function onProfileChange( $behavior, $subscriber, $data, $env ) {
-        echo "\t onProfileChange  {$data["favorite_id"]} {$data["outer_id"]} {$data["origin"]} \n";
+
+        print_r($data);
+
     }
 
 
@@ -319,6 +321,7 @@ class User extends Model {
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
     public function onInviteChange( $behavior, $subscriber, $data, $env ) {
+       
         if ( empty($data["inviter"]) ) {
             return ;
         }
