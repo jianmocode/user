@@ -136,13 +136,17 @@ class User extends Model {
 			// 登录密码
 			->putColumn( 'password', $this->type('string', ['length'=>128] ) )
 
-			// 支付密码
-			->putColumn( 'pay_password', $this->type('string', ['length'=>128] ) )
+			// 支付密码 (二级密码)
+            ->putColumn( 'pay_password', $this->type('string', ['length'=>128] ) )
 
 			// 用户状态 on/off/lock
-			 ->putColumn( 'status', $this->type('string', ['length'=>10,'index'=>true, 'default'=>'on']) )
+             ->putColumn( 'status', $this->type('string', ['length'=>10,'index'=>true, 'default'=>'on']) )
+            
+            // 社会化
+            ->putColumn( 'inviter', $this->type('string', ['length'=>128] ) ) // 邀请者 (user_id)
+            ->putColumn( 'follower_cnt', $this->type('string', ['length'=>128] ) )  // 粉丝数量 (缓存数据)
+            ->putColumn( 'following_cnt', $this->type('string', ['length'=>128] ) )  // 关注数量 (缓存数据)
 		;
-
 
 		// 微信公众号授权表
 		
@@ -178,7 +182,124 @@ class User extends Model {
 			// 微信应用 SLUG
 			->putColumn( 'appid_openid',  $this->type('string', ['length'=>128, 'unique'=>true]) )
 		;
-	}
+    }
+    
+
+
+    /**
+     * 用户初始化( 注册行为/注册任务/设置默认值等... )
+     */
+    public function __defaults() {
+
+        // 注册任务
+        $tasks = [
+            [
+                "name"=>"完善个人资料任务", "slug"=>"profile", "type"=>"once",
+                "process"=>5, 
+                "quantity" => [100,200,300,400,500],
+                "auto_accept" => 0,
+                "accept" => ["class"=>"\\xpmsns\\user\\model\\user", "method"=>"onProfileAccpet"],
+                "status" => "online",
+            ],[
+                "name"=>"邀请注册任务", "slug"=>"invite", "type"=>"repeatable",
+                "process"=>1, 
+                "quantity" => [500],
+                "auto_accept" => 0,
+                "accept" => ["class"=>"\\xpmsns\\user\\model\\user", "method"=>"onInviteAccpet"],
+                "status" => "online",
+            ]
+        ];
+
+        // 注册行为
+        $behaviors =[
+            [
+                "name" => "更新个人资料", "slug"=>"xpmsns/user/user/profile",
+                "intro" =>  "本行为当更新用户资料后触发",
+                "params" => ["name"=>"真实姓名", "nickname"=>"昵称", "sex"=>"性别", "address"=>"地址", "birthday"=>"生日"],
+                "status" => "online",
+            ],[
+                "name" => "用户注册", "slug"=>"xpmsns/user/user/signup",
+                "intro" =>  "本行为当更新用户资料后触发",
+                "params" => ["user_id"=>"用户ID", "mobile"=>"手机号", "name"=>"真实姓名", "nickname"=>"昵称", "sex"=>"性别", "address"=>"地址", "birthday"=>"生日", "inviter"=>"邀请者ID"],
+                "status" => "online",
+            ]
+        ];
+
+        // 订阅行为( 响应任务处理 )
+        $subscribers =[
+            [
+                "name" => "完善个人资料任务",
+                "behavior_slug"=>"xpmsns/user/user/profile",
+                "ourter_id" => "profile",
+                "origin" => "task",
+                "timeout" => 30,
+                "handler" => ["class"=>"\\xpmsns\\user\\model\\user", "method"=>"onProfileChange"],
+                "status" => "on",
+            ],[
+                "name" => "邀请注册任务",
+                "behavior_slug"=>"xpmsns/user/user/signup",
+                "ourter_id" => "invite",
+                "origin" => "task",
+                "timeout" => 30,
+                "handler" => ["class"=>"\\xpmsns\\user\\model\\user", "method"=>"onInviteChange"],
+                "status" => "on",
+            ]
+        ];
+
+        $t = new \Xpmsns\User\Model\Task();
+        $b = new \Xpmsns\User\Model\Behavior();
+        $s = new \Xpmsns\User\Model\Subscriber();
+
+        foreach( $tasks as $task ){
+            try { $t->create($task); } catch( Excp $e) { $e->log(); }
+        }
+
+        foreach( $behaviors as $behavior ){
+            try { $b->create($behavior); } catch( Excp $e) { $e->log(); }
+        }
+        foreach( $subscribers as $subscriber ){
+            try { $s->create($subscriber); } catch( Excp $e) { $e->log(); }
+        }
+    }
+
+    /**
+     * 任务接受响应: 完善个人资料任务 (验证是否符合接受条件)
+     * @return 符合返回 true, 不符合返回 false
+     */
+    public function onProfileAccpet(){
+        return true;
+    }
+
+    /**
+     * 任务接受响应: 完善个人资料任务 (验证是否符合接受条件)
+     * @return 符合返回 true, 不符合返回 false
+     */
+    public function onInviteAccpet(){
+        return true;
+    }
+
+    /**
+     * 订阅器: 完善个人资料任务 ( 更新个人资料行为发生时, 触发此函数, 可在后台暂停或关闭)
+     * @param array $behavior  行为(用户签到)数据结构
+     * @param array $subscriber  订阅者(完善个人资料任务订阅) 数据结构  ["ourter_id"=>"任务SLUG", "origin"=>"task" ... ]
+     * @param array $data  行为数据 ["name"=>"真实姓名", "nickname"=>"昵称", "sex"=>"性别", "address"=>"地址", "birthday"=>"生日"],
+     * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     */
+    public function onProfileChange( $behavior, $subscriber, $data, $env ) {
+        echo "\t onProfileChange  {$data["favorite_id"]} {$data["outer_id"]} {$data["origin"]} \n";
+    }
+
+
+    /**
+     * 订阅器: 完善个人资料任务 ( 更新个人资料行为发生时, 触发此函数, 可在后台暂停或关闭)
+     * @param array $behavior  行为(用户签到)数据结构
+     * @param array $subscriber  订阅者(邀请注册任务订阅) 数据结构  ["ourter_id"=>"任务SLUG", "origin"=>"task" ... ]
+     * @param array $data  行为数据 ["user_id"=>"用户ID", "mobile"=>"手机号", "name"=>"真实姓名", "nickname"=>"昵称", "sex"=>"性别", "address"=>"地址", "birthday"=>"生日", "inviter"=>"邀请者ID"],
+     * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     */
+    public function onInviteChange( $behavior, $subscriber, $data, $env ) {
+        echo "\t onInviteChange  {$data["favorite_id"]} {$data["outer_id"]} {$data["origin"]} \n";
+    }
 
 
     /**

@@ -40,7 +40,7 @@ class Favorite extends Model {
     // @KEEP BEGIN
     
     /**
-     * 签到初始化( 注册行为/注册任务/设置默认值等... )
+     * 收藏初始化( 注册行为/注册任务/设置默认值等... )
      */
     public function __defaults() {
 
