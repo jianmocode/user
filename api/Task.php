@@ -116,6 +116,29 @@ class Task extends Api {
         return $utask->getTasks( $query, $user_id );
     }
 
+    /**
+     * 读取单条任务
+     */
+    function getTask( $query, $data ){
+       
+        $u = new \Xpmsns\User\Model\User;
+        $user = $u->getUserInfo();
+        $user_id = $user["user_id"];
+
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $task_slug = $query["slug"];
+        if ( empty($task_slug) ) {
+            throw new Excp("请提供任务别名", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $utask = new \Xpmsns\User\Model\UserTask;
+        return $utask->getByTaskSlugAndUserId( $task_slug, $user_id );
+
+    }
+
     
 
     // @KEEP END
