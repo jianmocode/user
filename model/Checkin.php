@@ -146,6 +146,11 @@ class Checkin extends Model {
             }
         }
 
+        // 超过7天重置到第一天
+        if ( $process > 7 ) {
+            $process = 1;
+        }
+
         // 自动接受任务
         $usertask = $task["usertask"];
         if( 
