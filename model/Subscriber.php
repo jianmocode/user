@@ -4,7 +4,7 @@
  * 订阅数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-03 12:15:17
+ * 最后修改: 2019-01-03 23:01:31
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -44,8 +44,8 @@ class Subscriber extends Model {
      * 重载SaveBy
      */
     public function saveBy( $uniqueKey,  $data,  $keys=null , $select=["*"]) {
-        if ( !empty($data["origin"]) &&  !empty($data["ourter_id"]) ) {
-            $data["origin_ourter_id"] = "DB::RAW(CONCAT(`origin`,'_',`ourter_id`))";
+        if ( !empty($data["origin"]) &&  !empty($data["outer_id"]) ) {
+            $data["origin_outer_id"] = "DB::RAW(CONCAT(`origin`,'_',`outer_id`))";
         }
         return parent::saveBy( $uniqueKey,  $data,  $keys , $select );
     }
@@ -64,7 +64,7 @@ class Subscriber extends Model {
 			$_id = $this->getVar("_id", "WHERE {$uni_key}=? LIMIT 1", [$data_key]);
 			$row = $this->update( $_id, [
 				"deleted_at"=>$time, 
-				"origin_ourter_id"=>"DB::RAW(CONCAT('_','".time() . rand(10000,99999). "_', `origin_ourter_id`))"
+				"origin_outer_id"=>"DB::RAW(CONCAT('_','".time() . rand(10000,99999). "_', `origin_outer_id`))"
 			]);
 
 			if ( $row['deleted_at'] == $time ) {	
@@ -92,11 +92,11 @@ class Subscriber extends Model {
 		// 别名
 		$this->putColumn( 'behavior_slug', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 来源ID
-		$this->putColumn( 'ourter_id', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
+		$this->putColumn( 'outer_id', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 来源
 		$this->putColumn( 'origin', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 唯一来源ID
-		$this->putColumn( 'origin_ourter_id', $this->type("string", ["length"=>128, "unique"=>true, "null"=>true]));
+		$this->putColumn( 'origin_outer_id', $this->type("string", ["length"=>128, "unique"=>true, "null"=>true]));
 		// 处理器
 		$this->putColumn( 'handler', $this->type("text", ["json"=>true, "null"=>true]));
 		// 超时时长
@@ -150,9 +150,9 @@ class Subscriber extends Model {
 	 *          	  $rs["name"],  // 名称 
 	 *          	  $rs["behavior_slug"],  // 别名 
 	 *                $rs["behavior_slug"], // behavior.slug
-	 *          	  $rs["ourter_id"],  // 来源ID 
+	 *          	  $rs["outer_id"],  // 来源ID 
 	 *          	  $rs["origin"],  // 来源 
-	 *          	  $rs["origin_ourter_id"],  // 唯一来源ID 
+	 *          	  $rs["origin_outer_id"],  // 唯一来源ID 
 	 *          	  $rs["handler"],  // 处理器 
 	 *          	  $rs["timeout"],  // 超时时长 
 	 *          	  $rs["status"],  // 状态 
@@ -207,7 +207,7 @@ class Subscriber extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 订阅记录MAP {"subscriber_id1":{"key":"value",...}...}
 	 */
-	public function getInBySubscriberId($subscriber_ids, $select=["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
+	public function getInBySubscriberId($subscriber_ids, $select=["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.outer_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -258,21 +258,21 @@ class Subscriber extends Model {
 		// 增加表单查询索引字段
 		array_push($select, "subscriber.subscriber_id");
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
-		$rs = $this->saveBy("subscriber_id", $data, ["subscriber_id", "origin_ourter_id"], ['_id', 'subscriber_id']);
+		$rs = $this->saveBy("subscriber_id", $data, ["subscriber_id", "origin_outer_id"], ['_id', 'subscriber_id']);
 		return $this->getBySubscriberId( $rs['subscriber_id'], $select );
 	}
 	
 	/**
 	 * 按唯一来源ID查询一条订阅记录
-	 * @param string $origin_ourter_id 唯一主键
+	 * @param string $origin_outer_id 唯一主键
 	 * @return array $rs 结果集 
 	 *          	  $rs["subscriber_id"],  // 订阅者ID 
 	 *          	  $rs["name"],  // 名称 
 	 *          	  $rs["behavior_slug"],  // 别名 
 	 *                $rs["behavior_slug"], // behavior.slug
-	 *          	  $rs["ourter_id"],  // 来源ID 
+	 *          	  $rs["outer_id"],  // 来源ID 
 	 *          	  $rs["origin"],  // 来源 
-	 *          	  $rs["origin_ourter_id"],  // 唯一来源ID 
+	 *          	  $rs["origin_outer_id"],  // 唯一来源ID 
 	 *          	  $rs["handler"],  // 处理器 
 	 *          	  $rs["timeout"],  // 超时时长 
 	 *          	  $rs["status"],  // 状态 
@@ -288,7 +288,7 @@ class Subscriber extends Model {
 	 *                $rs["behavior_before"], // behavior.before
 	 *                $rs["behavior_after"], // behavior.after
 	 */
-	public function getByOriginOurterId( $origin_ourter_id, $select=['*']) {
+	public function getByOriginOuterId( $origin_outer_id, $select=['*']) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -302,7 +302,7 @@ class Subscriber extends Model {
 		// 创建查询构造器
 		$qb = Utils::getTab("xpmsns_user_subscriber as subscriber", "{none}")->query();
  		$qb->leftJoin("xpmsns_user_behavior as behavior", "behavior.slug", "=", "subscriber.behavior_slug"); // 连接行为
-		$qb->where('origin_ourter_id', '=', $origin_ourter_id );
+		$qb->where('origin_outer_id', '=', $origin_outer_id );
 		$qb->limit( 1 );
 		$qb->select($select);
 		$rows = $qb->get()->toArray();
@@ -322,12 +322,12 @@ class Subscriber extends Model {
 
 	/**
 	 * 按唯一来源ID查询一组订阅记录
-	 * @param array   $origin_ourter_ids 唯一主键数组 ["$origin_ourter_id1","$origin_ourter_id2" ...]
+	 * @param array   $origin_outer_ids 唯一主键数组 ["$origin_outer_id1","$origin_outer_id2" ...]
 	 * @param array   $order        排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @param array   $select       选取字段，默认选取所有
-	 * @return array 订阅记录MAP {"origin_ourter_id1":{"key":"value",...}...}
+	 * @return array 订阅记录MAP {"origin_outer_id1":{"key":"value",...}...}
 	 */
-	public function getInByOriginOurterId($origin_ourter_ids, $select=["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
+	public function getInByOriginOuterId($origin_outer_ids, $select=["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.outer_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -340,7 +340,7 @@ class Subscriber extends Model {
 		// 创建查询构造器
 		$qb = Utils::getTab("xpmsns_user_subscriber as subscriber", "{none}")->query();
  		$qb->leftJoin("xpmsns_user_behavior as behavior", "behavior.slug", "=", "subscriber.behavior_slug"); // 连接行为
-		$qb->whereIn('subscriber.origin_ourter_id', $origin_ourter_ids);
+		$qb->whereIn('subscriber.origin_outer_id', $origin_outer_ids);
 		
 		// 排序
 		foreach ($order as $field => $order ) {
@@ -353,7 +353,7 @@ class Subscriber extends Model {
 
  		foreach ($data as & $rs ) {
 			$this->format($rs);
-			$map[$rs['origin_ourter_id']] = $rs;
+			$map[$rs['origin_outer_id']] = $rs;
 			
  		}
 
@@ -369,7 +369,7 @@ class Subscriber extends Model {
 	 * @param array $select 返回的字段，默认返回全部
 	 * @return array 数据记录数组
 	 */
-	public function saveByOriginOurterId( $data, $select=["*"] ) {
+	public function saveByOriginOuterId( $data, $select=["*"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -378,7 +378,7 @@ class Subscriber extends Model {
 		// 增加表单查询索引字段
 		array_push($select, "subscriber.subscriber_id");
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
-		$rs = $this->saveBy("origin_ourter_id", $data, ["subscriber_id", "origin_ourter_id"], ['_id', 'subscriber_id']);
+		$rs = $this->saveBy("origin_outer_id", $data, ["subscriber_id", "origin_outer_id"], ['_id', 'subscriber_id']);
 		return $this->getBySubscriberId( $rs['subscriber_id'], $select );
 	}
 
@@ -394,8 +394,8 @@ class Subscriber extends Model {
         }
         
         // @KEEP BEGIN
-        if ( !empty($data["origin"]) &&  !empty($data["ourter_id"]) ) {
-            $data["origin_ourter_id"] = "DB::RAW(CONCAT(`origin`,'_',`ourter_id`))";
+        if ( !empty($data["origin"]) &&  !empty($data["outer_id"]) ) {
+            $data["origin_outer_id"] = "DB::RAW(CONCAT(`origin`,'_',`outer_id`))";
         }
         // @KEEP END
 		return parent::create( $data );
@@ -410,7 +410,7 @@ class Subscriber extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 订阅记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.outer_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -447,13 +447,13 @@ class Subscriber extends Model {
 	/**
 	 * 按条件检索订阅记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"]
+	 *         	      $query['select'] 选取字段，默认选择 ["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.outer_id","subscriber.status"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
 	 *			      $query["subscriber_id"] 按订阅者ID查询 ( = )
 	 *			      $query["behavior_slug"] 按别名查询 ( = )
-	 *			      $query["ourter_id"] 按来源ID查询 ( = )
+	 *			      $query["outer_id"] 按来源ID查询 ( = )
 	 *			      $query["origin"] 按来源查询 ( = )
 	 *			      $query["status"] 按状态查询 ( = )
 	 *			      $query["name"] 按名称查询 ( = )
@@ -465,9 +465,9 @@ class Subscriber extends Model {
 	 *               	["name"],  // 名称 
 	 *               	["behavior_slug"],  // 别名 
 	 *               	["behavior_slug"], // behavior.slug
-	 *               	["ourter_id"],  // 来源ID 
+	 *               	["outer_id"],  // 来源ID 
 	 *               	["origin"],  // 来源 
-	 *               	["origin_ourter_id"],  // 唯一来源ID 
+	 *               	["origin_outer_id"],  // 唯一来源ID 
 	 *               	["handler"],  // 处理器 
 	 *               	["timeout"],  // 超时时长 
 	 *               	["status"],  // 状态 
@@ -485,7 +485,7 @@ class Subscriber extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"] : $query['select'];
+		$select = empty($query['select']) ? ["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.outer_id","subscriber.status"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
@@ -504,7 +504,7 @@ class Subscriber extends Model {
 				$qb->where("subscriber.subscriber_id", "like", "%{$query['keyword']}%");
 				$qb->orWhere("subscriber.name","like", "%{$query['keyword']}%");
 				$qb->orWhere("subscriber.behavior_slug","like", "%{$query['keyword']}%");
-				$qb->orWhere("subscriber.ourter_id","like", "%{$query['keyword']}%");
+				$qb->orWhere("subscriber.outer_id","like", "%{$query['keyword']}%");
 				$qb->orWhere("subscriber.origin","like", "%{$query['keyword']}%");
 			});
 		}
@@ -521,8 +521,8 @@ class Subscriber extends Model {
 		}
 		  
 		// 按来源ID查询 (=)  
-		if ( array_key_exists("ourter_id", $query) &&!empty($query['ourter_id']) ) {
-			$qb->where("subscriber.ourter_id", '=', "{$query['ourter_id']}" );
+		if ( array_key_exists("outer_id", $query) &&!empty($query['outer_id']) ) {
+			$qb->where("subscriber.outer_id", '=', "{$query['outer_id']}" );
 		}
 		  
 		// 按来源查询 (=)  
@@ -642,9 +642,9 @@ class Subscriber extends Model {
 			"subscriber_id",  // 订阅者ID
 			"name",  // 名称
 			"behavior_slug",  // 别名
-			"ourter_id",  // 来源ID
+			"outer_id",  // 来源ID
 			"origin",  // 来源
-			"origin_ourter_id",  // 唯一来源ID
+			"origin_outer_id",  // 唯一来源ID
 			"handler",  // 处理器
 			"timeout",  // 超时时长
 			"status",  // 状态

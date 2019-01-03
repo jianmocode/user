@@ -4,7 +4,7 @@
  * 订阅控制器
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-03 12:15:17
+ * 最后修改: 2019-01-03 23:01:30
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/controller/Name.php
  */
 
@@ -200,7 +200,7 @@ class SubscriberController extends \Xpmse\Loader\Controller {
 
 		// 删除唯一索引字段
 		unset($rs['subscriber_id']);
-		unset($rs['origin_ourter_id']);
+		unset($rs['origin_outer_id']);
 
 		// 复制图片
 
