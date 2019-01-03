@@ -100,19 +100,6 @@ use \Xpmse\T;
 	</div><!-- END 单行文本: 当前进度 (process) -->
 
 
-	<!-- 单选框: 状态 (status) 开始  -->
-	<div class="form-group    ">
-		<label class="col-xs-2 control-label" for="status">状态</label>
-		<div class="col-xs-8">
-			
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="status" value="accepted" type="radio" data-uncheck-value="accepted" checked /> <span></span> 已接受</label>
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="status" value="completed" type="radio" data-uncheck-value="completed"  /> <span></span> 已完成</label>
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input  name="status" value="canceled" type="radio" data-uncheck-value="canceled"  /> <span></span> 已取消</label>
-			<div class="help-block"></div>
-		</div>
-	</div><!-- END 单选框: 状态 (status) 开始  -->
-
-
 
 
     <!-- JSON编辑器(json-editor): 数据 (data) 开始  -->
@@ -128,7 +115,7 @@ use \Xpmse\T;
 			<div class="col-xs-8">
                 <textarea class="form-control input-lg " name="data"  type="text"  rows="6" 
                     
-                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=data | json_encode(constant(\'JSON_PRETTY_PRINT\'))%>', $rs )?></textarea>
+                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=data | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
                 <input type="hidden" name="__json_cols" value="data" />
 			</div>
 			<div class="col-xs-2 push-10-t"></div>
@@ -161,6 +148,19 @@ use \Xpmse\T;
 			});
 		}
 	</script>
+
+
+	<!-- 单选框: 状态 (status) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="status">状态</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["status"])) { $rs["status"] = "accepted"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="accepted" value="accepted" <?=("accepted" == $rs["status"]) ? "checked" : ""?> > <span></span> 已接受</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="completed" value="completed" <?=("completed" == $rs["status"]) ? "checked" : ""?> > <span></span> 已完成</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="canceled" value="canceled" <?=("canceled" == $rs["status"]) ? "checked" : ""?> > <span></span> 已取消</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 状态 (status) 开始  -->
 
 				<!--  提交按钮 -->
 				<div class="block block-quickpanel sidebar-mini">

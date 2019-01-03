@@ -150,7 +150,9 @@ use \Xpmse\T;
 								<th class="font-w300"> 用户 </th>
 								<th class="font-w300"> 任务 </th>
 								<th class="font-w300"> 手机号 </th>
+								<th class="font-w300"> 进度 </th>
 								<th class="font-w300"> 状态 </th>
+								<th class="font-w300"> 最后更新 </th>
 							</tr>
 						</thead>
 
@@ -171,7 +173,13 @@ use \Xpmse\T;
 									<?php $v=null; $v=T::s("{{user_mobile}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
+									<?php $v=null; $v=T::s("{{process}}/{{task_process}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
+								</td>
+								<td class="font-w300">
 									<span class="text-<?=$rs['_status']['style']?>"><?=$rs['_status']['name'] ? $rs['_status']['name']  : $rs['status'] ?></span>
+								</td>
+								<td class="font-w300">
+									<?php $v=null; $v=T::s("{{updated_at ?  updated_at | date(\"Y年m月d日 @H:i:s\") : created_at | date(\"Y年m月d日 @H:i:s\")  }}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 							</tr>
 							<?php endforeach;?>
@@ -179,7 +187,7 @@ use \Xpmse\T;
 						</tbody>
 
 						<tfoot>
-							<tr><td colspan="5"> <nav class="pull-right">
+							<tr><td colspan="7"> <nav class="pull-right">
 
 								<ul class="pagination">
 									<?php if ($response['prev'] !== false): ?>

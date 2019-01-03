@@ -4,7 +4,7 @@
  * 任务副本数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-28 18:15:17
+ * 最后修改: 2019-01-03 12:54:22
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
@@ -27,4 +27,15 @@ class Usertask extends Api {
 	/**
 	 * 自定义函数 
 	 */
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -4,7 +4,7 @@
  * 任务副本数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-28 18:15:18
+ * 最后修改: 2019-01-03 12:54:22
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -664,6 +664,7 @@ class Usertask extends Model {
 	 *                $rs["user_group_id"], // user.group_id
 	 *                $rs["user_name"], // user.name
 	 *                $rs["user_idno"], // user.idno
+	 *                $rs["user_idtype"], // user.idtype
 	 *                $rs["user_iddoc"], // user.iddoc
 	 *                $rs["user_nickname"], // user.nickname
 	 *                $rs["user_sex"], // user.sex
@@ -673,6 +674,8 @@ class Usertask extends Model {
 	 *                $rs["user_headimgurl"], // user.headimgurl
 	 *                $rs["user_language"], // user.language
 	 *                $rs["user_birthday"], // user.birthday
+	 *                $rs["user_bio"], // user.bio
+	 *                $rs["user_bgimgurl"], // user.bgimgurl
 	 *                $rs["user_mobile"], // user.mobile
 	 *                $rs["user_mobile_nation"], // user.mobile_nation
 	 *                $rs["user_mobile_full"], // user.mobile_full
@@ -695,22 +698,15 @@ class Usertask extends Model {
 	 *                $rs["user_password"], // user.password
 	 *                $rs["user_pay_password"], // user.pay_password
 	 *                $rs["user_status"], // user.status
-	 *                $rs["user_bio"], // user.bio
-	 *                $rs["user_bgimgurl"], // user.bgimgurl
-	 *                $rs["user_idtype"], // user.idtype
 	 *                $rs["task_created_at"], // task.created_at
 	 *                $rs["task_updated_at"], // task.updated_at
 	 *                $rs["task_slug"], // task.slug
 	 *                $rs["task_name"], // task.name
-	 *                $rs["task_quantity"], // task.quantity
-	 *                $rs["task_accept"], // task.accept
-	 *                $rs["task_complete"], // task.complete
-	 *                $rs["task_events"], // task.events
-	 *                $rs["task_status"], // task.status
-	 *                $rs["task_formula"], // task.formula
-	 *                $rs["task_summary"], // task.summary
 	 *                $rs["task_type"], // task.type
+	 *                $rs["task_summary"], // task.summary
 	 *                $rs["task_cover"], // task.cover
+	 *                $rs["task_quantity"], // task.quantity
+	 *                $rs["task_formula"], // task.formula
 	 *                $rs["task_hourly_limit"], // task.hourly_limit
 	 *                $rs["task_daily_limit"], // task.daily_limit
 	 *                $rs["task_weekly_limit"], // task.weekly_limit
@@ -718,6 +714,12 @@ class Usertask extends Model {
 	 *                $rs["task_yearly_limit"], // task.yearly_limit
 	 *                $rs["task_time_limit"], // task.time_limit
 	 *                $rs["task_process"], // task.process
+	 *                $rs["task_accept"], // task.accept
+	 *                $rs["task_complete"], // task.complete
+	 *                $rs["task_events"], // task.events
+	 *                $rs["task_status"], // task.status
+	 *                $rs["task_auto_accept"], // task.auto_accept
+	 *                $rs["task_categories"], // task.categories
 	 */
 	public function getByUsertaskId( $usertask_id, $select=['*']) {
 		
@@ -759,7 +761,7 @@ class Usertask extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 任务副本记录MAP {"usertask_id1":{"key":"value",...}...}
 	 */
-	public function getInByUsertaskId($usertask_ids, $select=["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.status"], $order=["usertask.created_at"=>"desc"] ) {
+	public function getInByUsertaskId($usertask_ids, $select=["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.process","task.process","usertask.status","usertask.created_at","usertask.updated_at"], $order=["usertask.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -836,7 +838,7 @@ class Usertask extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 任务副本记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.status"], $order=["usertask.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.process","task.process","usertask.status","usertask.created_at","usertask.updated_at"], $order=["usertask.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -874,7 +876,7 @@ class Usertask extends Model {
 	/**
 	 * 按条件检索任务副本记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.status"]
+	 *         	      $query['select'] 选取字段，默认选择 ["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.process","task.process","usertask.status","usertask.created_at","usertask.updated_at"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
@@ -902,6 +904,7 @@ class Usertask extends Model {
 	 *               	["user_group_id"], // user.group_id
 	 *               	["user_name"], // user.name
 	 *               	["user_idno"], // user.idno
+	 *               	["user_idtype"], // user.idtype
 	 *               	["user_iddoc"], // user.iddoc
 	 *               	["user_nickname"], // user.nickname
 	 *               	["user_sex"], // user.sex
@@ -911,6 +914,8 @@ class Usertask extends Model {
 	 *               	["user_headimgurl"], // user.headimgurl
 	 *               	["user_language"], // user.language
 	 *               	["user_birthday"], // user.birthday
+	 *               	["user_bio"], // user.bio
+	 *               	["user_bgimgurl"], // user.bgimgurl
 	 *               	["user_mobile"], // user.mobile
 	 *               	["user_mobile_nation"], // user.mobile_nation
 	 *               	["user_mobile_full"], // user.mobile_full
@@ -933,22 +938,15 @@ class Usertask extends Model {
 	 *               	["user_password"], // user.password
 	 *               	["user_pay_password"], // user.pay_password
 	 *               	["user_status"], // user.status
-	 *               	["user_bio"], // user.bio
-	 *               	["user_bgimgurl"], // user.bgimgurl
-	 *               	["user_idtype"], // user.idtype
 	 *               	["task_created_at"], // task.created_at
 	 *               	["task_updated_at"], // task.updated_at
 	 *               	["task_slug"], // task.slug
 	 *               	["task_name"], // task.name
-	 *               	["task_quantity"], // task.quantity
-	 *               	["task_accept"], // task.accept
-	 *               	["task_complete"], // task.complete
-	 *               	["task_events"], // task.events
-	 *               	["task_status"], // task.status
-	 *               	["task_formula"], // task.formula
-	 *               	["task_summary"], // task.summary
 	 *               	["task_type"], // task.type
+	 *               	["task_summary"], // task.summary
 	 *               	["task_cover"], // task.cover
+	 *               	["task_quantity"], // task.quantity
+	 *               	["task_formula"], // task.formula
 	 *               	["task_hourly_limit"], // task.hourly_limit
 	 *               	["task_daily_limit"], // task.daily_limit
 	 *               	["task_weekly_limit"], // task.weekly_limit
@@ -956,10 +954,16 @@ class Usertask extends Model {
 	 *               	["task_yearly_limit"], // task.yearly_limit
 	 *               	["task_time_limit"], // task.time_limit
 	 *               	["task_process"], // task.process
+	 *               	["task_accept"], // task.accept
+	 *               	["task_complete"], // task.complete
+	 *               	["task_events"], // task.events
+	 *               	["task_status"], // task.status
+	 *               	["task_auto_accept"], // task.auto_accept
+	 *               	["task_categories"], // task.categories
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.status"] : $query['select'];
+		$select = empty($query['select']) ? ["usertask.usertask_id","user.name","user.nickname","task.name","user.mobile","usertask.process","task.process","usertask.status","usertask.created_at","usertask.updated_at"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
