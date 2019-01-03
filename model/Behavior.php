@@ -49,7 +49,7 @@ class Behavior extends Model {
      * @param array $data 行为数据
      * @return null
      */
-    function trigger( $slug, $data=[] ) {
+    static public function trigger( $slug, $data=[] ) {
 
         // 创建用户对象
         try {
@@ -63,11 +63,13 @@ class Behavior extends Model {
  
         // 执行行为(通知所有该行为订阅者)
         try {
-            $env = $this->getEnv();
-            $this->runBySlug($slug, $data, $env );
-        }catch(Excp $e) {}
+            $behavior = new Behavior();
+            $env = $behavior->getEnv();
+            $behavior->runBySlug($slug, $data, $env );
+        }catch(Excp $e) { $e->log(); }
+
     }
-    
+
 
     /**
      * 收集环境信息
