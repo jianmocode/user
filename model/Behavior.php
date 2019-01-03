@@ -44,6 +44,32 @@ class Behavior extends Model {
     // @KEEP BEGIN
 
     /**
+     * 触发用户行为(通知所有该行为订阅者)
+     * @param string $slug 用户行为别名
+     * @param array $data 行为数据
+     * @return null
+     */
+    function trigger( $slug, $data=[] ) {
+
+        // 创建用户对象
+        try {
+            $u = new \Xpmsns\User\Model\User;
+        } catch( Excp $e) { return; }
+
+        $uinfo = $u->getUserInfo();        
+        if ( empty($uinfo["user_id"]) ) {
+            return;
+        }
+ 
+        // 执行行为(通知所有该行为订阅者)
+        try {
+            $env = $this->getEnv();
+            $this->runBySlug($slug, $data, $env );
+        }catch(Excp $e) {}
+    }
+    
+
+    /**
      * 收集环境信息
      * @param array $data 扩展数据
      * @return array $env 
