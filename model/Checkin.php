@@ -71,7 +71,7 @@ class Checkin extends Model {
             [
                 "name" => "签到任务",
                 "behavior_slug"=>"xpmsns/user/checkin/create",
-                "ourter_id" => "checkin",
+                "outer_id" => "checkin",
                 "origin" => "task",
                 "timeout" => 30,
                 "handler" => ["class"=>"\\xpmsns\\user\\model\\checkin", "method"=>"onCheckinChange"],
@@ -108,14 +108,14 @@ class Checkin extends Model {
     /**
      * 订阅器:签到任务(签到行为发生时, 触发此函数, 可在后台暂停或关闭)
      * @param array $behavior  行为(用户签到)数据结构
-     * @param array $subscriber  订阅者(签到任务订阅) 数据结构  ["ourter_id"=>"任务SLUG", "origin"=>"task" ... ]
+     * @param array $subscriber  订阅者(签到任务订阅) 数据结构  ["outer_id"=>"任务SLUG", "origin"=>"task" ... ]
      * @param array $data  行为数据 ["checkin_id"=>"签到ID", "lng"=>"经度", "lat"=>"维度", "alt"=>"海拔", "time"=>"签到时刻", "device"=>"签到设备", "location"=>"位置", "history"=>"最近7条签到记录"]
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
     public function onCheckinChange( $behavior, $subscriber, $data, $env ) {
 
         // echo "onCheckinChange: {$task_slug} -> {$user_id} \n";
-        $task_slug = $subscriber["ourter_id"];
+        $task_slug = $subscriber["outer_id"];
         $user_id = $env["user_id"];
 
         // 验证数据清单

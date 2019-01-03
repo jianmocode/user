@@ -251,7 +251,7 @@ class User extends Model {
             [
                 "name" => "完善个人资料任务",
                 "behavior_slug"=>"xpmsns/user/user/profile",
-                "ourter_id" => "profile",
+                "outer_id" => "profile",
                 "origin" => "task",
                 "timeout" => 30,
                 "handler" => ["class"=>"\\xpmsns\\user\\model\\user", "method"=>"onProfileChange"],
@@ -259,7 +259,7 @@ class User extends Model {
             ],[
                 "name" => "邀请注册任务",
                 "behavior_slug"=>"xpmsns/user/user/signup",
-                "ourter_id" => "invite",
+                "outer_id" => "invite",
                 "origin" => "task",
                 "timeout" => 30,
                 "handler" => ["class"=>"\\xpmsns\\user\\model\\user", "method"=>"onInviteChange"],
@@ -302,7 +302,7 @@ class User extends Model {
     /**
      * 订阅器: 完善个人资料任务 ( 更新个人资料行为发生时, 触发此函数, 可在后台暂停或关闭)
      * @param array $behavior  行为(用户签到)数据结构
-     * @param array $subscriber  订阅者(完善个人资料任务订阅) 数据结构  ["ourter_id"=>"任务SLUG", "origin"=>"task" ... ]
+     * @param array $subscriber  订阅者(完善个人资料任务订阅) 数据结构  ["outer_id"=>"任务SLUG", "origin"=>"task" ... ]
      * @param array $data  行为数据 ["name"=>"真实姓名", "nickname"=>"昵称", "sex"=>"性别", "address"=>"地址", "birthday"=>"生日"],
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
@@ -314,7 +314,7 @@ class User extends Model {
     /**
      * 订阅器: 邀请注册任务 (用户注册行为发生时, 触发此函数, 可在后台暂停或关闭)
      * @param array $behavior  行为(用户注册)数据结构
-     * @param array $subscriber  订阅者(邀请注册任务订阅) 数据结构  ["ourter_id"=>"任务SLUG", "origin"=>"task" ... ]
+     * @param array $subscriber  订阅者(邀请注册任务订阅) 数据结构  ["outer_id"=>"任务SLUG", "origin"=>"task" ... ]
      * @param array $data  行为数据 ["user_id"=>"用户ID", "mobile"=>"手机号", "name"=>"真实姓名", "nickname"=>"昵称", "sex"=>"性别", "address"=>"地址", "birthday"=>"生日", "inviter"=>"邀请者ID"],
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
@@ -325,7 +325,7 @@ class User extends Model {
 
         // 读取任务
         $inviter = $data["inviter"];
-        $task_slug = $subscriber["ourter_id"];
+        $task_slug = $subscriber["outer_id"];
         $user_id = $inviter["user_id"];
         $t = new \Xpmsns\User\Model\Usertask;
         $task = $t->getByTaskSlugAndUserId( $task_slug, $user_id );

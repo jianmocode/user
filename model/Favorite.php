@@ -71,7 +71,7 @@ class Favorite extends Model {
             [
                 "name" => "收藏任务",
                 "behavior_slug"=>"xpmsns/user/favorite/create",
-                "ourter_id" => "favorite",
+                "outer_id" => "favorite",
                 "origin" => "task",
                 "timeout" => 30,
                 "handler" => ["class"=>"\\xpmsns\\user\\model\\favorite", "method"=>"onFavoriteChange"],
@@ -106,7 +106,7 @@ class Favorite extends Model {
     /**
      * 订阅器: 收藏任务 ( 收藏行为发生时, 触发此函数, 可在后台暂停或关闭)
      * @param array $behavior  行为(用户签到)数据结构
-     * @param array $subscriber  订阅者(签到任务订阅) 数据结构  ["ourter_id"=>"任务SLUG", "origin"=>"task" ... ]
+     * @param array $subscriber  订阅者(签到任务订阅) 数据结构  ["outer_id"=>"任务SLUG", "origin"=>"task" ... ]
      * @param array $data  行为数据 ["favorite_id"=>"收藏ID", "user_id"=>"用户ID", "outer_id"=>"资源ID", "origin"=>"来源", "url"=>"地址", "title"=>"标题", "summary"=>"摘要", "origin_outer_id"=>"收藏唯一ID"],
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
