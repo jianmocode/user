@@ -110,11 +110,11 @@ class User extends Api {
 			$data['extra'] = json_decode($data['extra'], true);
         }
 
-		$resp = $u->save( $data );
+		$u->save( $data );
         $u->loginSetSession($uinfo['user_id']);
 
         try {  // 触发用户个人资料更新行为
-            \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/profile", $resp);
+            \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/profile", $u->getUserInfo());
         }catch(Excp $e) { $e->log(); }
 
 		return ['code'=>0, 'message'=>'数据保存成功', 'user_info'=>$u->getUserInfo()];

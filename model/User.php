@@ -212,8 +212,15 @@ class User extends Model {
             [
                 "name"=>"完善个人资料任务", "slug"=>"profile", "type"=>"once",
                 "process"=>5, 
-                "quantity" => [100,200,300,400,500],
+                "quantity" => [0,0,0,0,500],
                 "auto_accept" => 0,
+                "params" => [
+                    ["nickname"],
+                    ["address"],
+                    ["birthday"],
+                    ["contact_name"],
+                    ["company"]
+                ],
                 "accept" => ["class"=>"\\xpmsns\\user\\model\\user", "method"=>"onProfileAccpet"],
                 "status" => "online",
             ],[
@@ -308,7 +315,74 @@ class User extends Model {
      */
     public function onProfileChange( $behavior, $subscriber, $data, $env ) {
 
-        print_r($data);
+        $task_slug = $subscriber["outer_id"];
+        $user_id = $env["user_id"];
+
+        $t = new \Xpmsns\User\Model\Usertask;
+        $task = $t->getByTaskSlugAndUserId( $task_slug, $user_id );
+        if ( empty($task) ) {
+            throw new Excp("未找到任务信息({$task_slug})", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]);
+        }
+
+
+        // 自动接受任务
+        $usertask = $task["usertask"];
+        if( 
+            $task["auto_accept"] == 1 &&
+            ( empty($usertask) || ( $usertask["status"] != "accepted" &&  $task["type"] == "repeatable" ) )
+        ) {
+            $task["usertask"] = $usertask = $t->acceptBySlug( $task_slug, $user_id );
+        }
+
+        if ( empty($task["usertask"]) ) {
+            throw new Excp("用户尚未接受该任务({$task_slug})", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]); 
+        }
+
+
+        if ( $task["usertask"]["status"] != "accepted" ) {
+            throw new Excp("该任务已经完成或取消({$task["usertask"]["status"]})", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]); 
+        }
+
+        
+        $params = is_array($task["params"]) ? $task["params"] : [];
+
+        // 步骤清单
+        $defaults = [
+            is_array($params[0]) ? $params[0] : ["nickname"],
+            is_array($params[1]) ? $params[1] : ["address"],
+            is_array($params[2]) ? $params[2] : ["birthday"],
+            is_array($params[3]) ? $params[3] : ["contact_name"],
+            is_array($params[4]) ? $params[4] : ["company"],
+        ];
+
+        // print_r( $defaults );
+        // print_r( $params );
+
+        $params = $defaults;
+        $user = $this->getByUid( $user_id );
+
+        // 计算当前完成步骤
+        $status = [true, true, true, true, true];
+        foreach( $defaults as $step=>$fields ) {
+            foreach( $fields  as $field ) {
+                if ( empty( $user["$field"]) ) {
+                    $status[$step] = false;
+                    continue;
+                }
+            }
+        }
+
+        $process = 0;
+        foreach($status as $s) {
+            if ( $s ) {
+                $process ++;
+            }
+        }
+
+        if ( $process > 0 ) {
+            // 设定进展并发放奖励
+            $t->processByUsertaskId( $usertask["usertask_id"], $process );  
+        }
 
     }
 
