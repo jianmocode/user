@@ -76,7 +76,6 @@ class Invite extends Model {
         return $uinfo;
     }
 
-
     
     /**
      * 重载SaveBy

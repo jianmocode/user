@@ -320,7 +320,12 @@ class User extends Api {
 		$u = new UserModel();
 		$user_id = $u->updateWxappUser( $cfg['appid'], $data );
 		$user = $u->getByUid($user_id);
-		$user["_id"] = $user_id;
+        $user["_id"] = $user_id;
+        
+       
+        try {  // 触发用户登录行为
+            \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/signin", $user );
+        }catch(Excp $e) { $e->log(); }
 
 		return $user;
 	}
@@ -544,6 +549,12 @@ class User extends Api {
 			throw new Excp("系统错误, 读取用户信息失败", 500, ['data'=>$data, 'query'=>$query]);
 		}
 
+        
+        // 触发用户登录行为
+        try {  // 触发用户登录行为
+            \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/signin", $user );
+        }catch(Excp $e) { $e->log(); }
+
 		return $uinfo;
 	}
 
@@ -649,18 +660,32 @@ class User extends Api {
 			$slug = $map['user/default/group'];
 			$rs = $g->getBySlug($slug);
 			$data['group_id'] = $rs['group_id'];
-		}
+        }
+
+        $u = new UserModel();
+        
+        // 邀请注册
+        $inviter = $u->getInviter();
+        if ( !empty($inviter) ) {
+            $data["inviter"] = $inviter["inviter_id"];
+        }
 
 		// 数据入库
-		$u = new UserModel();
 		try {
-			$u->create($data);
+			$resp = $u->create($data);
 		} catch(Excp $e ){
 			if ( $e->getCode() == '1062') {
 				throw new Excp("手机号 +{$data['mobile_nation']} {$data['mobile']} 已被注册", 402, ['data'=>$data, 'errorlist'=>[['mobile'=>'手机号码已被注册']]]);
 			}
 			throw $e;
-		}
+        }
+        
+        if ( !empty($resp) ) {
+            try {  // 触发用户注册行为
+                $resp["inviter"] = $inviter;
+                \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/signup", $resp);
+            }catch(Excp $e) { $e->log(); }
+        }
 
 		return ["message"=>"注册成功", "code"=>0 ];
 	}

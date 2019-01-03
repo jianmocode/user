@@ -185,6 +185,22 @@ class User extends Model {
     }
     
 
+    /**
+     * 读取邀请者信息
+     */
+    public function getInviter(){
+        $invite = new Invite();
+        return $invite->getInviter();
+    }
+
+    /**
+     * 读取当前邀请者信息
+     */
+    static public function inviter(){
+        $invite = new Invite();
+        return $invite->getInviter();
+    }
+
 
     /**
      * 用户初始化( 注册行为/注册任务/设置默认值等... )
@@ -221,6 +237,11 @@ class User extends Model {
                 "name" => "用户注册", "slug"=>"xpmsns/user/user/signup",
                 "intro" =>  "本行为当更新用户资料后触发",
                 "params" => ["user_id"=>"用户ID", "mobile"=>"手机号", "name"=>"真实姓名", "nickname"=>"昵称", "sex"=>"性别", "address"=>"地址", "birthday"=>"生日", "inviter"=>"邀请者ID"],
+                "status" => "online",
+            ],[
+                "name" => "用户登录", "slug"=>"xpmsns/user/user/signin",
+                "intro" =>  "本行为当更新用户资料后触发",
+                "params" => ["user_id"=>"用户ID"],
                 "status" => "online",
             ]
         ];
@@ -965,7 +986,40 @@ class User extends Model {
         $rs["balance"] = $this->getBalance( $user_id );
         $rs["coin"] = $this->getCoin( $user_id );
 		return $rs;
-	}
+    }
+    
+
+    /**
+     * 读取用户资料(通过手机号码)
+     * @param  string $mobile 手机号码
+     */
+    function getByMobile( $mobile, $select="*", $nation = "86" ) {
+
+		if ( is_array($select) ) {
+			array_push($select, 'user_id');
+			array_push($select, 'group_id');
+		}
+
+		$user = $this->query()
+                     ->where("mobile", "=", $mobile)
+                     ->where("mobile_nation","=", $nation )
+					 ->limit(1)
+					 ->select($select)
+					 ->get()
+					 ->toArray()
+				;
+
+		if ( empty($user) ) {
+			return [];
+		}
+	
+        $this->formatUsers($user);
+        $rs = current($user);
+        $rs["balance"] = $this->getBalance( $user_id );
+        $rs["coin"] = $this->getCoin( $user_id );
+		return $rs;
+    }
+    
 
 
 	/**
