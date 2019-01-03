@@ -32,24 +32,11 @@ use \Xpmse\T;
 				<!-- 隐藏域 -->
 				<input type="hidden" name="behavior_id" value="<?=$rs['behavior_id']?>" >
 	
-	<!-- 单行文本: 名称 (name) 开始  -->
-	<div class="form-group   ">
-		<label class="col-xs-2 control-label" for="name">名称</label>
-		<div class="col-xs-8">
-			<input class="form-control input-lg "  
-				type="text" 
-				id="name" name="name" 
-				placeholder="请填写行为名称"  
-				value="<?=T::v('<%=name | e(\'html\')%>', $rs )?>" /> 
-			<div class="help-block"></div>
-		</div>
-	</div><!-- END 单行文本: 名称 (name) -->
-
 	<!-- 单行文本: 别名 (slug) 开始  -->
 	<div class="form-group   ">
 		<label class="col-xs-2 control-label" for="slug">别名</label>
 		<div class="col-xs-8">
-			<input class="form-control input-lg "  
+			<input class="form-control input-lg disabled"  disabled
 				type="text" 
 				id="slug" name="slug" 
 				placeholder="请填写行为别名"  
@@ -57,61 +44,6 @@ use \Xpmse\T;
 			<div class="help-block">行为别名必须唯一</div>
 		</div>
 	</div><!-- END 单行文本: 别名 (slug) -->
-
-
-
-
-	<!-- 富文本(summernote): 介绍 (intro) 开始  -->
-	<div class="form-group     ">
-		<label class="col-xs-2 control-label" for="intro">介绍</label>
-		<div class="col-xs-8">
-			<textarea class="js-summernote" name="intro" id="intro" placeholder="" ><?=T::v('<%=intro | e(\'html\')%>', $rs )?></textarea>
-			<div class="help-block"></div>
-		</div>
-	</div><!-- END 富文本(summernote): 介绍 (intro) -->
-	<script type="text/javascript">
-		// Init full text editor
-		$('.js-summernote[name=intro]').summernote({
-			lang: 'zh-CN',
-			height: 300,
-			minHeight: null,
-			maxHeight: null,
-			callbacks: {
-    			onImageUpload: function(files) {
-    				var that = this;
-    				for(var i = files.length - 1; i >= 0; i--) {
-    					var file = files[i];
-    					var form_data = new FormData();
-						form_data.append('file', file);
-						$.ajax({
-							data: form_data,
-							dataType:'json',
-							type: "POST",
-							url: '/_a/mina/uploader/upload?type=image',
-							cache: false,
-							contentType: false,
-							processData: false,
-							success: function( rs ) {
-							    $(that).summernote('editor.insertImage', rs['url']);
-							}
-						});
-    				}
-    			}
-    		}
-		});
-	</script>
-
-
-	<!-- 单选框: 状态 (status) 开始  -->
-	<div class="form-group    ">
-		<label class="col-xs-2 control-label" for="status">状态</label>
-		<div class="col-xs-8">
-			
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input disabled name="status" value="online" type="radio" data-uncheck-value="online" checked /> <span></span> 上线</label>
-<label class="css-input css-radio css-radio-lg css-radio-primary push-10-r"><input disabled name="status" value="offline" type="radio" data-uncheck-value="offline"  /> <span></span>  下线</label>
-			<div class="help-block"></div>
-		</div>
-	</div><!-- END 单选框: 状态 (status) 开始  -->
 
 
 
@@ -127,8 +59,8 @@ use \Xpmse\T;
 		<div class="form-group">
 			<label class="col-xs-2 control-label">参数表</label>
 			<div class="col-xs-8">
-                <textarea class="form-control input-lg " name="params"  type="text"  rows="6" 
-                    
+                <textarea class="form-control input-lg disabled" name="params"  type="text"  rows="6" 
+                    disabled
                     placeholder="请填写自定义JavaScript代码"><?=T::v('<%=params | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
                 <input type="hidden" name="__json_cols" value="params" />
 			</div>
@@ -155,7 +87,7 @@ use \Xpmse\T;
 			CodeMirror.fromTextArea(document.getElementById(txt_id), {
 				lineNumbers: true,
 				mode: "text/javascript",
-                readOnly: false,
+                readOnly: true,
 				viewportMargin: Infinity
 			}).on('change', function( cm ){ // 更新 txt 数据
 				document.getElementById(txt_id).value = cm.getValue();
@@ -163,105 +95,44 @@ use \Xpmse\T;
 		}
 	</script>
 
-
-
-
-    <!-- JSON编辑器(json-editor): 发生前 (before) 开始  -->
-	<style type="text/css">
-		.CodeMirror {
-			border: 1px solid #e6e6e6;
-		}
-	</style>
-	<div class="json-editor draggable-item" data-name="before" >
-
-		<div class="form-group">
-			<label class="col-xs-2 control-label">发生前</label>
-			<div class="col-xs-8">
-                <textarea class="form-control input-lg " name="before"  type="text"  rows="6" 
-                    
-                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=before | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
-                <input type="hidden" name="__json_cols" value="before" />
-			</div>
-			<div class="col-xs-2 push-10-t"></div>
+	<!-- 单行文本: 名称 (name) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="name">名称</label>
+		<div class="col-xs-8">
+			<input class="form-control input-lg "  
+				type="text" 
+				id="name" name="name" 
+				placeholder="请填写行为名称"  
+				value="<?=T::v('<%=name | e(\'html\')%>', $rs )?>" /> 
+			<div class="help-block"></div>
 		</div>
-
-		<!-- helper -->
-		<div class="form-group helper"> 
-			<label class="col-xs-2 control-label" for="schedule"></label>
-			<div class="col-xs-9">
-				<div class="help-block"></div>
-			</div>
-		</div><!-- end helper -->
-	</div>
-    <!-- END 代码编辑器(json-editor): 发生前 (before)  -->
-
-    <script type="text/javascript">
-    
-        // 载入代码编辑器
-		if ( typeof CodeMirror != 'undefined' ) {
-			
-			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
-			$('textarea[name="before"]').attr('id', txt_id );
-			CodeMirror.fromTextArea(document.getElementById(txt_id), {
-				lineNumbers: true,
-				mode: "text/javascript",
-                readOnly: false,
-				viewportMargin: Infinity
-			}).on('change', function( cm ){ // 更新 txt 数据
-				document.getElementById(txt_id).value = cm.getValue();
-			});
-		}
-	</script>
+	</div><!-- END 单行文本: 名称 (name) -->
 
 
 
-
-    <!-- JSON编辑器(json-editor): 发生后 (after) 开始  -->
-	<style type="text/css">
-		.CodeMirror {
-			border: 1px solid #e6e6e6;
-		}
-	</style>
-	<div class="json-editor draggable-item" data-name="after" >
-
-		<div class="form-group">
-			<label class="col-xs-2 control-label">发生后</label>
-			<div class="col-xs-8">
-                <textarea class="form-control input-lg " name="after"  type="text"  rows="6" 
-                    
-                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=after | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
-                <input type="hidden" name="__json_cols" value="after" />
-			</div>
-			<div class="col-xs-2 push-10-t"></div>
+	<!-- 文本域: 介绍 (intro) 开始  -->
+	<div class="form-group   ">
+		<label class="col-xs-2 control-label" for="intro">介绍</label>
+		<div class="col-xs-8">
+			<textarea class="form-control input-lg "   
+				type="text" 
+				id="intro" name="intro" rows="4"
+				placeholder=""><?=T::v('<%=intro  | e(\'html\')%>', $rs )?></textarea> 
+			<div class="help-block"></div>
 		</div>
+	</div><!-- END 文本域: 介绍 (intro) -->
 
-		<!-- helper -->
-		<div class="form-group helper"> 
-			<label class="col-xs-2 control-label" for="schedule"></label>
-			<div class="col-xs-9">
-				<div class="help-block"></div>
-			</div>
-		</div><!-- end helper -->
-	</div>
-    <!-- END 代码编辑器(json-editor): 发生后 (after)  -->
 
-    <script type="text/javascript">
-    
-        // 载入代码编辑器
-		if ( typeof CodeMirror != 'undefined' ) {
-			
-			var txt_id = (new Date).getTime() + Math.floor(Math.random()*1000000+1);
-			$('textarea[name="after"]').attr('id', txt_id );
-			CodeMirror.fromTextArea(document.getElementById(txt_id), {
-				lineNumbers: true,
-				mode: "text/javascript",
-                readOnly: false,
-				viewportMargin: Infinity
-			}).on('change', function( cm ){ // 更新 txt 数据
-				document.getElementById(txt_id).value = cm.getValue();
-			});
-		}
-	</script>
+	<!-- 单选框: 状态 (status) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="status">状态</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["status"])) { $rs["status"] = "online"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="online" value="online" <?=("online" == $rs["status"]) ? "checked" : ""?> > <span></span> 上线</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="status" data-uncheck-value="offline" value="offline" <?=("offline" == $rs["status"]) ? "checked" : ""?> > <span></span>  下线</label>
+			<div class="help-block"></div>
+		</div>
+	</div><!-- END 单选框: 状态 (status) 开始  -->
 
 				<!--  提交按钮 -->
 				<div class="block block-quickpanel sidebar-mini">
@@ -274,13 +145,11 @@ use \Xpmse\T;
 									class="btn btn-lg btn-primary font-w300 btn-minw push-20-l user-action fn-back" >
 									<i class="fa fa-angle-double-left push-5-r"></i> 行为列表 
 								</a>
-                            </div>
-                            
-                            <!-- @KEEP BEGIN -->
+							</div>
 							<div class="col-xs-8 push-20-t text-center">
 								<button  
 									type="submit" 
-									class="btn btn-lg btn-primary font-w300 btn-minw  push-20-r fn-action fn-save hidden  ">
+									class="btn btn-lg btn-primary font-w300 btn-minw  push-20-r fn-action fn-save  ">
 										<i class="fa fa-save push-5-r"></i> 保存
 								</button>
 
@@ -334,8 +203,7 @@ use \Xpmse\T;
 										<i class="fa fa-minus-circle push-5-r"></i> 删除
 								</button>
 
-                            </div>
-                            <!-- @KEEP END -->
+							</div>
 						</div>
 						<div class="bg-primary text-white text-center bottom-line"></div>	
 					</div>

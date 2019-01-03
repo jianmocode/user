@@ -4,7 +4,7 @@
  * 行为数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 12:31:17
+ * 最后修改: 2019-01-03 12:22:37
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
