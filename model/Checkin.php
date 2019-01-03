@@ -98,7 +98,7 @@ class Checkin extends Model {
 
     
     /**
-     * 签到任务接受响应 (验证是否符合接受条件)
+     * 任务接受响应: 签到任务接受响应 (验证是否符合接受条件)
      * @return 符合返回 true, 不符合返回 false
      */
     public function onCheckinAccpet(){
@@ -106,9 +106,9 @@ class Checkin extends Model {
     }
 
     /**
-     * 签到任务订阅器 (签到行为发生时, 触发此函数, 可在后台暂停或关闭)
+     * 订阅器:签到任务(签到行为发生时, 触发此函数, 可在后台暂停或关闭)
      * @param array $behavior  行为(用户签到)数据结构
-     * @param array $subscriber  订阅者(签到任务订阅) 数据结构  ["origin_ourter_id"=>"任务SLUG", "origin"=>"task" ... ]
+     * @param array $subscriber  订阅者(签到任务订阅) 数据结构  ["ourter_id"=>"任务SLUG", "origin"=>"task" ... ]
      * @param array $data  行为数据 ["checkin_id"=>"签到ID", "lng"=>"经度", "lat"=>"维度", "alt"=>"海拔", "time"=>"签到时刻", "device"=>"签到设备", "location"=>"位置", "history"=>"最近7条签到记录"]
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
@@ -145,7 +145,6 @@ class Checkin extends Model {
                 break;
             }
         }
-
 
         // 自动接受任务
         $usertask = $task["usertask"];

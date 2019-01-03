@@ -40,6 +40,81 @@ class Favorite extends Model {
     // @KEEP BEGIN
     
     /**
+     * 签到初始化( 注册行为/注册任务/设置默认值等... )
+     */
+    public function __defaults() {
+
+        // 注册任务
+        $tasks = [
+            [
+                "name"=>"收藏任务", "slug"=>"favorite", "type"=>"repeatable",
+                "daily_limit"=>1, "process"=>3, 
+                "quantity" => [100,200,300],
+                "auto_accept" => 0,
+                "accept" => ["class"=>"\\xpmsns\\user\\model\\favorite", "method"=>"onFavoriteAccpet"],
+                "status" => "online",
+            ]
+        ];
+
+        // 注册行为
+        $behaviors =[
+            [
+                "name" => "用户收藏", "slug"=>"xpmsns/user/favorite/create",
+                "intro" =>  "本行为当用户收藏成功后触发",
+                "params" => ["favorite_id"=>"收藏ID", "user_id"=>"用户ID", "outer_id"=>"资源ID", "origin"=>"来源", "url"=>"地址", "title"=>"标题", "summary"=>"摘要", "origin_outer_id"=>"收藏唯一ID"],
+                "status" => "online",
+            ]
+        ];
+
+        // 订阅行为( 响应任务处理 )
+        $subscribers =[
+            [
+                "name" => "收藏任务",
+                "behavior_slug"=>"xpmsns/user/favorite/create",
+                "ourter_id" => "favorite",
+                "origin" => "task",
+                "timeout" => 30,
+                "handler" => ["class"=>"\\xpmsns\\user\\model\\favorite", "method"=>"onFavoriteChange"],
+                "status" => "on",
+            ]
+        ];
+
+        $t = new \Xpmsns\User\Model\Task();
+        $b = new \Xpmsns\User\Model\Behavior();
+        $s = new \Xpmsns\User\Model\Subscriber();
+
+        foreach( $tasks as $task ){
+            try { $t->create($task); } catch( Excp $e) { $e->log(); }
+        }
+
+        foreach( $behaviors as $behavior ){
+            try { $b->create($behavior); } catch( Excp $e) { $e->log(); }
+        }
+        foreach( $subscribers as $subscriber ){
+            try { $s->create($subscriber); } catch( Excp $e) { $e->log(); }
+        }
+    }
+
+    /**
+     * 任务接受响应: 收藏任务 (验证是否符合接受条件)
+     * @return 符合返回 true, 不符合返回 false
+     */
+    public function onFavoriteAccpet(){
+        return true;
+    }
+
+    /**
+     * 订阅器: 收藏任务 ( 收藏行为发生时, 触发此函数, 可在后台暂停或关闭)
+     * @param array $behavior  行为(用户签到)数据结构
+     * @param array $subscriber  订阅者(签到任务订阅) 数据结构  ["ourter_id"=>"任务SLUG", "origin"=>"task" ... ]
+     * @param array $data  行为数据 ["favorite_id"=>"收藏ID", "user_id"=>"用户ID", "outer_id"=>"资源ID", "origin"=>"来源", "url"=>"地址", "title"=>"标题", "summary"=>"摘要", "origin_outer_id"=>"收藏唯一ID"],
+     * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     */
+    public function onFavoriteChange( $behavior, $subscriber, $data, $env ) {
+        echo "\t onFavoriteChange  {$data["favorite_id"]} {$data["outer_id"]} {$data["origin"]} \n";
+    }
+
+    /**
      * 重载SaveBy
      */
     public function saveBy( $uniqueKey,  $data,  $keys=null , $select=["*"]) {
@@ -55,7 +130,6 @@ class Favorite extends Model {
 	 * @return [type] [description]
 	 */
 	function remove( $data_key, $uni_key="_id", $mark_only=true ){ 
-		
 		
 		if ( $mark_only === true ) {
 
