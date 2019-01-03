@@ -4,7 +4,7 @@
  * 积分数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-28 13:00:32
+ * 最后修改: 2019-01-03 23:12:04
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
@@ -53,6 +53,7 @@ class Coin extends Api {
 	*               	["user_group_id"], // user.group_id
 	*               	["user_name"], // user.name
 	*               	["user_idno"], // user.idno
+	*               	["user_idtype"], // user.idtype
 	*               	["user_iddoc"], // user.iddoc
 	*               	["user_nickname"], // user.nickname
 	*               	["user_sex"], // user.sex
@@ -62,6 +63,8 @@ class Coin extends Api {
 	*               	["user_headimgurl"], // user.headimgurl
 	*               	["user_language"], // user.language
 	*               	["user_birthday"], // user.birthday
+	*               	["user_bio"], // user.bio
+	*               	["user_bgimgurl"], // user.bgimgurl
 	*               	["user_mobile"], // user.mobile
 	*               	["user_mobile_nation"], // user.mobile_nation
 	*               	["user_mobile_full"], // user.mobile_full
@@ -84,9 +87,6 @@ class Coin extends Api {
 	*               	["user_password"], // user.password
 	*               	["user_pay_password"], // user.pay_password
 	*               	["user_status"], // user.status
-	*               	["user_bio"], // user.bio
-	*               	["user_bgimgurl"], // user.bgimgurl
-	*               	["user_idtype"], // user.idtype
 	*/
 	protected function get( $query, $data ) {
 
@@ -159,6 +159,7 @@ class Coin extends Api {
 	*               	["user_group_id"], // user.group_id
 	*               	["user_name"], // user.name
 	*               	["user_idno"], // user.idno
+	*               	["user_idtype"], // user.idtype
 	*               	["user_iddoc"], // user.iddoc
 	*               	["user_nickname"], // user.nickname
 	*               	["user_sex"], // user.sex
@@ -168,6 +169,8 @@ class Coin extends Api {
 	*               	["user_headimgurl"], // user.headimgurl
 	*               	["user_language"], // user.language
 	*               	["user_birthday"], // user.birthday
+	*               	["user_bio"], // user.bio
+	*               	["user_bgimgurl"], // user.bgimgurl
 	*               	["user_mobile"], // user.mobile
 	*               	["user_mobile_nation"], // user.mobile_nation
 	*               	["user_mobile_full"], // user.mobile_full
@@ -190,9 +193,6 @@ class Coin extends Api {
 	*               	["user_password"], // user.password
 	*               	["user_pay_password"], // user.pay_password
 	*               	["user_status"], // user.status
-	*               	["user_bio"], // user.bio
-	*               	["user_bgimgurl"], // user.bgimgurl
-	*               	["user_idtype"], // user.idtype
 	 */
 	protected function search( $query, $data ) {
 

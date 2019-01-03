@@ -146,6 +146,7 @@ use \Xpmse\T;
 								<th class="font-w300"> 手机号 </th>
 								<th class="font-w300"> 数量 </th>
 								<th class="font-w300"> 类型 </th>
+								<th class="font-w300"> 创建时间 </th>
 							</tr>
 						</thead>
 
@@ -157,7 +158,7 @@ use \Xpmse\T;
 									<?php $v=null; $v=T::s("{{coin_id}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
-									<?php $v=null; $v=T::s("{{user_name ? user_nickname : user_name}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
+									<?php $v=null; $v=T::s("{{user_name ? user_name : user_nickname}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{user_mobile}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
@@ -168,13 +169,16 @@ use \Xpmse\T;
 								<td class="font-w300">
 									<span class="text-<?=$rs['_type']['style']?>"><?=$rs['_type']['name'] ? $rs['_type']['name']  : $rs['type'] ?></span>
 								</td>
+								<td class="font-w300">
+									<?php $v=null; $v=T::s("{{created_at | date(\"Y年m月d日 @H:i:s\")}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
+								</td>
 							</tr>
 							<?php endforeach;?>
 
 						</tbody>
 
 						<tfoot>
-							<tr><td colspan="5"> <nav class="pull-right">
+							<tr><td colspan="6"> <nav class="pull-right">
 
 								<ul class="pagination">
 									<?php if ($response['prev'] !== false): ?>

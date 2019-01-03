@@ -4,7 +4,7 @@
  * 积分数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-28 13:00:34
+ * 最后修改: 2019-01-03 23:12:04
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -126,6 +126,7 @@ class Coin extends Model {
 	 *                $rs["user_group_id"], // user.group_id
 	 *                $rs["user_name"], // user.name
 	 *                $rs["user_idno"], // user.idno
+	 *                $rs["user_idtype"], // user.idtype
 	 *                $rs["user_iddoc"], // user.iddoc
 	 *                $rs["user_nickname"], // user.nickname
 	 *                $rs["user_sex"], // user.sex
@@ -135,6 +136,8 @@ class Coin extends Model {
 	 *                $rs["user_headimgurl"], // user.headimgurl
 	 *                $rs["user_language"], // user.language
 	 *                $rs["user_birthday"], // user.birthday
+	 *                $rs["user_bio"], // user.bio
+	 *                $rs["user_bgimgurl"], // user.bgimgurl
 	 *                $rs["user_mobile"], // user.mobile
 	 *                $rs["user_mobile_nation"], // user.mobile_nation
 	 *                $rs["user_mobile_full"], // user.mobile_full
@@ -157,9 +160,6 @@ class Coin extends Model {
 	 *                $rs["user_password"], // user.password
 	 *                $rs["user_pay_password"], // user.pay_password
 	 *                $rs["user_status"], // user.status
-	 *                $rs["user_bio"], // user.bio
-	 *                $rs["user_bgimgurl"], // user.bgimgurl
-	 *                $rs["user_idtype"], // user.idtype
 	 */
 	public function getByCoinId( $coin_id, $select=['*']) {
 		
@@ -200,7 +200,7 @@ class Coin extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 积分记录MAP {"coin_id1":{"key":"value",...}...}
 	 */
-	public function getInByCoinId($coin_ids, $select=["coin.coin_id","user.name","user.nickname","user.mobile","coin.quantity","coin.type"], $order=["coin.created_at"=>"desc"] ) {
+	public function getInByCoinId($coin_ids, $select=["coin.coin_id","user.name","user.nickname","user.mobile","coin.quantity","coin.type","coin.created_at"], $order=["coin.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -276,7 +276,7 @@ class Coin extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 积分记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["coin.coin_id","user.name","user.nickname","user.mobile","coin.quantity","coin.type"], $order=["coin.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["coin.coin_id","user.name","user.nickname","user.mobile","coin.quantity","coin.type","coin.created_at"], $order=["coin.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -313,7 +313,7 @@ class Coin extends Model {
 	/**
 	 * 按条件检索积分记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["coin.coin_id","user.name","user.nickname","user.mobile","coin.quantity","coin.type"]
+	 *         	      $query['select'] 选取字段，默认选择 ["coin.coin_id","user.name","user.nickname","user.mobile","coin.quantity","coin.type","coin.created_at"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keywords"] 按关键词查询
@@ -336,6 +336,7 @@ class Coin extends Model {
 	 *               	["user_group_id"], // user.group_id
 	 *               	["user_name"], // user.name
 	 *               	["user_idno"], // user.idno
+	 *               	["user_idtype"], // user.idtype
 	 *               	["user_iddoc"], // user.iddoc
 	 *               	["user_nickname"], // user.nickname
 	 *               	["user_sex"], // user.sex
@@ -345,6 +346,8 @@ class Coin extends Model {
 	 *               	["user_headimgurl"], // user.headimgurl
 	 *               	["user_language"], // user.language
 	 *               	["user_birthday"], // user.birthday
+	 *               	["user_bio"], // user.bio
+	 *               	["user_bgimgurl"], // user.bgimgurl
 	 *               	["user_mobile"], // user.mobile
 	 *               	["user_mobile_nation"], // user.mobile_nation
 	 *               	["user_mobile_full"], // user.mobile_full
@@ -367,13 +370,10 @@ class Coin extends Model {
 	 *               	["user_password"], // user.password
 	 *               	["user_pay_password"], // user.pay_password
 	 *               	["user_status"], // user.status
-	 *               	["user_bio"], // user.bio
-	 *               	["user_bgimgurl"], // user.bgimgurl
-	 *               	["user_idtype"], // user.idtype
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["coin.coin_id","user.name","user.nickname","user.mobile","coin.quantity","coin.type"] : $query['select'];
+		$select = empty($query['select']) ? ["coin.coin_id","user.name","user.nickname","user.mobile","coin.quantity","coin.type","coin.created_at"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
