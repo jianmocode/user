@@ -160,7 +160,7 @@ use \Xpmse\T;
 									<?php $v=null; $v=T::s("{{name}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
-									<?=T::s("", $rs );?>
+									<?php $v=null; $v=T::s("{{behavior_name}}({{behavior_slug}})", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{origin}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>

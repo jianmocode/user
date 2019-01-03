@@ -4,7 +4,7 @@
  * 订阅数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-03 11:32:40
+ * 最后修改: 2019-01-03 11:38:33
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -207,7 +207,7 @@ class Subscriber extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 订阅记录MAP {"subscriber_id1":{"key":"value",...}...}
 	 */
-	public function getInBySubscriberId($subscriber_ids, $select=["subscriber.subscriber_id","subscriber.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
+	public function getInBySubscriberId($subscriber_ids, $select=["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -327,7 +327,7 @@ class Subscriber extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 订阅记录MAP {"origin_ourter_id1":{"key":"value",...}...}
 	 */
-	public function getInByOriginOurterId($origin_ourter_ids, $select=["subscriber.subscriber_id","subscriber.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
+	public function getInByOriginOurterId($origin_ourter_ids, $select=["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -410,7 +410,7 @@ class Subscriber extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 订阅记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["subscriber.subscriber_id","subscriber.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"], $order=["subscriber.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -447,7 +447,7 @@ class Subscriber extends Model {
 	/**
 	 * 按条件检索订阅记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["subscriber.subscriber_id","subscriber.name","subscriber.origin","subscriber.ourter_id","subscriber.status"]
+	 *         	      $query['select'] 选取字段，默认选择 ["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
@@ -485,7 +485,7 @@ class Subscriber extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["subscriber.subscriber_id","subscriber.name","subscriber.origin","subscriber.ourter_id","subscriber.status"] : $query['select'];
+		$select = empty($query['select']) ? ["subscriber.subscriber_id","subscriber.name","behavior.slug","behavior.name","subscriber.origin","subscriber.ourter_id","subscriber.status"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
