@@ -660,8 +660,9 @@ class User extends Model {
 					  ->get()
 					  ->toArray();
 		
-		unset($u['remark']);
-
+        unset($u['remark']);
+        
+        $method = "signin";
 		if ( empty($uinfo) ) {
 
 			// Group 信息
@@ -673,7 +674,8 @@ class User extends Model {
 			$g = new Group();
 			$rs = $g->getBySlug($slug);
 			$u['group_id'] = $rs['group_id'];
-			$this->create( $u );
+            $this->create( $u );
+            $method = "signup";
 
 		} else {
 			$this->updateBy("user_id", $u);
@@ -683,7 +685,10 @@ class User extends Model {
 		$this->openid = $openid;
 		$this->unionid = $u['unionid'];
 		$this->cfg = $cfg;
-		return $user_id;
+		return [
+            "user_id"=>$user_id, 
+            "method"=>$method
+        ];
 	}
 
 

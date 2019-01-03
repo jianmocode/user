@@ -339,15 +339,22 @@ class User extends Api {
 		}
 
 		$u = new UserModel();
-		$user_id = $u->updateWxappUser( $cfg['appid'], $data );
+        $resp = $u->updateWxappUser( $cfg['appid'], $data );
+        $user_id = $resp["user_id"];
 		$user = $u->getByUid($user_id);
         $user["_id"] = $user_id;
         
-       
-        try {  // 触发用户登录行为
-            \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/signin", $user );
-        }catch(Excp $e) { $e->log(); }
-
+        if ( $resp["method"] == "signin") {
+            try {  // 触发用户登录行为
+                \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/signin", $user );
+            }catch(Excp $e) { $e->log(); }
+        } else if ( $resp["method"] == "signup") {
+            
+            try {  // 触发用户注册行为
+                $resp["inviter"] = $inviter;
+                \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/signup", $resp);
+            }catch(Excp $e) { $e->log(); }
+        }
 		return $user;
 	}
 
