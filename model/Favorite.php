@@ -75,6 +75,9 @@ class Favorite extends Model {
             foreach( $favs as &$fav  ){
                 $article_id = $fav["outer_id"];
                 $article = $articles[$article_id];
+                if( !is_array($article) ) {
+                    $article = [];
+                }
 
                 $fav = array_merge( $fav, $article );
             }
