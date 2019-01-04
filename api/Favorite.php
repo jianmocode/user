@@ -121,7 +121,9 @@ class Favorite extends Api {
 
         $query["user_id"] = $user_id;
         $fav = new \Xpmsns\User\Model\Favorite;
-        return $rows = $fav->search( $query );
+        $rows = $fav->search( $query );
+        $fav->getSource($rows["data"]);
+        return $rows;
 
     }
 

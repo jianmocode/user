@@ -39,6 +39,49 @@ class Favorite extends Model {
 
     // @KEEP BEGIN
     
+
+    /**
+     * 读取收藏内容
+     * @param array &$favs 收藏数据集合
+     * @param array $selects 选中字段清单
+     *                 [
+     *                    "origin"=>["field1","field2"..]
+     *                    ...
+     *                 ]
+     */
+    public function getSource( & $favs, $selects=[] ) {
+
+        // 处理图文
+        $article_ids = [];
+
+        foreach( $favs  as $idx=>$fav ){
+            if (  $fav["origin"] == "article"){
+                array_push($article_ids, $fav["outer_id"]);
+            }
+        }
+
+        // 处理图文
+        if ( !empty($article_ids) ) {
+
+            $select = is_array($selects["article"]) ? $selects["article"] : [
+                "article.article_id",
+                "article.title","article.cover","article.summary", "article.author", 
+                "article.view_cnt","article.like_cnt", "article.dislike_cnt", "article.comment_cnt",
+            ];
+
+            $art = new \Xpmsns\Pages\Model\Article;
+            $articles = $art->getInByArticleId($article_ids, $select);
+
+            foreach( $favs as &$fav  ){
+                $article_id = $fav["outer_id"];
+                $article = $articles[$article_id];
+
+                $fav = array_merge( $fav, $article );
+            }
+        }
+    }
+
+
     /**
      * 收藏初始化( 注册行为/注册任务/设置默认值等... )
      */
