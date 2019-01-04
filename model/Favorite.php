@@ -228,7 +228,7 @@ class Favorite extends Model {
      */
     public function saveBy( $uniqueKey,  $data,  $keys=null , $select=["*"]) {
         if ( !empty($data["origin"]) &&  !empty($data["outer_id"]) ) {
-            $data["origin_outer_id"] = "DB::RAW(CONCAT(`origin`,'_',`outer_id`))";
+            $data["origin_outer_id"] = "DB::RAW(CONCAT(`origin`,'_', `user_id`, '_', `outer_id`))";
         }
         return parent::saveBy( $uniqueKey,  $data,  $keys , $select );
     }
@@ -614,7 +614,7 @@ class Favorite extends Model {
 
         // @KEEP BEGIN
         if ( !empty($data["origin"]) &&  !empty($data["outer_id"]) ) {
-            $data["origin_outer_id"] = "DB::RAW(CONCAT(`origin`,'_',`outer_id`))";
+            $data["origin_outer_id"] = "DB::RAW(CONCAT(`origin`,'_', `user_id`, '_', `outer_id`))";
         }
         // @KEEP END
 

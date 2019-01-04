@@ -453,7 +453,20 @@ class User extends Model {
 		}
 		$rs['session_id'] = session_id();
 		return $rs;
-	}
+    }
+    
+    /**
+     * 读取用户信息
+     */
+    static public function info() {
+        @session_start();
+		$rs = !empty($_SESSION['USER:info']) ? $_SESSION['USER:info'] : $_SESSION['_uinfo'] ;
+		if ( !is_array($rs) ) {
+			$rs = [];
+		}
+		$rs['session_id'] = session_id();
+		return $rs;
+    }
 
 
 
