@@ -35,7 +35,7 @@ class RunController extends \Xpmse\Loader\Controller {
      *   }
      *   $job_id = $job->call( $slug, "SomeModel", "SomeMethod", $args... );
      */
-    function BehaviorServer() {
+    function BehaviorStart() {
         
         Utils::cliOnly();
         $opt = new Option('xpmsns/user');
@@ -62,13 +62,23 @@ class RunController extends \Xpmse\Loader\Controller {
 
     }
 
+    // 重启
+    function BehaviorRestart() {
+        
+        Utils::cliOnly();
+        $job = new Job(["name" => "Behavior"]);
+        $job->restart();
+    }
 
+    // 关闭
     function BehaviorShutdown() {
         Utils::cliOnly();
         $job = new Job(["name" => "Behavior"]);
         $job->shutdown();
     }
+    
 
+    // 平滑重启
     function BehaviorReload() {
         
         Utils::cliOnly();
@@ -80,12 +90,12 @@ class RunController extends \Xpmse\Loader\Controller {
         $job->reload($worker_only);
     }
 
-
+    // 检查服务器
     function BehaviorInspect(){
         Utils::cliOnly();
         $job = new Job(["name" => "Behavior"]);
         $detail = $job->inspect();
-        print_r( $detail );
+        Utils::out( $detail );
     }
     
 }
