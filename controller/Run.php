@@ -53,7 +53,7 @@ class RunController extends \Xpmse\Loader\Controller {
             throw Excp("未找到服务器有效配置", 500, ["config"=>$config]);
         }
         $job = new Job(["name" => "Behavior"]);
-        // $config["daemonize"] = 1;
+        $config["daemonize"] = 1;
         $job->server($config);
 
     }
