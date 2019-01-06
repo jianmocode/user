@@ -288,6 +288,31 @@ class User extends Model {
         foreach( $subscribers as $subscriber ){
             try { $s->create($subscriber); } catch( Excp $e) { $e->log(); }
         }
+
+
+        // 注册服务器
+        $services = [
+            [
+                "app" => "xpmsns/user",
+                "name" => "Behavior",
+                "type" => "queue",
+                "cname" => "用户行为收集队列服务",
+                "autostart" => 1,
+                "status" => 'on',
+                "priority" => 10,
+                "setting" => [
+					"host" => "127.0.0.1",
+					"home" => Utils::getHome(),
+                    "user" => 0,
+                    "worker_num" =>1
+				]
+            ]
+        ];
+
+        $se = new \Xpmse\Service;
+        foreach( $services as $service ) {
+            try { $se->create($service); } catch( Excp $e) { $e->log(); }
+        }
     }
 
     /**
