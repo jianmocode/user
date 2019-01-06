@@ -53,8 +53,28 @@ class RunController extends \Xpmse\Loader\Controller {
             throw Excp("未找到服务器有效配置", 500, ["config"=>$config]);
         }
         $job = new Job(["name" => "Behavior"]);
+        // $config["daemonize"] = 1;
         $job->server($config);
 
+    }
+
+
+    function BehaviorShutdown() {
+        Utils::cliOnly();
+        $job = new Job(["name" => "Behavior"]);
+        $job->shutdown();
+    }
+
+    function BehaviorReload() {
+        
+        Utils::cliOnly();
+        $job = new Job(["name" => "Behavior"]);
+        $worker_only = false;
+        if ( intval($_GET["worker_only"]) == 1 ) {
+            $worker_only  = true;
+        }
+        var_dump($worker_only);
+        $job->reload($worker_only);
     }
     
 }
