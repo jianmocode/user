@@ -73,8 +73,15 @@ class RunController extends \Xpmse\Loader\Controller {
         if ( intval($_GET["worker_only"]) == 1 ) {
             $worker_only  = true;
         }
-        var_dump($worker_only);
         $job->reload($worker_only);
+    }
+
+
+    function BehaviorInspect(){
+        Utils::cliOnly();
+        $job = new Job(["name" => "Behavior"]);
+        $detail = $job->inspect();
+        print_r( $detail );
     }
     
 }
