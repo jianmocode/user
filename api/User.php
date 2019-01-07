@@ -107,11 +107,14 @@ class User extends Api {
 
         // 处理特别参数
         if ( !empty($data['extra']) ) {
-			$data['extra'] = json_decode($data['extra'], true);
+            $data['extra'] = json_decode($data['extra'], true);
+            if ( $data['extra'] === false ) {
+                Utils::json_decode( $data['extra'] ); // 通报错误
+            }
         }
 
-		$u->save( $data );
-        $u->loginSetSession($uinfo['user_id']);
+        $u->save( $data );
+        $u->loginSetSession($uinfo['user_id']); // 更新缓存
 
         try {  // 触发用户个人资料更新行为
             \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/profile", $u->getUserInfo());
