@@ -51,6 +51,52 @@ class Coin extends Model {
 
         return intval($sum);
     }
+
+
+    /**
+     * 读取积分来源
+     * @param array $rs
+     */
+    function getSource( & $rows ) {
+        
+        // 任务ID信息
+        $task_ids = [];
+
+        foreach ( $rows as &$rs ){
+            if ( empty($rs["snapshot"] ) ) {
+                return $rs;
+            }
+
+            // 处理任务
+            $snapshot = $rs["snapshot"];
+            if ( $snapshot["type"] == 'task' ) {
+                if ( !empty( $snapshot["data"]["task_id"]) ) {
+                    array_push( $task_ids, $snapshot["data"]["task_id"]);
+                }
+            }
+        }
+
+        // 读取任务信息
+        $t = new Task;
+        $tasks = $t->getInByTaskId( $task_ids );
+
+        foreach ( $rows as &$rs ) {
+            if ( empty($rs["snapshot"] ) ) {
+                return $rs;
+            }
+
+            $snapshot = $rs["snapshot"];
+            if ( $snapshot["type"] == 'task' ) {
+                $task_id = $snapshot["data"]["task_id"];
+                if ( !empty( $task_id) ) {
+                    $rs["task"] = $tasks[$task_id];
+                    $rs["usertask"] = $snapshot["data"];
+                    unset($rs["snapshot"]);
+                }
+            }
+        }
+    }
+
     // @KEEP END
 
 

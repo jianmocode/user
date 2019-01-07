@@ -27,6 +27,26 @@ class Coin extends Api {
 	/**
 	 * 自定义函数 
 	 */
+    // @KEEP BEGIN
+    function getCoins( $query, $data ) {
+
+        $u = new \Xpmsns\User\Model\User;
+        $user = $u->getUserInfo();
+        $user_id = $user["user_id"];
+
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $query['select'] = "coin.*";
+        $query["user_id"] = $user_id;
+        $coin = new \Xpmsns\User\Model\Coin;
+        $rows = $coin->search( $query );
+        $coin->getSource($rows["data"]);
+        return $rows;
+
+    }
+    // @KEEP END
 
 
 	/**
