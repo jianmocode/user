@@ -341,12 +341,19 @@ class User extends Api {
 			throw new Excp("未找到有效的微信公众号配置", 404);
 		}
 
-		$u = new UserModel();
+        $u = new UserModel();
+        
+        // 处理邀请注册用户
+        $inviter = $u->getInviter();
+        if ( !empty($inviter) ) {
+            $data["inviter"] = $inviter["user_id"];
+        }
+
         $resp = $u->updateWxappUser( $cfg['appid'], $data );
         $user_id = $resp["user_id"];
 		$user = $u->getByUid($user_id);
         $user["_id"] = $user_id;
-        
+
         if ( $resp["method"] == "signin") {
             try {  // 触发用户登录行为
                 \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/signin", $user );
