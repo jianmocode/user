@@ -225,8 +225,11 @@ class User extends Model {
                 "status" => "online",
             ],[
                 "name"=>"邀请注册任务", "slug"=>"invite", "type"=>"repeatable",
-                "process"=>1, 
-                "quantity" => [500],
+                "process"=>4,
+                "quantity" => [100,100,100,100],
+                "params" => [
+                    "count"=>4
+                ],
                 "auto_accept" => 0,
                 "accept" => ["class"=>"\\xpmsns\\user\\model\\user", "method"=>"onInviteAccpet"],
                 "status" => "online",
@@ -418,11 +421,85 @@ class User extends Model {
      * @param array $data  行为数据 ["user_id"=>"用户ID", "mobile"=>"手机号", "name"=>"真实姓名", "nickname"=>"昵称", "sex"=>"性别", "address"=>"地址", "birthday"=>"生日", "inviter"=>"邀请者ID"],
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
+    
     public function onInviteChange( $behavior, $subscriber, $data, $env ) {
+
+        if ( empty($data["inviter"]) ) {
+            return ;
+        }
+
+        // 读取任务
+        $inviter = $data["inviter"];
+        $task_slug = $subscriber["outer_id"];
+        $user_id = $inviter["user_id"];
+        $t = new \Xpmsns\User\Model\Usertask;
+        $task = $t->getByTaskSlugAndUserId( $task_slug, $user_id );
+        if ( empty($task) ) {
+            throw new Excp("未找到任务信息({$task_slug})", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]);
+        }
+
+        // 自动接受任务
+        $usertask = $task["usertask"];
+        if( 
+            $task["auto_accept"] == 1 &&
+            ( empty($usertask) || ( $usertask["status"] != "accepted" &&  $task["type"] == "repeatable" ) )
+        ) {
+            $task["usertask"] = $usertask = $t->acceptBySlug( $task_slug, $user_id );
+        }
+
+        // 扩展数量
+        $params = is_array($task["params"]) ? $task["params"] : [];
+        $params["count"] = empty($params["count"]) ?  intval($task["process"]) : intval($params["count"]);
+        if ( $params["count"] != intval($task["process"]) ) {
+            $tt = new  \Xpmsns\User\Model\Task;
+            $quantity = []; 
+            for( $i=0;$i<$params["count"]; $i++) {
+                $quantity[$i] = 0;
+            }
+            $quantity[$params["count"]-1] = end($task["quantity"]);
+ 
+            $tt->updateBy("task_id", [
+                "task_id"=>$task["task_id"],
+                "process" => $params["count"],
+                "quantity" => $quantity,
+            ]);
+        }
+
+        // 任务副本创建时间
+        if ( strtotime($data["created_at"]) < strtotime($usertask["created_at"]) ) {
+            $created_at = $data["created_at"];
+        } else {
+            $created_at = $usertask["created_at"];
+        }
+
+        // 检索自任务副本创建到当前时刻的邀请成功的数量
+        $process = $this->query()
+                   ->where("inviter", "=",$user_id)
+                   ->where("created_at", ">=",$created_at)
+                   ->limit( $params["count"] )
+                   ->count("user_id")
+                ;
+                
+        if ( $process > 0 ) {
+            $t->processByUsertaskId( $usertask["usertask_id"], $process );
+        }
+
+    }
+
+    /**
+     * 订阅器: 邀请注册任务 (用户注册行为发生时, 触发此函数, 可在后台暂停或关闭)
+     * @param array $behavior  行为(用户注册)数据结构
+     * @param array $subscriber  订阅者(邀请注册任务订阅) 数据结构  ["outer_id"=>"任务SLUG", "origin"=>"task" ... ]
+     * @param array $data  行为数据 ["user_id"=>"用户ID", "mobile"=>"手机号", "name"=>"真实姓名", "nickname"=>"昵称", "sex"=>"性别", "address"=>"地址", "birthday"=>"生日", "inviter"=>"邀请者ID"],
+     * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
+     */
+    
+    public function onInviteChangeAnother( $behavior, $subscriber, $data, $env ) {
        
         if ( empty($data["inviter"]) ) {
             return ;
         }
+        
 
         // 读取任务
         $inviter = $data["inviter"];

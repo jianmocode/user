@@ -213,7 +213,7 @@ class Favorite extends Model {
         $process = $this->query()
                    ->where("user_id", "=",$user_id)
                    ->where("created_at", ">=",$created_at)
-                   ->limit(3)
+                   ->limit( $params["count"] )
                    ->count("favorite_id")
                 ;
                 
