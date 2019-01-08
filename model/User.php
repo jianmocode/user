@@ -807,6 +807,17 @@ class User extends Model {
 			$this->create( $u );
 
 		} else {
+
+            // 更新扩展数据
+            if ( !empty($u["extra"]) ) {
+                $extra = json_decode($u["extra"], true);
+                if ( $extra == false ) {
+                    $extra = [];
+                }
+
+                $u["extra"] = array_merge($u["extra"], $extra);
+            }
+
 			$this->updateBy("user_id", $u);
 		}
 
