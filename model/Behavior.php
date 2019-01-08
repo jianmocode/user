@@ -115,7 +115,7 @@ class Behavior extends Model {
 
         if ( $daemon === true ) {
             $job_slug =  "{$slug}::{$env['session_id']}";
-            $job = new \Xpmse\Job(["name"=>"Behavior"]);
+            $job = new \Xpmse\Job(["name"=>"XpmsnsUserBehavior"]);
             if ( $job->isRunning($slug) ) {
                 return ["code"=>503, "message"=>"任务正在运行", "extra"=>["slug"=>$slug, "data"=>$data, "env"=>$env] ];
             }
@@ -142,7 +142,7 @@ class Behavior extends Model {
 
         if ( $daemon === true ) {
             $job_slug =  "{$behavior_id}::{$env['session_id']}";
-            $job = new \Xpmse\Job(["name"=>"Behavior"]);
+            $job = new \Xpmse\Job(["name"=>"XpmsnsUserBehavior"]);
             if ( $job->isRunning($slug) ) {
                 return ["code"=>503, "message"=>"任务正在运行", "extra"=>["slug"=>$slug, "data"=>$data, "env"=>$env] ];
             }
