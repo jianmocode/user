@@ -12,7 +12,7 @@ use \Xpmse\Loader\App;
 use \Xpmse\Excp;
 use \Xpmse\Utils;
 use \Xpmse\Job;
-use \Xpmse\Option;
+use \Xpmse\Service;
 
 class RunController extends \Xpmse\Loader\Controller {
 
@@ -38,7 +38,8 @@ class RunController extends \Xpmse\Loader\Controller {
     function BehaviorStart() {
         
         Utils::cliOnly();
-        $opt = new Option('xpmsns/user');
+        $se = new Service;
+        $service = $se->getByName("Behavior", "xpmsns/user");
 
         // 默认值:
         // {
@@ -48,11 +49,11 @@ class RunController extends \Xpmse\Loader\Controller {
         //     "user": 0,
         //     "worker_num": 1
         // }
-        $config = $opt->get("user/server/behavior");
+        $config = $service["setting"];
         if ( empty( $config ) ) {
             throw Excp("未找到服务器有效配置", 500, ["config"=>$config]);
         }
-        $job = new Job(["name" => "Behavior"]);
+        $job = new Job(["name" => "XpmsnsUserBehavior"]);
         $daemonize = false;
         if ( intval($_GET["daemonize"]) == 1 ) {
             $daemonize  = true;
@@ -66,14 +67,14 @@ class RunController extends \Xpmse\Loader\Controller {
     function BehaviorRestart() {
         
         Utils::cliOnly();
-        $job = new Job(["name" => "Behavior"]);
+        $job = new Job(["name" => "XpmsnsUserBehavior"]);
         $job->restart();
     }
 
     // 关闭
     function BehaviorShutdown() {
         Utils::cliOnly();
-        $job = new Job(["name" => "Behavior"]);
+        $job = new Job(["name" => "XpmsnsUserBehavior"]);
         $job->shutdown();
     }
     
@@ -82,7 +83,7 @@ class RunController extends \Xpmse\Loader\Controller {
     function BehaviorReload() {
         
         Utils::cliOnly();
-        $job = new Job(["name" => "Behavior"]);
+        $job = new Job(["name" => "XpmsnsUserBehavior"]);
         $worker_only = false;
         if ( intval($_GET["worker_only"]) == 1 ) {
             $worker_only  = true;
@@ -93,7 +94,7 @@ class RunController extends \Xpmse\Loader\Controller {
     // 检查服务器
     function BehaviorInspect(){
         Utils::cliOnly();
-        $job = new Job(["name" => "Behavior"]);
+        $job = new Job(["name" => "XpmsnsUserBehavior"]);
         $detail = $job->inspect();
         Utils::out( $detail );
     }
