@@ -120,16 +120,16 @@ use \Xpmse\T;
 
 
 				<div class="form-group">
-                        <div class="col-xs-12">
-                            <div class="form-material">
-                                <input class="js-tags-input form-control" type="text" id="tag" name="tag" 
-                                value="<?=empty($user['tag'])?'':implode(',',$user['tag'])?>"
-                                >
-                                <label for="tag">标签</label>
-                                <div class="help-block text-right"></div>
-                            </div>
+                    <div class="col-xs-12">
+                        <div class="form-material">
+                            <input class="js-tags-input form-control" type="text" id="tag" name="tag" 
+                            value="<?=empty($user['tag'])?'':implode(',',$user['tag'])?>"
+                            >
+                            <label for="tag">标签</label>
+                            <div class="help-block text-right"></div>
                         </div>
                     </div>
+                </div>
                 
 				<div class="form-group hidden">
 					<div class="col-xs-6">
@@ -150,7 +150,6 @@ use \Xpmse\T;
 					</div>
                 </div>
                 
-
                 <div class="form-group">
                     <div class="col-xs-6">
                         <div class="form-material">
@@ -191,10 +190,32 @@ use \Xpmse\T;
                             <span class="font-s12 text-success "><?=$user["coin"]?></span>
                         </div>   
                     </div>
-
-                    
-
                 </div>
+
+                <!-- 扩展信息 -->
+                <?php if ( !empty($user["extra"]) ) : ?>
+				<div class="form-group">
+                    <div class="col-xs-12 push-10">
+                        <h5 class="font-w400">
+                            扩展信息
+                        </h5> 
+                    </div>
+                </div>
+
+                <?php foreach($user["extra"] as $key=>$val ) :?>
+                <div class="form-group">
+                   <div class="col-xs-12">
+                       <div class="form-material">
+                            <input class="form-control" type="text" id="extra-<?=$key?>" name="extra-<?=$key?>" 
+                            value="<?=$val?>" 
+                            placeholder="填写<?=$key?>">
+                           <label for="extra-<?=$key?>"><?=$key?></label>
+                       </div>
+                   </div>
+                </div>
+                <?php endforeach; ?>
+                <?php endif; ?>
+    
 
 				<div class="form-group">
 					<div class="col-xs-12 push-10 push-15-t">

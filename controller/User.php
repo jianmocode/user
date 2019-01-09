@@ -189,12 +189,27 @@ class UserController extends \Xpmse\Loader\Controller {
 	 */
 	function save() {
 
-		$u = new \Xpmsns\User\Model\User;
+        $u = new \Xpmsns\User\Model\User;
+        
+        $data = $_POST;
+
+        // 处理数据 扩展数据
+        $extra = [];
+        foreach( $data as $key=>$val ) {
+            if ( strpos($key, "extra-") !== false ){
+                $ni = explode("-", $key);
+                $extra[$ni[1]] = $val;
+            }
+        }
+
+        if ( !empty($extra) ){
+            $data["extra"] = $extra;
+        }
 
 		// throw new Excp("测试出错啦！！！", 500, ["hello"=>"world"]);
 		// throw new Excp("出错啦 1", 500, [ "errors"=>["mobile"=>"手机号码已被注册"]]);
 		try {
-			$user_id = $u->save($_POST);
+			$user_id = $u->save($data);
 		} catch( Excp $e ){
 			if ( $e->getCode() == '23000'  || $e->getCode() == "1062" ) {
 
