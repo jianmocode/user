@@ -158,16 +158,16 @@ use \Xpmse\T;
                         </div>
                         <div class="push-15-t">
                             <?php if (is_null($user["status"])) { $user["status"] = "on"; } ?>
-                            <label class="css-input  css-radio  css-radio-primary push-10-r">
+                            <label class="css-input  css-radio  css-radio-success push-10-r">
                                 <input   type="radio" name="status" data-uncheck-value="on" value="on" <?=("on" == $user["status"]) ? "checked" : ""?> > 
                                 <span></span> 正常
                             </label>
     
-                            <label class="css-input  css-radio  css-radio-primary push-10-r">
+                            <label class="css-input  css-radio  css-radio-danger push-10-r">
                                 <input   type="radio" name="status" data-uncheck-value="off" value="off" <?=("off" == $user["status"]) ? "checked" : ""?> > 
                                 <span></span> 封禁 
                             </label>
-                            <label class="css-input  css-radio  css-radio-primary push-10-r">
+                            <label class="css-input  css-radio  css-radio-warning push-10-r">
                                 <input   type="radio" name="status" data-uncheck-value="lock" value="lock" <?=("lock" == $user["status"]) ? "checked" : ""?> > 
                                 <span></span> 锁定
                             </label>
@@ -246,6 +246,18 @@ use \Xpmse\T;
 						</div>
 					</div>
                 </div>
+
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <div class="form-material">
+                             <input class="form-control" type="text" id="verify" name="verify" 
+                             value="<?=$user['verify']?>"
+                             placeholder="请填写用户身份信息">
+                            <label for="verify">身份信息</label>
+                            <div class="help-block text-right"></div>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="form-group">
                     <div class="col-xs-12">
@@ -315,63 +327,49 @@ use \Xpmse\T;
                     </div>
                 </div>
 
-
                 <div class="form-group">
-                    <div class="col-xs-6">
-                        <div class="form-material">
-                            <label for="status">实名认证</label>
-                        </div>
-                        
-                        <div class="push-15-t">
-                            <?php if (is_null($user["status"])) { $user["status"] = "on"; } ?>
-                            <label class="css-input  css-radio  css-radio-primary push-10-r">
-                                <input   type="radio" name="status" data-uncheck-value="on" value="on" <?=("on" == $user["status"]) ? "checked" : ""?> > 
-                                <span></span> 正常
-                            </label>
-        
-                            <label class="css-input  css-radio  css-radio-primary push-10-r">
-                                <input   type="radio" name="status" data-uncheck-value="off" value="off" <?=("off" == $user["status"]) ? "checked" : ""?> > 
-                                <span></span> 封禁 
-                            </label>
-                            <label class="css-input  css-radio  css-radio-primary push-10-r">
-                                <input   type="radio" name="status" data-uncheck-value="lock" value="lock" <?=("lock" == $user["status"]) ? "checked" : ""?> > 
-                                <span></span> 锁定
-                            </label>
-                        </div>
-    
-                        <div class="help-block text-right"></div>
-                    </div>
-
-                    <div class="col-xs-6">
+                    <div class="col-xs-12">
                         <div class="form-material">
                              <input class="form-control" type="text" id="verify" name="verify" 
                              value="<?=$user['verify']?>"
                              placeholder="请填写实名认证驳回信息">
-                            <label for="verify">驳回信息</label>
+                            <label for="verify">实名认证驳回信息</label>
                             <div class="help-block text-right"></div>
                         </div>
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <div class="form-material">
+                            <label for="name_verified">实名认证</label>
+                        </div>
+                        <!-- 实名认证 unverified 未通过认证  verified 已认证  verifying 认证中  -->
+                        <div class="push-15-t">
+                            <?php if (is_null($user["name_verified"])) { $user["name_verified"] = "unverified"; } ?>
+                            <label class="css-input  css-radio  css-radio-danger push-10-r">
+                                <input   type="radio" name="name_verified" data-uncheck-value="unverified" value="unverified" <?=("unverified" == $user["name_verified"]) ? "checked" : ""?> > 
+                                <span></span> 未认证
+                            </label>
+        
+                            <label class="css-input  css-radio  css-radio-success push-10-r">
+                                <input   type="radio" name="name_verified" data-uncheck-value="verified" value="verified" <?=("verified" == $user["name_verified"]) ? "checked" : ""?> > 
+                                <span></span> 已认证 
+                            </label>
+                            <label class="css-input  css-radio  css-radio-warning push-10-r">
+                                <input   type="radio" name="name_verified" data-uncheck-value="verifying" value="verifying" <?=("verifying" == $user["name_verified"]) ? "checked" : ""?> > 
+                                <span></span> 认证中
+                            </label>
+                            <label class="css-input  css-radio  css-radio-danger push-10-r">
+                                <input  type="radio" name="name_verified" data-uncheck-value="failure" value="failure" <?=("failure" == $user["name_verified"]) ? "checked" : ""?> > 
+                                <span></span> 驳回申请
+                            </label>
+                        </div>
+    
+                        <div class="help-block text-right"></div>
+                    </div>
+                </div>
 
-				<div class="form-group">
-					<div class="col-xs-12">
-						<div class="form-material">
-							 <input class="form-control" type="text" id="verify" name="verify" 
-							 value="<?=$user['verify']?>"
-							 placeholder="请填写用户身份信息">
-							<label for="verify">身份信息</label>
-							<div class="help-block text-right"></div>
-						</div>
-					</div>
-				</div>
-
-
-
-
-				
-
-				
 				
 				<div class="form-group">
 					<div class="col-xs-12 push-15-t">
