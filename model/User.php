@@ -124,9 +124,11 @@ class User extends Model {
 
 			// 身份校验
 			 ->putColumn( 'user_verified', $this->type('string',  ["length"=>40, 'default'=>"unverified"]) )    // 身份认证 unverified 未通过认证  verified 已认证  verifying 认证中
-			 ->putColumn( 'name_verified', $this->type('string',  ["length"=>40, 'default'=>"unverified"]) )    // 实名认证 unverified 未通过认证  verified 已认证  verifying 认证中
-			 ->putColumn( 'verify', $this->type('string',  ['length'=>128]) )    	      // 用户身份信息
-			 ->putColumn( 'verify_data', $this->type('text',  ['json'=>true]) )  		  // 用户认证证明材料
+             ->putColumn( 'name_verified', $this->type('string',  ["length"=>40, 'default'=>"unverified"]) )    // 实名认证 unverified 未通过认证  verified 已认证  verifying 认证中
+             ->putColumn( 'name_message', $this->type('string',  ['length'=>600]) )    	      // 驳回实名认证申请通知
+             ->putColumn( 'verify', $this->type('string',  ['length'=>128]) )    	      // 用户身份信息
+             ->putColumn( 'verify_data', $this->type('text',  ['json'=>true]) )  		  // 用户认证证明材料
+             ->putColumn( 'verify_message', $this->type('string',  ['length'=>600]) )    	      // 驳回身份认证申请通知
 			 ->putColumn( 'mobile_verified', $this->type('boolean',  ['default'=>"0"]) )  // 手机号是否通过校验
 			 ->putColumn( 'email_verified', $this->type('boolean',  ['default'=>"0"]) )   // 电邮地址是否通过校验
 			
