@@ -189,66 +189,6 @@ class User extends Api {
 	}
 
 
-	/**
-	 * 我的专栏查询 API
-	 * @param  [type] $query [description]
-	 * @param  [type] $data  [description]
-	 * @return [type]        [description]
-	 */
-	protected function mySpecial( $query, $data ) {
-
-	}
-
-
-	/**
-	 * 我的专栏信息更新/开通 API
-	 * @param  [type] $query [description]
-	 * @param  [type] $data  [description]
-	 * @return [type]        [description]
-	 */
-	protected function mySpecialUpdate( $query, $data ) {
-
-		// 用户身份验证
-		$u = new UserModel();
-		$uinfo = $u->getUserInfo();
-		if ( empty($uinfo['user_id']) ) {
-			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
-		}
-
-		// 许可字段清单
-		$allowed = ["type", "name", "path", "logo", "category_ids", "summary", "docs"];
-		$data = array_filter(
-			$data,
-			function ($key) use ($allowed) {
-				return in_array($key, $allowed);
-			},
-			ARRAY_FILTER_USE_KEY
-		);
-
-		// handle files field
-		if ( array_key_exists('logo', $data) && is_string($data['logo']) ) {
-			$data['logo'] = json_decode($data['logo'], true);
-		}
-		if ( array_key_exists('docs', $data) && is_string($data['docs']) ) {
-			$data['docs'] = json_decode($data['docs'], true);
-		}
-
-		// User ID 
-		$data['user_id'] = $uinfo['user_id'];
-
-		
-		// SaveData 检查专栏是否存在, 存在则更新，不存在则创建
-		$sp = new Special();
-		$us = $sp->query()->where('user_id', $data['user_id'])->limit(1)->select('special_id')->get()->toArray();
-		if ( empty($us) ) { 
-			$us = $sp->create($data);
-		} else { 
-			$data["special_id"] = current($us)["special_id"];
-			$us = $sp->updateBy("special_id", $data);
-		}
-
-		return $us;
-	}
 
 
 	/**
