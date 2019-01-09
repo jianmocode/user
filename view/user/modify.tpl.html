@@ -1,5 +1,7 @@
 <?php
-	use \Xpmse\Loader\App as App;
+use \Xpmse\Loader\App; 
+use \Xpmse\Utils;
+use \Xpmse\T;
 ?>
 <script type="text/javascript">
 	DEBUG_ON = true;
@@ -78,29 +80,6 @@
 
 
 				<div class="form-group">
-					
-					<div class="col-xs-6">
-						<div class="form-material">
-							<select class="js-select2 form-control" id="status" name="status" 
-								style="width: 100%;" data-placeholder="请选择状态...">
-								<option></option>
-								<option value="on" 
-									<?=($user['status'] == 'on' || empty($user['status'])) ? 'selected' : '' ?>
-								> 正常</option>
-
-								<option value="off"
-									<?=($user['status'] == 'off') ? 'selected' : '' ?>
-								>封禁</option>
-								<option value="lock"
-									<?=($user['status'] == 'lock') ? 'selected' : '' ?>
-								>锁定</option>
-							</select>
-							<label for="status">状态</label>
-							<div class="help-block text-right"></div>
-						</div>
-					</div>
-
-
 					<div class="col-xs-6">
 						<div class="form-material">
 							<select class="js-select2 form-control" id="group_id" name="group_id" 
@@ -116,10 +95,42 @@
 							<label for="group_id">用户组</label>
 							<div class="help-block text-right"></div>
 						</div>
-					</div>
-				</div>
+                    </div>
+
+                    <div class="col-xs-3 push-10">
+                        <div>
+                            <label class="css-input switch switch-sm switch-primary">
+                                <input type="checkbox" name="mobile_verified" value="1"
+                                <?=($user['mobile_verified'] ) ? 'checked' : '' ?>
+                                ><span></span> 手机号已核验
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div>
+                            <label class="css-input switch switch-sm switch-primary">
+                                <input type="checkbox" name="email_verified"  value="1"
+                                <?=($user['email_verified'] ) ? 'checked' : '' ?>
+                                ><span></span> 邮箱地址已核验
+                            </label>
+                        </div>
+                    </div>
+                    
+                </div>
 
 
+				<div class="form-group">
+                        <div class="col-xs-12">
+                            <div class="form-material">
+                                <input class="js-tags-input form-control" type="text" id="tag" name="tag" 
+                                value="<?=empty($user['tag'])?'':implode(',',$user['tag'])?>"
+                                >
+                                <label for="tag">标签</label>
+                                <div class="help-block text-right"></div>
+                            </div>
+                        </div>
+                    </div>
+                
 				<div class="form-group hidden">
 					<div class="col-xs-6">
 						<div class="form-material">
@@ -137,7 +148,53 @@
 							<div class="help-block text-right">用于余额支付鉴权。不想修改，请留空。</div>
 						</div>
 					</div>
-				</div>
+                </div>
+                
+
+                <div class="form-group">
+                    <div class="col-xs-6">
+                        <div class="form-material">
+                            <label for="status">状态</label>
+                        </div>
+                        <div class="push-15-t">
+                            <?php if (is_null($user["status"])) { $user["status"] = "on"; } ?>
+                            <label class="css-input  css-radio  css-radio-primary push-10-r">
+                                <input   type="radio" name="status" data-uncheck-value="on" value="on" <?=("on" == $user["status"]) ? "checked" : ""?> > 
+                                <span></span> 正常
+                            </label>
+    
+                            <label class="css-input  css-radio  css-radio-primary push-10-r">
+                                <input   type="radio" name="status" data-uncheck-value="off" value="off" <?=("off" == $user["status"]) ? "checked" : ""?> > 
+                                <span></span> 封禁 
+                            </label>
+                            <label class="css-input  css-radio  css-radio-primary push-10-r">
+                                <input   type="radio" name="status" data-uncheck-value="lock" value="lock" <?=("lock" == $user["status"]) ? "checked" : ""?> > 
+                                <span></span> 锁定
+                            </label>
+                        </div>
+
+                        <div class="help-block text-right"></div>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <div class="form-material">
+                            <label for="status">资产</label>
+                        </div>
+    
+                        <div class="push-15-t">
+                            <img src="/s/xpmsns/user/static/icons/balance.svg" style="width:16px;height:16px; line-height:18px; border:none;margin-right:2px;"> 
+                            <span class="font-s12">余额: </span>
+                            <span class="font-s12 text-success "><?=sprintf("%.2f",$user["balance"]/2)?></span>
+    
+                            <img class="push-10-l" src="/s/xpmsns/user/static/icons/coin.svg" style="width:16px;height:16px; line-height:18px; border:none;margin-right:2px;"> 
+                            <span class="font-s12">积分: </span>
+                            <span class="font-s12 text-success "><?=$user["coin"]?></span>
+                        </div>   
+                    </div>
+
+                    
+
+                </div>
 
 				<div class="form-group">
 					<div class="col-xs-12 push-10 push-15-t">
@@ -150,40 +207,18 @@
 				</div>
 
 				<div class="form-group">
-
 					<div class="col-xs-3">
 						<div class="form-material">
-							<select class="js-select2 form-control" id="iddoc" name="iddoc" 
+							<select class="js-select2 form-control" id="idtype" name="idtype" 
 								style="width: 100%;" data-placeholder="请有效证件...">
 								<option></option>
-								<option value="1" 
-									<?=($user['iddoc'] == '1' || empty($user['iddoc'])) ? 'selected' : '' ?>
-								> 居民身份证</option>
-
-								<option value="6"
-									<?=($user['iddoc'] == '6') ? 'selected' : '' ?>
-								>护照</option>
-
-								<option value="2"
-									<?=($user['iddoc'] == '2') ? 'selected' : '' ?>
-								>军人身份证件</option>
-
-								<option value="3"
-									<?=($user['iddoc'] == '3') ? 'selected' : '' ?>
-								>武装警察身份证</option>
-
-								<option value="4"
-									<?=($user['iddoc'] == '4') ? 'selected' : '' ?>
-								>港澳通行证</option>
-
-								<option value="5"
-									<?=($user['iddoc'] == '5') ? 'selected' : '' ?>
-								>台胞证</option>
-
-								<option value="7"
-									<?=($user['iddoc'] == '7') ? 'selected' : '' ?>
-								>其他</option>
-
+                                <option value="ID" <?=($user['idtype'] == 'ID') ? 'selected' : '' ?> > 身份证</option>
+                                <option value="ID" <?=($user['idtype'] == 'AB') ? 'selected' : '' ?> > 户口簿</option>
+                                <option value="ID" <?=($user['idtype'] == 'MID') ? 'selected' : '' ?> > 军人身份证</option>
+                                <option value="ID" <?=($user['idtype'] == 'APID') ? 'selected' : '' ?> > 武装警察身份证</option>
+                                <option value="ID" <?=($user['idtype'] == 'HMLP') ? 'selected' : '' ?> > 港澳通行证(限港澳居民)</option>
+                                <option value="ID" <?=($user['idtype'] == 'MTPS') ? 'selected' : '' ?> > 台胞证(限台湾省居民)</option>
+                                <option value="ID" <?=($user['idtype'] == 'PASSPORT') ? 'selected' : '' ?> > 护照(限外国公民)</option>
 							</select>
 							<label for="iddoc">有效身份证件</label>
 							<div class="help-block text-right"></div>
@@ -200,7 +235,6 @@
 						</div>
 					</div>
 					
-					
 
 					<div class="col-xs-6">
 						<div class="form-material">
@@ -211,8 +245,115 @@
 							<div class="help-block text-right"></div>
 						</div>
 					</div>
-				</div>
-				
+                </div>
+                
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <label for="idno">身份证件文件</label>
+                        
+                        <!-- 多图片组上传: 申请材料 (docs) 开始  -->
+                        <div class="xpmse-image-groups-content push-15-t">
+                                
+                            <?php if(@count($user['iddoc']) < 1): ?><?php $steps = 1 -  @count($user['iddoc']); for( $i=0; $i<$steps; $i++){ $user['iddoc'][] = [];} ?><?php endif ?><?php if( is_array($user['iddoc']) && utils::array_depth($user['iddoc']) != 2): ?><?php foreach($user['iddoc'] as $idx=>$it ){ $user['iddoc'][$idx] = ['img'=>$it]; }?><?php endif ?><?php foreach ( $user['iddoc'] as $__key=>$img ): ?> 
+                            <div class="xpmse-image-groups draggable-item " data-nested="docs" data-multiple="1">
+                                <div class="form-group " >
+                                    <div class="col-xs-4" style="width:220px" >
+                                        <div name="docs" class="file-uploader rounded rounded-4"
+                                            data-api='/_a/mina/uploader/upload?type=image'
+                                            data-title=''
+                                            data-previews=""
+                                            data-width="150"
+                                            data-height="150"
+                                            data-icon="fa fa-image" 
+                                            data-placeholder="请上传证明材料" 
+                                            data-allow-types="image/png,image/jpg,image/jpeg,image/gif"
+                                            data-maxsize="20"
+                                            data-progress="yes"
+                                            data-cropable="yes"
+                                            data-draggable="yes"
+                                            data-src="<?=T::v('<%=url%>', $img )?>"
+                                            data-path="<?=T::v('<%=path%>', $img )?>"
+                                            data-nested-value="1"
+                                            ></div>
+                                        <div class="help-block"></div>
+                                    </div>
+                                    <div class="col-xs-1 push-10-t">
+                                        <a href="javascript:void(0);" data-action="add"    class="text-success push-20-r"> <i class="fa fa-plus font-s20"></i> </a> 
+                                        <a href="javascript:void(0);" data-action="remove" class="text-danger"> <i class="fa fa-minus font-s20"></i> </a> 
+                                    </div>
+                                </div> 
+                            </div>
+                            <?php endforeach; ?> 
+
+                            <script type="text/javascript">
+                                $('.xpmse-image-groups[data-nested="docs"]').Multipliable({
+                                    initialized: function(elm, idx) {
+                                        $(elm).parent('.xpmse-image-groups-content') .find('.control-label').each( function(i, el ){
+                                            if (i >0) { $(el).html('');}
+                                        });
+                                    },
+                                    added: function( elm ) {
+                                        App.initHelper('file-uploader', {handler: $(elm).find('.file-uploader')} );
+                                    },
+                                    removed: function(){},
+                                    html: function( elm ){ 
+                                        var html = $(elm).clone();
+                                        var resp = $(html);
+                                        resp.find('.control-label').html('');
+                                        resp.find('.file-uploader').html('');
+                                        resp.find('.file-uploader').attr('data-src', '');
+                                        resp.find('.file-uploader').attr('data-path', '');
+                                        resp.find('input[type=hidden]').remove();
+                                        resp.find('input').val('');
+                                        resp.find('textarea').val('');
+                                        return resp;
+                                    }
+                                });
+                            </script>
+                        </div><!-- END 多图片组上传: 申请材料 (docs) -->
+
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="col-xs-6">
+                        <div class="form-material">
+                            <label for="status">实名认证</label>
+                        </div>
+                        
+                        <div class="push-15-t">
+                            <?php if (is_null($user["status"])) { $user["status"] = "on"; } ?>
+                            <label class="css-input  css-radio  css-radio-primary push-10-r">
+                                <input   type="radio" name="status" data-uncheck-value="on" value="on" <?=("on" == $user["status"]) ? "checked" : ""?> > 
+                                <span></span> 正常
+                            </label>
+        
+                            <label class="css-input  css-radio  css-radio-primary push-10-r">
+                                <input   type="radio" name="status" data-uncheck-value="off" value="off" <?=("off" == $user["status"]) ? "checked" : ""?> > 
+                                <span></span> 封禁 
+                            </label>
+                            <label class="css-input  css-radio  css-radio-primary push-10-r">
+                                <input   type="radio" name="status" data-uncheck-value="lock" value="lock" <?=("lock" == $user["status"]) ? "checked" : ""?> > 
+                                <span></span> 锁定
+                            </label>
+                        </div>
+    
+                        <div class="help-block text-right"></div>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <div class="form-material">
+                             <input class="form-control" type="text" id="verify" name="verify" 
+                             value="<?=$user['verify']?>"
+                             placeholder="请填写实名认证驳回信息">
+                            <label for="verify">驳回信息</label>
+                            <div class="help-block text-right"></div>
+                        </div>
+                    </div>
+                </div>
+
+
 				<div class="form-group">
 					<div class="col-xs-12">
 						<div class="form-material">
@@ -226,59 +367,7 @@
 				</div>
 
 
-				<div class="form-group">
-					<div class="col-xs-3 push-10">
-						<div>
-							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="mobile_verified" value="1"
-								<?=($user['mobile_verified'] ) ? 'checked' : '' ?>
-								><span></span> 手机号已核验
-							</label>
-						</div>
-					</div>
 
-					<div class="col-xs-3">
-						<div>
-							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="name_verified"  value="1"
-								<?=($user['name_verified'] ) ? 'checked' : '' ?>
-								><span></span> 实名信息已核验
-							</label>
-						</div>
-					</div>
-
-
-					<div class="col-xs-3">
-						<div>
-							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="user_verified"  value="1"
-								<?=($user['user_verified'] ) ? 'checked' : '' ?>
-								><span></span> 身份信息已核验
-							</label>
-						</div>
-					</div>
-					<div class="col-xs-3">
-						<div>
-							<label class="css-input switch switch-sm switch-primary">
-								<input type="checkbox" name="email_verified"  value="1"
-								<?=($user['email_verified'] ) ? 'checked' : '' ?>
-								><span></span> 邮箱地址已核验
-							</label>
-						</div>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<div class="col-xs-12">
-						<div class="form-material">
-							<input class="js-tags-input form-control" type="text" id="tag" name="tag" 
-							value="<?=empty($user['tag'])?'':implode(',',$user['tag'])?>"
-							>
-							<label for="tag">标签</label>
-							<div class="help-block text-right"></div>
-						</div>
-					</div>
-				</div>
 
 				<div class="form-group">
 					<div class="col-xs-12">
@@ -750,13 +839,13 @@ function getData( form, validation ) {
 	// 特殊数值校验
 	
 	// 身份信息 (标记为已核验，但身份信息为空)
-	if ( data["user_verified"] == "1" && typeof data["verify"] == 'undefined' ) {
+	if ( data["user_verified"] == "verified" && typeof data["verify"] == 'undefined' ) {
 		failure({verify:'请填写身份信息'}, validation );
 		return false;
 	}
 
 	// 实名信息 (标记为已核验，但真实姓名和身份证号为空)
-	if ( data["name_verified"] == "1") {
+	if ( data["name_verified"] == "verified") {
 
 		var error = {};
 
@@ -838,7 +927,8 @@ function saveUser( form, validation ) {
 
 
 $(function(){
-	App.initHelpers('file-uploader', {'handler':'div[name="headimg"]'});
+    App.initHelpers('file-uploader', {'handler':'div[name="headimg"]'});
+    App.initHelpers('file-uploader', {'handler':'.file-uploader'});
 	App.initHelpers(['datepicker','select2', 'image-crop', 'tags-inputs', 'ajax-confirm']);
 
 	// 保存数据按钮

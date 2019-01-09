@@ -49,7 +49,50 @@ class User extends Api {
 		]);
 
 		return $resp;
-	}
+    }
+    
+    /**
+     * 读取当前用户积分
+     */
+    protected function getCoin( $query, $data ) {
+        $u = new UserModel();
+		$uinfo = $u->getUserInfo();
+		if ( empty($uinfo['user_id']) ) {
+			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
+        }
+        
+        return $u->getCoin( $uinfo["user_id"] );
+    }
+
+    /**
+     * 读取当前用户余额
+     */
+    protected function getBalance( $query, $data ) {
+        $u = new UserModel();
+		$uinfo = $u->getUserInfo();
+		if ( empty($uinfo['user_id']) ) {
+			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
+        }
+        
+        return $u->getBalance( $uinfo["user_id"]  );
+    }
+
+
+    /**
+     * 读取当前用户积分和余额
+     */
+    protected function getBalanceAndCoin( $query, $data ) {
+        $u = new UserModel();
+		$uinfo = $u->getUserInfo();
+		if ( empty($uinfo['user_id']) ) {
+			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
+        }
+        
+        return [
+            "coin" => $u->getCoin( $uinfo["user_id"]  ),
+            "balance" => $u->getBalance( $uinfo["user_id"]  ),
+        ];
+    }
 
 
 
