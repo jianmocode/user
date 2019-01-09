@@ -250,7 +250,8 @@ class User extends Api {
 
 		$allowed = [
 			"user_id","bio", "sex", "nickname", "country", "city", "headimgurl", "bgimgurl", "birthday", "language", 
-			"name", "idno", "idtype", "iddoc", "name_verified"
+            "name", "idno", "idtype", "iddoc", "name_verified", "name_message", "verify_message", 
+            "mobile_verified", "email_verified",
 		];
 		$query['select'] = is_string($query['select']) ?  explode(',',$query['select']) : $query['select'];
 		$select = empty($query['select']) ? $allowed : $query['select'];
