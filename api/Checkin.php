@@ -85,7 +85,7 @@ class Checkin extends Api {
         $rs = $ci->create( $data );
         $history  = $ci->search([
             "user_id" => $user_id,
-            "orderby_created_at_desc" => "1",
+            "orderby_time_desc" => "1",
             "perpage" => 8
         ]);
         $rs["history"] = $history["data"];

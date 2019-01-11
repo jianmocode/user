@@ -364,8 +364,6 @@ class Usertask extends Model {
             $task["usertask"] = null;
             if ( !empty($usertask) &&  $task["type"] == "repeatable" && $task["daily_limit"] > 0 ) {
 
-                
-
                 $time = strtotime( date("Y-m-d 00:00:00", strtotime($usertask["created_at"])) );
                 $today = strtotime(date("Y-m-d 00:00:00"));
                 
@@ -460,15 +458,16 @@ class Usertask extends Model {
      * 设定任务副本进度并发放奖励 (按任务副本ID读取任务副本)
      * @param string $usertask_id  任务副本ID
      * @param int $process 新进度
+     * @param bool $force 强制更新(不验证进度数值)
      * @return array 任务副本结构体
      */
-    public function processByUsertaskId( $usertask_id, $process ) {
+    public function processByUsertaskId( $usertask_id, $process, $force=false ) {
 
         $usertask = $this->getByUsertaskId( $usertask_id );
         if ( empty($usertask) ) {
             throw new Excp("未找到任务副本信息", 404, ["process"=>$process,"usertask_id"=>$usertask_id]);
         }
-        $this->process( $usertask, $process );
+        $this->process( $usertask, $process, $force );
     }
 
     /**
@@ -537,9 +536,10 @@ class Usertask extends Model {
      *                  user_id     required 用户ID 
      *                  process     required 当前进度
      * @param int $process 新进度
+     * @param bool $force 强制更新(不验证进度数值)
      * @return array 任务副本结构体
      */
-    private function process( $usertask, $process ) {
+    private function process( $usertask, $process, $force=false ) {
 
         $usertask_id = $usertask["usertask_id"];
         $user_id = $usertask["user_id"];
@@ -566,12 +566,12 @@ class Usertask extends Model {
         $usertask["process"] = intval($usertask["process"]);
 
         // 非法步骤
-        if ( $process > $task["process"] || $process  < 1 ) {
+        if ( ($process > $task["process"] || $process  < 1 ) && !$force ) {
             throw new Excp("步骤信息不合法 ( process = {$process}  process > {$task['process']} 或 process < 1 )", 402, ["process"=>$process, "max"=>$task["process"], "current"=>$usertask["process"]]);
         }
 
         // 不可以后退
-        if ( $process <= $usertask["process"] ) {
+        if (( $process <= $usertask["process"]) && !$force ) {
             throw new Excp("步骤信息不合法  ( process = {$process}  process <= {$usertask['process']} ) ", 402, ["process"=>$process,"max"=>$task["process"], "current"=>$usertask["process"]]);
         }
 

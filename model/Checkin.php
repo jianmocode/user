@@ -13,6 +13,7 @@ use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
 use \Xpmse\Conf;
+use \Xpmse\Job;
 use \Xpmse\Loader\App as App;
 
 
@@ -130,26 +131,70 @@ class Checkin extends Model {
             throw new Excp("未找到任务信息", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]);
         }
 
-        // 计算当前累计步骤
-        $process = 1; $next = null; 
-        foreach( $data["history"] as $ci ){
+        // 连续签到算法
+        $last_ci = current($data["history"]);
+        if ( empty($last_ci) ) {
+            return;
+        }
+
+        $job = new Job(["name"=>"XpmsnsUserBehavior"]);
+        
+        // 最近7天日期
+        $last_7days = [];
+        $last_time = strtotime(date("Y-m-d 00:00:00", strtotime($last_ci["time"])));
+        for( $i=0; $i<7; $i++) {
+
+            $last_7days[$i] = $last_time - 86400 * $i;
+
+            // DEBUG
+            $job->info( "last_7days[{$i}]:" . $last_7days[$i] . ' ' . date('Y-m-d H:i:s', $last_7days[$i]) );
+        }
+
+        // 判断连续签到
+        for( $i=0; $i<7; $i++) { 
+            $process = $i + 1;
+            $ci = $data["history"][$i];
+            if ( empty($ci) ) { 
+                break; 
+            }
             $curr = strtotime(date("Y-m-d 00:00:00", strtotime($ci["time"])));
-            $curr_shouldbe = strtotime(date("Y-m-d 00:00:00", strtotime("-1d",$next)));
-            // echo  "\tcurr=".   date("Y-m-d H:i:s",$curr) .  "  curr_shouldbe=". date("Y-m-d H:i:s",$curr_shouldbe). " process={$process} \n";
-            if ( $next == null ) {
-                $next = $curr;
-                continue;
-            } else if ( intval($curr_shouldbe)  == intval($next) ) {
-                $process++;
-            } else {
+            
+            // DEBUG
+            $job->info("? $last_7days[$i] == {$curr}  " .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' == ' . date('Y-m-d H:i:s', $curr) );
+            if ( $last_7days[$i]  != $curr ) {
                 break;
             }
         }
 
+        $force = false;
+
         // 超过7天重置到第一天
-        if ( $process > 7 ) {
+        if ( $process >= 7 ) {
             $process = 1;
+            $force = true;
         }
+
+        // DEBUG
+        $job->info( "process=:" . $process . " force={$force}");
+
+
+        // // 计算当前累计步骤
+        // $process = 1; $next = null; 
+        // foreach( $data["history"] as $ci ){
+        //     $curr = strtotime(date("Y-m-d 00:00:00", strtotime($ci["time"])));
+        //     $curr_shouldbe = strtotime(date("Y-m-d 00:00:00", strtotime("-1d",$next)));
+        //     // echo  "\tcurr=".   date("Y-m-d H:i:s",$curr) .  "  curr_shouldbe=". date("Y-m-d H:i:s",$curr_shouldbe). " process={$process} \n";
+        //     if ( $next == null ) {
+        //         $next = $curr;
+        //         continue;
+        //     } else if ( intval($curr_shouldbe)  == intval($next) ) {
+        //         $process++;
+        //     } else {
+        //         break;
+        //     }
+        // }
+
+       
 
         // 自动接受任务
         $usertask = $task["usertask"];
@@ -161,7 +206,7 @@ class Checkin extends Model {
         }
 
         // 设定进展并发放奖励
-        $t->processByUsertaskId( $usertask["usertask_id"], $process );
+        $t->processByUsertaskId( $usertask["usertask_id"], $process, $force );
         
         // print_r( $usertask );
         // print_r( $task );
