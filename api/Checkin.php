@@ -109,7 +109,7 @@ class Checkin extends Api {
             throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
         }
 
-        $query["user_id"] = $user_id;
+        $query["user_user_id"] = $user_id;
         $ci = new \Xpmsns\User\Model\Checkin;
         return $rows = $ci->search( $query );
 
