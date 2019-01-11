@@ -4,7 +4,7 @@
  * 余额数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-04 01:06:43
+ * 最后修改: 2019-01-11 21:58:46
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -82,7 +82,11 @@ class Balance extends Model {
 	 * @return
 	 */
 	public function format( & $rs ) {
+     
+		$fileFields = []; 
 
+        // 处理图片和文件字段 
+        $this->__fileFields( $rs, $fileFields );
 
 		// 格式化: 类型
 		// 返回值: "_type_types" 所有状态表述, "_type_name" 状态名称,  "_type" 当前状态表述, "type" 当前状态数值
@@ -161,6 +165,9 @@ class Balance extends Model {
 	 *                $rs["user_password"], // user.password
 	 *                $rs["user_pay_password"], // user.pay_password
 	 *                $rs["user_status"], // user.status
+	 *                $rs["user_inviter"], // user.inviter
+	 *                $rs["user_follower_cnt"], // user.follower_cnt
+	 *                $rs["user_following_cnt"], // user.following_cnt
 	 */
 	public function getByBalanceId( $balance_id, $select=['*']) {
 		
@@ -176,7 +183,7 @@ class Balance extends Model {
 		// 创建查询构造器
 		$qb = Utils::getTab("xpmsns_user_balance as balance", "{none}")->query();
  		$qb->leftJoin("xpmsns_user_user as user", "user.user_id", "=", "balance.user_id"); // 连接用户
-		$qb->where('balance_id', '=', $balance_id );
+		$qb->where('balance.balance_id', '=', $balance_id );
 		$qb->limit( 1 );
 		$qb->select($select);
 		$rows = $qb->get()->toArray();
@@ -320,6 +327,9 @@ class Balance extends Model {
 	 *			      $query["keywords"] 按关键词查询
 	 *			      $query["balance_id"] 按余额ID查询 ( = )
 	 *			      $query["type"] 按类型查询 ( = )
+	 *			      $query["user_user_id"] 按查询 ( = )
+	 *			      $query["user_mobile_full"] 按查询 ( = )
+	 *			      $query["user_email"] 按查询 ( = )
 	 *			      $query["orderby_created_at_desc"]  按name=created_at DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按name=updated_at DESC 排序
 	 *           
@@ -371,6 +381,9 @@ class Balance extends Model {
 	 *               	["user_password"], // user.password
 	 *               	["user_pay_password"], // user.pay_password
 	 *               	["user_status"], // user.status
+	 *               	["user_inviter"], // user.inviter
+	 *               	["user_follower_cnt"], // user.follower_cnt
+	 *               	["user_following_cnt"], // user.following_cnt
 	 */
 	public function search( $query = [] ) {
 
@@ -408,6 +421,21 @@ class Balance extends Model {
 		// 按类型查询 (=)  
 		if ( array_key_exists("type", $query) &&!empty($query['type']) ) {
 			$qb->where("balance.type", '=', "{$query['type']}" );
+		}
+		  
+		// 按查询 (=)  
+		if ( array_key_exists("user_user_id", $query) &&!empty($query['user_user_id']) ) {
+			$qb->where("user.user_id", '=', "{$query['user_user_id']}" );
+		}
+		  
+		// 按查询 (=)  
+		if ( array_key_exists("user_mobile_full", $query) &&!empty($query['user_mobile_full']) ) {
+			$qb->where("user.mobile_full", '=', "{$query['user_mobile_full']}" );
+		}
+		  
+		// 按查询 (=)  
+		if ( array_key_exists("user_email", $query) &&!empty($query['user_email']) ) {
+			$qb->where("user.email", '=', "{$query['user_email']}" );
 		}
 		  
 

@@ -4,7 +4,7 @@
  * 余额数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-04 01:06:42
+ * 最后修改: 2019-01-11 21:58:45
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
@@ -87,6 +87,9 @@ class Balance extends Api {
 	*               	["user_password"], // user.password
 	*               	["user_pay_password"], // user.pay_password
 	*               	["user_status"], // user.status
+	*               	["user_inviter"], // user.inviter
+	*               	["user_follower_cnt"], // user.follower_cnt
+	*               	["user_following_cnt"], // user.following_cnt
 	*/
 	protected function get( $query, $data ) {
 
@@ -131,6 +134,9 @@ class Balance extends Api {
 	 *			      $query["keywords"] 按关键词查询
 	 *			      $query["balance_id"] 按余额ID查询 ( AND = )
 	 *			      $query["type"] 按类型查询 ( AND = )
+	 *			      $query["user_user_id"] 按查询 ( AND = )
+	 *			      $query["user_mobile_full"] 按查询 ( AND = )
+	 *			      $query["user_email"] 按查询 ( AND = )
 	 *			      $query["orderby_created_at_desc"]  按 DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按 DESC 排序
      *
@@ -141,6 +147,9 @@ class Balance extends Api {
 	 *			      $data["keywords"] 按关键词查询
 	 *			      $data["balance_id"] 按余额ID查询 ( AND = )
 	 *			      $data["type"] 按类型查询 ( AND = )
+	 *			      $data["user_user_id"] 按查询 ( AND = )
+	 *			      $data["user_mobile_full"] 按查询 ( AND = )
+	 *			      $data["user_email"] 按查询 ( AND = )
 	 *			      $data["orderby_created_at_desc"]  按 DESC 排序
 	 *			      $data["orderby_updated_at_desc"]  按 DESC 排序
 	 *
@@ -193,6 +202,9 @@ class Balance extends Api {
 	*               	["user_password"], // user.password
 	*               	["user_pay_password"], // user.pay_password
 	*               	["user_status"], // user.status
+	*               	["user_inviter"], // user.inviter
+	*               	["user_follower_cnt"], // user.follower_cnt
+	*               	["user_following_cnt"], // user.following_cnt
 	 */
 	protected function search( $query, $data ) {
 
