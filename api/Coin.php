@@ -4,7 +4,7 @@
  * 积分数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-03 23:47:47
+ * 最后修改: 2019-01-11 21:56:35
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
@@ -39,7 +39,7 @@ class Coin extends Api {
         }
 
         $query['select'] = "coin.*";
-        $query["user_id"] = $user_id;
+        $query["user_user_id"] = $user_id;
         $coin = new \Xpmsns\User\Model\Coin;
         $rows = $coin->search( $query );
         $coin->getSource($rows["data"]);
@@ -107,6 +107,9 @@ class Coin extends Api {
 	*               	["user_password"], // user.password
 	*               	["user_pay_password"], // user.pay_password
 	*               	["user_status"], // user.status
+	*               	["user_inviter"], // user.inviter
+	*               	["user_follower_cnt"], // user.follower_cnt
+	*               	["user_following_cnt"], // user.following_cnt
 	*/
 	protected function get( $query, $data ) {
 
@@ -150,6 +153,9 @@ class Coin extends Api {
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keywords"] 按关键词查询
 	 *			      $query["coin_id"] 按积分ID查询 ( AND = )
+	 *			      $query["user_user_id"] 按查询 ( AND = )
+	 *			      $query["user_mobile_full"] 按查询 ( AND = )
+	 *			      $query["user_email"] 按查询 ( AND = )
 	 *			      $query["type"] 按类型查询 ( AND = )
 	 *			      $query["orderby_created_at_desc"]  按 DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按 DESC 排序
@@ -160,6 +166,9 @@ class Coin extends Api {
 	 *         	      $data['perpage'] 每页显示记录数，默认为 20
 	 *			      $data["keywords"] 按关键词查询
 	 *			      $data["coin_id"] 按积分ID查询 ( AND = )
+	 *			      $data["user_user_id"] 按查询 ( AND = )
+	 *			      $data["user_mobile_full"] 按查询 ( AND = )
+	 *			      $data["user_email"] 按查询 ( AND = )
 	 *			      $data["type"] 按类型查询 ( AND = )
 	 *			      $data["orderby_created_at_desc"]  按 DESC 排序
 	 *			      $data["orderby_updated_at_desc"]  按 DESC 排序
@@ -213,6 +222,9 @@ class Coin extends Api {
 	*               	["user_password"], // user.password
 	*               	["user_pay_password"], // user.pay_password
 	*               	["user_status"], // user.status
+	*               	["user_inviter"], // user.inviter
+	*               	["user_follower_cnt"], // user.follower_cnt
+	*               	["user_following_cnt"], // user.following_cnt
 	 */
 	protected function search( $query, $data ) {
 
