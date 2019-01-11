@@ -326,6 +326,12 @@ class Usertask extends Model {
      */
     public function getTasks( $query, $user_id ) {
 
+        $select = empty($query['select']) ? ["task.task_id", "task.daily_limit", "task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"] : $query['select'];
+		if ( is_string($select) ) {
+			$select = explode(',', $select);
+        }
+        $query['select'] = $select;
+        
         $t = new Task();
         $tasks = $t->search( $query );
 
@@ -350,9 +356,29 @@ class Usertask extends Model {
             $map["{$task['task_id']}"] = $task;
         });
 
+        // 添加任务副本信息 
         foreach( $tasks["data"] as &$task ){
             $usertask = $map["{$task['task_id']}"];
-            $task["usertask"] = $usertasks;
+
+            // 过滤过期任务 (第二天清零)
+            $task["usertask"] = null;
+            if ( !empty($usertask) &&  $task["type"] == "repeatable" && $task["daily_limit"] > 0 ) {
+
+                
+
+                $time = strtotime( date("Y-m-d 00:00:00", strtotime($usertask["created_at"])) );
+                $today = strtotime(date("Y-m-d 00:00:00"));
+                
+                // echo "{$usertask["created_at"]} \n";
+                // echo date("Y-m-d H:i:s", $time)." \n";
+                // echo date("Y-m-d H:i:s", $today)." \n\n";
+                // 超过1天
+                if ( ($today - $time) >  86400 ) { 
+                    continue;
+                }
+            }
+
+            $task["usertask"] = $usertask;
         }
 
         return $tasks;
