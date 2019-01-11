@@ -119,7 +119,7 @@ class Favorite extends Api {
             throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
         }
 
-        $query["user_id"] = $user_id;
+        $query["user_user_id"] = $user_id;
         $fav = new \Xpmsns\User\Model\Favorite;
         $rows = $fav->search( $query );
         $fav->getSource($rows["data"]);
