@@ -155,7 +155,7 @@ class Checkin extends Model {
             
             $ci = $data["history"][$i];
             if ( empty($ci) ) { 
-                $job->info("? empty($ci) :" . $process );
+                $job->info("? empty($ci): process=" . $process );
                 break; 
             }
 
