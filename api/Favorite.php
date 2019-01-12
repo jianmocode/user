@@ -4,7 +4,7 @@
  * 收藏数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-12 17:53:56
+ * 最后修改: 2019-01-12 18:12:11
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
@@ -56,6 +56,8 @@ class Favorite extends Api {
             }
             throw $e;
         }
+
+        $fav->onFavoriteChange( [], [], $resp, [] ) ;
 
         try {  // 触发用户收藏行为
             \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/favorite/create", $resp);

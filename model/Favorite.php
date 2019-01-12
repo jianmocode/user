@@ -4,7 +4,7 @@
  * 收藏数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-12 17:53:56
+ * 最后修改: 2019-01-12 18:12:11
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -15,6 +15,7 @@ use \Xpmse\Utils;
 use \Xpmse\Conf;
 use \Mina\Cache\Redis as Cache;
 use \Xpmse\Loader\App as App;
+use \Xpmse\Job;
 
 
 class Favorite extends Model {
@@ -172,9 +173,34 @@ class Favorite extends Model {
      * @param array $env 环境数据 (session_id, user_id, client_ip, time, user, cookies...)
      */
     public function onFavoriteChange( $behavior, $subscriber, $data, $env ) {
-    
+        
         $task_slug = $subscriber["outer_id"];
         $user_id = $env["user_id"];
+        $outer_id = $data["outer_id"];
+        $origin = $data["origin"];
+
+        $cache_name = "onFavoriteChange:{$user_id}:{$origin}_{$outer_id}";
+        if (empty( $outer_id )) {
+            return;
+        }
+
+        if (empty( $user_id )) {
+            return;
+        }
+
+        $job = new Job(["name"=>"XpmsnsUserBehavior"]);
+        if ( $this->cache->get($cache_name) !== false ) {
+            $job->info("用户已收藏过本篇文章(user={$user_id} origin={$origin} outer_id={$outer_id})");
+            $job->info("当前步骤: 维持不变");
+            return;
+        }
+
+        // 缓存到第二日凌晨
+        $tomorrow = strtotime("+1d", time());
+        $tomorrow = strtotime(date("Y-m-d 00:00:00", $tomorrow));
+        $tls = $tomorrow-time();
+        $this->cache->set($cache_name, time(), $tls);
+        $job->info("标记为已收藏有效期至".date("Y-m-d 00:00:00", $tomorrow). " (user={$user_id} origin={$origin} outer_id={$outer_id} tls={$tls}");
 
         $t = new \Xpmsns\User\Model\Usertask;
         $task = $t->getByTaskSlugAndUserId( $task_slug, $user_id );
@@ -221,14 +247,19 @@ class Favorite extends Model {
             $created_at = $usertask["created_at"];
         }
 
+        // 当天的
+        $today = date("Y-m-d 00:00:00");
+
         // 检索自任务副本创建到当前时刻的收藏数量
         $process = $this->query()
                    ->where("user_id", "=",$user_id)
-                   ->where("created_at", ">=",$created_at)
+                   ->where("created_at", ">=",$today)
                    ->limit( $params["count"] )
                    ->count("favorite_id")
                 ;
-                
+        
+        $job->info("当前步骤: process={$process} today={$today}");
+
         if ( $process > 0 ) {
             $t->processByUsertaskId( $usertask["usertask_id"], $process );
         }
