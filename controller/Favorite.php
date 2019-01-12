@@ -4,7 +4,7 @@
  * 收藏控制器
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 18:55:47
+ * 最后修改: 2019-01-12 17:53:56
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/controller/Name.php
  */
 

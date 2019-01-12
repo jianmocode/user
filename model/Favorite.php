@@ -4,7 +4,7 @@
  * 收藏数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2018-12-31 18:55:47
+ * 最后修改: 2019-01-12 17:53:56
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -13,6 +13,7 @@ use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
 use \Xpmse\Conf;
+use \Mina\Cache\Redis as Cache;
 use \Xpmse\Loader\App as App;
 
 
@@ -21,16 +22,28 @@ class Favorite extends Model {
 
 
 
+    /**
+     * 数据缓存对象
+     */
+    protected $cache = null;
+
 	/**
-	 * 收藏数据模型
+	 * 收藏数据模型【3】
 	 * @param array $param 配置参数
 	 *              $param['prefix']  数据表前缀，默认为 xpmsns_user_
 	 */
 	function __construct( $param=[] ) {
 
 		parent::__construct(array_merge(['prefix'=>'xpmsns_user_'],$param));
-		$this->table('favorite'); // 数据表名称 xpmsns_user_favorite
-
+        $this->table('favorite'); // 数据表名称 xpmsns_user_favorite
+        
+        // + Redis缓存
+        $this->cache = new Cache([
+            "prefix" => "xpmsns_user_favorite:",
+            "host" => Conf::G("mem/redis/host"),
+            "port" => Conf::G("mem/redis/port"),
+            "passwd"=> Conf::G("mem/redis/password")
+        ]);
 	}
 
 	/**
@@ -39,7 +52,6 @@ class Favorite extends Model {
 
     // @KEEP BEGIN
     
-
     /**
      * 读取收藏内容
      * @param array &$favs 收藏数据集合
@@ -294,7 +306,11 @@ class Favorite extends Model {
 	 * @return
 	 */
 	public function format( & $rs ) {
+     
+		$fileFields = []; 
 
+        // 处理图片和文件字段 
+        $this->__fileFields( $rs, $fileFields );
 
  
 		// <在这里添加更多数据格式化逻辑>
@@ -357,6 +373,9 @@ class Favorite extends Model {
 	 *                $rs["user_password"], // user.password
 	 *                $rs["user_pay_password"], // user.pay_password
 	 *                $rs["user_status"], // user.status
+	 *                $rs["user_inviter"], // user.inviter
+	 *                $rs["user_follower_cnt"], // user.follower_cnt
+	 *                $rs["user_following_cnt"], // user.following_cnt
 	 */
 	public function getByFavoriteId( $favorite_id, $select=['*']) {
 		
@@ -372,7 +391,7 @@ class Favorite extends Model {
 		// 创建查询构造器
 		$qb = Utils::getTab("xpmsns_user_favorite as favorite", "{none}")->query();
  		$qb->leftJoin("xpmsns_user_user as user", "user.user_id", "=", "favorite.user_id"); // 连接用户
-		$qb->where('favorite_id', '=', $favorite_id );
+		$qb->where('favorite.favorite_id', '=', $favorite_id );
 		$qb->limit( 1 );
 		$qb->select($select);
 		$rows = $qb->get()->toArray();
@@ -506,6 +525,9 @@ class Favorite extends Model {
 	 *                $rs["user_password"], // user.password
 	 *                $rs["user_pay_password"], // user.pay_password
 	 *                $rs["user_status"], // user.status
+	 *                $rs["user_inviter"], // user.inviter
+	 *                $rs["user_follower_cnt"], // user.follower_cnt
+	 *                $rs["user_following_cnt"], // user.following_cnt
 	 */
 	public function getByOriginOuterId( $origin_outer_id, $select=['*']) {
 		
@@ -521,7 +543,7 @@ class Favorite extends Model {
 		// 创建查询构造器
 		$qb = Utils::getTab("xpmsns_user_favorite as favorite", "{none}")->query();
  		$qb->leftJoin("xpmsns_user_user as user", "user.user_id", "=", "favorite.user_id"); // 连接用户
-		$qb->where('origin_outer_id', '=', $origin_outer_id );
+		$qb->where('favorite.origin_outer_id', '=', $origin_outer_id );
 		$qb->limit( 1 );
 		$qb->select($select);
 		$rows = $qb->get()->toArray();
@@ -730,6 +752,9 @@ class Favorite extends Model {
 	 *               	["user_password"], // user.password
 	 *               	["user_pay_password"], // user.pay_password
 	 *               	["user_status"], // user.status
+	 *               	["user_inviter"], // user.inviter
+	 *               	["user_follower_cnt"], // user.follower_cnt
+	 *               	["user_following_cnt"], // user.following_cnt
 	 */
 	public function search( $query = [] ) {
 
