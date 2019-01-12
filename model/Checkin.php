@@ -164,6 +164,7 @@ class Checkin extends Model {
             // 历史时间对比
             $curr = strtotime(date("Y-m-d 00:00:00", strtotime($ci["time"])));
             if ( $last_7days[$i]  != $curr ) {
+                $process = $process -1;
                 $job->info("? $last_7days[$i] != {$curr} :" .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' != ' . date('Y-m-d H:i:s', $curr) . "  process=" . $process  );
                 break;
             }
