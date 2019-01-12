@@ -152,30 +152,37 @@ class Checkin extends Model {
 
         // 判断连续签到
         for( $i=0; $i<7; $i++) { 
-            $process = $i + 1;
+            
             $ci = $data["history"][$i];
             if ( empty($ci) ) { 
+                $job->info("? empty($ci) :" . $process );
                 break; 
             }
+
+            $process = $i + 1;
+
+            // 历史时间对比
             $curr = strtotime(date("Y-m-d 00:00:00", strtotime($ci["time"])));
-            
-            // DEBUG
-            $job->info("? $last_7days[$i] == {$curr}  " .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' == ' . date('Y-m-d H:i:s', $curr) );
             if ( $last_7days[$i]  != $curr ) {
+                $job->info("? $last_7days[$i] != {$curr} :" .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' != ' . date('Y-m-d H:i:s', $curr) . "  process=" . $process  );
                 break;
             }
+
+            // DEBUG
+            $job->info("? $last_7days[$i] == {$curr}  :" .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' == ' . date('Y-m-d H:i:s', $curr)  . "  process=" . $process  );
         }
 
-        $force = false;
+        
 
         // 超过7天重置到第一天
+        $force = false;  // 是否强制重置
         if ( $process >= 7 ) {
             $process = 1;
             $force = true;
         }
 
         // DEBUG
-        $job->info( "process=:" . $process . " force={$force}");
+        $job->info( "result  process=:" . $process . " force={$force}");
 
 
         // // 计算当前累计步骤
