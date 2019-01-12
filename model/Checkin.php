@@ -182,7 +182,7 @@ class Checkin extends Model {
         }
 
         // DEBUG
-        $job->info( "result  process=:" . $process . " force={$force}");
+        $job->info( "result: process=" . $process . " force={$force}");
 
 
         // // 计算当前累计步骤
