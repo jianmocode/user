@@ -57,7 +57,6 @@ class Favorite extends Api {
             throw $e;
         }
 
-        $fav->onFavoriteChange( [], [], $resp, [] ) ;
 
         try {  // 触发用户收藏行为
             \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/favorite/create", $resp);
