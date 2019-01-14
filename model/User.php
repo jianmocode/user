@@ -488,23 +488,27 @@ class User extends Model {
         }
 
         // 任务副本创建时间
-        if ( strtotime($data["created_at"]) < strtotime($usertask["created_at"]) ) {
-            $created_at = $data["created_at"];
-        } else {
-            $created_at = $usertask["created_at"];
-        }
+        $today = date('Y-m-d 00:00:00');
+        $created_at = $today;
+        // if ( strtotime($today) > strtotime($usertask["created_at"]) ) {
+        //     $created_at = $today;
+        // } else {
+        //     $created_at = $usertask["created_at"];
+        // }
 
-        $job->info("邀请记录: inviter={$user_id}, invitee={$env['user_id']}, created_at={$created_at}, count={$params['count']}");
+
+        $job->info("邀请记录: inviter={$user_id}, invitee={$env['user_id']}, today={$today}, created_at={$created_at}, count={$params['count']}");
 
         // 检索自任务副本创建到当前时刻的邀请成功的数量
         $process = $this->query()
-                   ->where("inviter", "=",$user_id)
-                   ->where("created_at", ">=",$created_at)
+                   ->where("inviter", "=", $user_id)
+                   ->where("created_at", ">=", $created_at)
                    ->limit( $params["count"] )
                    ->count("user_id")
                 ;
         
         $job->info("Result: process={$process}");
+        
         if ( $process > 0 ) {
             $t->processByUsertaskId( $usertask["usertask_id"], $process );
         }
