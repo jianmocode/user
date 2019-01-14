@@ -508,7 +508,7 @@ class User extends Model {
                 ;
         
         $job->info("Result: process={$process}");
-        
+
         if ( $process > 0 ) {
             $t->processByUsertaskId( $usertask["usertask_id"], $process );
         }
@@ -853,7 +853,11 @@ class User extends Model {
 		$this->appid = $appid;
 		$this->openid = $openid;
 		$this->unionid = $u['unionid'];
-		$this->cfg = $cfg;
+        $this->cfg = $cfg;
+        
+        // 更新 Session 
+        $this->loginSetSession($user_id);
+
 		return [
             "user_id"=>$user_id, 
             "method"=>$method
@@ -966,7 +970,11 @@ class User extends Model {
 		$this->appid = $appid;
 		$this->openid = $openid;
 		$this->unionid = $u['unionid'];
-		$this->cfg = $cfg;
+        $this->cfg = $cfg;
+        
+        // 更新 Session 
+        $this->loginSetSession($user_id);
+
 		return $user_id;
 	}
 
