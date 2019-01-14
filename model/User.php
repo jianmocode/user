@@ -494,7 +494,7 @@ class User extends Model {
             $created_at = $usertask["created_at"];
         }
 
-        $job->info("邀请记录: inviter={$user_id}, invitee={$evn['user_id']}, created_at={$created_at}, count={$params['count']}");
+        $job->info("邀请记录: inviter={$user_id}, invitee={$env['user_id']}, created_at={$created_at}, count={$params['count']}");
 
         // 检索自任务副本创建到当前时刻的邀请成功的数量
         $process = $this->query()
