@@ -442,8 +442,11 @@ class User extends Model {
      */
     
     public function onInviteChange( $behavior, $subscriber, $data, $env ) {
+        
+        $job = new Job(["name"=>"XpmsnsUserBehavior"]);
 
         if ( empty($data["inviter"]) ) {
+            $job->info("没有邀请者信息 (user_id={$env['user_id']})", $data );
             return ;
         }
 
@@ -456,8 +459,6 @@ class User extends Model {
         if ( empty($task) ) {
             throw new Excp("未找到任务信息({$task_slug})", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]);
         }
-
-        $job = new Job(["name"=>"XpmsnsUserBehavior"]);
 
         // 自动接受任务
         $usertask = $task["usertask"];
@@ -520,10 +521,12 @@ class User extends Model {
     
     public function onInviteChangeAnother( $behavior, $subscriber, $data, $env ) {
        
+        $job = new Job(["name"=>"XpmsnsUserBehavior"]);
+
         if ( empty($data["inviter"]) ) {
+            $job->info("没有邀请者信息 (user_id={$env['user_id']})", $data );
             return ;
         }
-        
 
         // 读取任务
         $inviter = $data["inviter"];
@@ -543,7 +546,9 @@ class User extends Model {
         ) {
             $task["usertask"] = $usertask = $t->acceptBySlug( $task_slug, $user_id );
         }
-  
+        
+        $job->info("邀请记录: inviter={$user_id}, invitee={$evn['user_id']}, usertask_id={$usertask['usertask_id']} process=1");
+
         // 设定进展并发放奖励
         $t->processByUsertaskId( $usertask["usertask_id"], 1 );
     }
