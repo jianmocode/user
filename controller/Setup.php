@@ -153,6 +153,17 @@ class SetupController extends \Xpmse\Loader\Controller {
 				"default",
 				5
 			);
+        }
+        
+        // 微信登录禁止同步以下字段
+		$wechat_notsync = $opt->get("user/wechat/notsync");
+		if ($wechat_notsync === null ) {
+			$opt->register(
+				"微信登录禁止同步以下字段", 
+				"user/wechat/notsync", 
+				["sex", "name"],
+				6
+			);
 		}
 	}
 

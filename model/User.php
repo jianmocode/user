@@ -398,8 +398,9 @@ class User extends Model {
         foreach( $defaults as $step=>$fields ) {
             foreach( $fields  as $field ) {
                 // DEBUG
-                $job->info("检查字段 {$field} 是否为空？" . var_export( empty( $user["$field"]), true ) );
-                if ( empty( $user["$field"]) ) {
+                $var = json_encode($user["$field"], true);
+                $job->info("检查字段 {$field} 是否为空？" . var_export( empty($var), true ) );
+                if ( empty($var) ) {
                     $status[$step] = false;
                     continue;
                 }
@@ -807,6 +808,27 @@ class User extends Model {
             $method = "signup";
 
 		} else {
+            
+            // 更新扩展数据
+            if ( !empty($u["extra"]) ) {
+                $extra = json_decode($u["extra"], true);
+                if ( $extra == false ) {
+                    $extra = [];
+                }
+                $u["extra"] = array_merge($u["extra"], $extra);
+            }
+
+            // 忽略更新列表
+            $opt =  new \Xpmse\Option("xpmsns/user");
+	        $options = $opt->getAll();
+            $c = $options['map'];
+            $notsync = is_array($c["user/wechat/notsync"]) ? $c["user/wechat/notsync"] : [];
+            foreach( $u as $field => $value ) {
+                if ( in_array($field, $notsync) ) {
+                    unset( $u["$field"]);
+                }
+            }
+
 			$this->updateBy("user_id", $u);
 		}
 
@@ -907,6 +929,17 @@ class User extends Model {
                 }
 
                 $u["extra"] = array_merge($u["extra"], $extra);
+            }
+
+            // 忽略更新列表
+            $opt =  new \Xpmse\Option("xpmsns/user");
+	        $options = $opt->getAll();
+            $c = $options['map'];
+            $notsync = is_array($c["user/wechat/notsync"]) ? $c["user/wechat/notsync"] : [];
+            foreach( $u as $field => $value ) {
+                if ( in_array($field, $notsync) ) {
+                    unset( $u["$field"]);
+                }
             }
 
 			$this->updateBy("user_id", $u);
