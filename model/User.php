@@ -400,11 +400,11 @@ class User extends Model {
                
                 $var = $user["$field"];
                 if ( is_numeric($var) && $var == 0 ) {
-                    $var = "0";
+                    $var = "0:not-null";
                 }
 
                 if ( is_bool($var) && $var == false ) {
-                    $var = "false";
+                    $var = "false:not-null";
                 }
 
                 // DEBUG
