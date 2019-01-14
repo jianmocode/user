@@ -397,9 +397,18 @@ class User extends Model {
         $status = [true, true, true, true, true];
         foreach( $defaults as $step=>$fields ) {
             foreach( $fields  as $field ) {
+               
+                $var = $user["$field"];
+                if ( is_numeric($var) && $var === 0 ) {
+                    $var = "0";
+                }
+                
+                if ( is_bool($var) && $var === false ) {
+                    $var = "false";
+                }
+
                 // DEBUG
-                $var = json_encode($user["$field"], true);
-                $job->info("检查字段 {$field} 是否为空？" . var_export( empty($var), true ) );
+                $job->info("检查字段 {$field} var={$var} 是否为空？" . var_export( empty($var), true ) );
                 if ( empty($var) ) {
                     $status[$step] = false;
                     continue;
