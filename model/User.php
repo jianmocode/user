@@ -10,6 +10,7 @@ use \Xpmse\Model as Model;
 use \Xpmse\Utils as Utils;
 use \Xpmse\Wechat as Wechat;
 use \Xpmse\Option as Option;
+use \Xpmse\Job;
 
 
 /**
@@ -354,6 +355,8 @@ class User extends Model {
             throw new Excp("未找到任务信息({$task_slug})", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]);
         }
 
+        $job = new Job(["name"=>"XpmsnsUserBehavior"]);
+
 
         // 自动接受任务
         $usertask = $task["usertask"];
@@ -394,6 +397,8 @@ class User extends Model {
         $status = [true, true, true, true, true];
         foreach( $defaults as $step=>$fields ) {
             foreach( $fields  as $field ) {
+                // DEBUG
+                $job->info("检查字段 {$field} 是否为空？" . var_export( empty( $user["$field"]), true ) );
                 if ( empty( $user["$field"]) ) {
                     $status[$step] = false;
                     continue;
@@ -408,6 +413,8 @@ class User extends Model {
             }
         }
 
+        // DEBUG 
+        $job->info("Result: process={$process}");
         if ( $process > 0 ) {
             // 设定进展并发放奖励
             $t->processByUsertaskId( $usertask["usertask_id"], $process );  
@@ -439,6 +446,8 @@ class User extends Model {
         if ( empty($task) ) {
             throw new Excp("未找到任务信息({$task_slug})", 404, ["task_slug"=>$task_slug, "user_id"=>$user_id]);
         }
+
+        $job = new Job(["name"=>"XpmsnsUserBehavior"]);
 
         // 自动接受任务
         $usertask = $task["usertask"];
@@ -474,6 +483,8 @@ class User extends Model {
             $created_at = $usertask["created_at"];
         }
 
+        $job->info("邀请记录: inviter={$user_id}, invitee={$evn['user_id']}, created_at={$created_at}, count={$params['count']}");
+
         // 检索自任务副本创建到当前时刻的邀请成功的数量
         $process = $this->query()
                    ->where("inviter", "=",$user_id)
@@ -481,7 +492,8 @@ class User extends Model {
                    ->limit( $params["count"] )
                    ->count("user_id")
                 ;
-                
+        
+        $job->info("Result: process={$process}");
         if ( $process > 0 ) {
             $t->processByUsertaskId( $usertask["usertask_id"], $process );
         }
