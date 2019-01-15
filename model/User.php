@@ -1032,7 +1032,7 @@ class User extends Model {
 				->select(
 					"user_id", "user.group_id as group_id", 
 					"user.name","nickname", "sex", "city", "province", "country","headimgurl", "language", "bio", "bgimgurl",
-					"mobile", "mobile_nation", "mobile_verified",
+					"mobile", "mobile_nation", "mobile_verified","extra",
 					"email", "email_verified",
 					"zip", "address", "user.remark as remark", "user.tag as tag",
 					"password", "pay_password",
