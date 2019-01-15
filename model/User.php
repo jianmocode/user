@@ -11,7 +11,7 @@ use \Xpmse\Utils as Utils;
 use \Xpmse\Wechat as Wechat;
 use \Xpmse\Option as Option;
 use \Xpmse\Job;
-
+use \Xpmse\Log;
 
 /**
  * 用户数据模型
@@ -36,7 +36,8 @@ class User extends Model {
 		$this->table('user');
 
 		// 微信公众号授权表
-		$this->user_wechat = Utils::getTab('user_wechat', "xpmsns_user_");  
+        $this->user_wechat = Utils::getTab('user_wechat', "xpmsns_user_");  
+        $this->log = new Log("User");
 	}
 
 
@@ -844,9 +845,10 @@ class User extends Model {
             foreach( $u as $field => $value ) {
                 if ( in_array($field, $notsync) ) {
                     unset( $u["$field"]);
+                    $this->log->info("微信小程序登录: 忽略更新字段 {$field} notsync=", $notsync);
                 }
             }
-
+            $this->log->info("微信小程序登录: 更新用户资料 user=", $u);
 			$this->updateBy("user_id", $u);
 		}
 

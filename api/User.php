@@ -13,6 +13,7 @@ use \Xpmsns\User\Model\User as UserModel;
 use \Xpmsns\User\Model\Group as GroupModel;
 use \Xpmsns\Pages\Model\Special; # pages 1.3.3 required 
 
+
 /**
  * 用户API接口
  */
@@ -25,7 +26,7 @@ class User extends Api {
 	function __construct() {
 
 		parent::__construct();
-		$this->forbidden(['wechatRouter']);
+        $this->forbidden(['wechatRouter']);
 	}
 
 
