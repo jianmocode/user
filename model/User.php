@@ -1515,10 +1515,14 @@ class User extends Model {
 			if ( isset( $user['headimgurl']) ) {
 				if ( Utils::isURL( $user['headimgurl']) ) {
 					$url = $user['headimgurl'];
-					$users[$idx]['headimg_url'] = $url;
+                    $users[$idx]['headimg_url'] = $url;
 					$users[$idx]['headimg_path'] = '';
-					$users[$idx]['headimgurl']['url'] = $url;
-					$users[$idx]['headimgurl']['path'] = '';
+                    $users[$idx]['headimgurl'] = [
+                        "url" => $url,
+                        "path" => ''
+                    ];
+                    // $users[$idx]['headimgurl']['url'] = $url;
+					// $users[$idx]['headimgurl']['path'] = '';
 
 				} else if ( is_array( $user['headimgurl']) ){
 					$users[$idx]['headimg_path'] = $user['headimgurl']['path'];
