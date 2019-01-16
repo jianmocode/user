@@ -251,17 +251,16 @@ class Favorite extends Model {
         $today = date("Y-m-d 00:00:00");
 
         // 检索自任务副本创建到当前时刻的收藏数量
-        $qb = $this->query()
+        $process = $this->query()
                    ->where("user_id", "=",$user_id)
                    ->where("created_at", ">=",$today)
-                   ->limit( $params["count"] )
-                   ->selectRaw("count(favorite_id) as process");
+                   ->count("favorite_id")
                 ;
-        $rows = $qb->get()->toArray();
-        $rs = current( $rows );
-        $process = intval($rs["process"]);
-        $job->info("查询SQL: " . $qb->getSql());
-        $job->info("当前步骤: process={$process} today={$today} user_id={$user_id} limit={$params['count']}");
+        if ( intval($process) >  intval($params["count"]) ) {
+            $process = intval($params["count"]);
+        }
+
+        $job->info("当前步骤: process={$process} today={$today} user_id={$user_id} count={$params["count"]} ");
 
         if ( $process > 0 ) {
             $t->processByUsertaskId( $usertask["usertask_id"], $process );
