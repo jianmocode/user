@@ -427,7 +427,7 @@ class Usertask extends Model {
         if ( !empty($usertasks) ) {
 
             $usertask = current($usertasks);
-            $task["usertask"] = null;
+            $task["usertask"] = $usertask;
             $params = $task["params"];
             if ( empty($params) ) {
                 $params = [];
@@ -449,13 +449,9 @@ class Usertask extends Model {
                 // echo date("Y-m-d H:i:s", $today)." \n\n";
                 // 超过1天
                 if ( ($today - $time) >= 86400 ) { 
-                    continue;
+                    $task["usertask"] = null;
                 }
             }
-
-            $task["usertask"] = $usertask;
-
-
         }
        
        return $task;
