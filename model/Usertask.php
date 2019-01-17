@@ -378,7 +378,7 @@ class Usertask extends Model {
                 $time = strtotime( date("Y-m-d 00:00:00", strtotime($usertask["created_at"])) );
                 $today = strtotime(date("Y-m-d 00:00:00"));
                 
-                $this->log->info( "created_at={$usertask["created_at"]} today=".date("Y-m-d H:i:s", $today)." time=".date("Y-m-d H:i:s", $time)." (today - time = ".($today - $time).") " );
+                $this->log->info( "usertask={$usertask['usertask_id']} created_at={$usertask["created_at"]} today=".date("Y-m-d H:i:s", $today)." time=".date("Y-m-d H:i:s", $time)." (today - time = ".($today - $time).") " );
 
                 // echo "{$usertask["created_at"]} \n";
                 // echo date("Y-m-d H:i:s", $time)." \n";
@@ -425,7 +425,37 @@ class Usertask extends Model {
             
         $task["usertask"] = [];
         if ( !empty($usertasks) ) {
-            $task["usertask"] = current($usertasks);
+
+            $usertask = current($usertasks);
+            $task["usertask"] = null;
+            $params = $task["params"];
+            if ( empty($params) ) {
+                $params = [];
+            }
+
+            if ( !isset($params["daily_refresh"]) ) {
+                $params["daily_refresh"] = true;
+            }
+
+            if ( !empty($usertask) &&  $task["type"] == "repeatable" && $task["daily_limit"] > 0 && $params["daily_refresh"] == true ) {
+
+                $time = strtotime( date("Y-m-d 00:00:00", strtotime($usertask["created_at"])) );
+                $today = strtotime(date("Y-m-d 00:00:00"));
+                
+                $this->log->info( "usertask={$usertask['usertask_id']} created_at={$usertask["created_at"]} today=".date("Y-m-d H:i:s", $today)." time=".date("Y-m-d H:i:s", $time)." (today - time = ".($today - $time).") " );
+
+                // echo "{$usertask["created_at"]} \n";
+                // echo date("Y-m-d H:i:s", $time)." \n";
+                // echo date("Y-m-d H:i:s", $today)." \n\n";
+                // 超过1天
+                if ( ($today - $time) >= 86400 ) { 
+                    continue;
+                }
+            }
+
+            $task["usertask"] = $usertask;
+
+
         }
        
        return $task;
