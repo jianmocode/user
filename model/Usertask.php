@@ -31,6 +31,7 @@ class Usertask extends Model {
 		parent::__construct(array_merge(['prefix'=>'xpmsns_user_'],$param));
 		$this->table('usertask'); // 数据表名称 xpmsns_user_usertask
 
+        $this->log = new Log("UserTask");
 	}
 
 	/**
@@ -367,6 +368,8 @@ class Usertask extends Model {
                 $time = strtotime( date("Y-m-d 00:00:00", strtotime($usertask["created_at"])) );
                 $today = strtotime(date("Y-m-d 00:00:00"));
                 
+                $this->log->info( "created_at={$usertask["created_at"]} today=".date("Y-m-d H:i:s", $today)." time=".date("Y-m-d H:i:s", $time)." (today - time = ".($today - $time).") " );
+
                 // echo "{$usertask["created_at"]} \n";
                 // echo date("Y-m-d H:i:s", $time)." \n";
                 // echo date("Y-m-d H:i:s", $today)." \n\n";
