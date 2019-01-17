@@ -364,7 +364,16 @@ class Usertask extends Model {
 
             // 过滤过期任务 (第二天清零)
             $task["usertask"] = null;
-            if ( !empty($usertask) &&  $task["type"] == "repeatable" && $task["daily_limit"] > 0 ) {
+            $params = $task["params"];
+            if ( empty($params) ) {
+                $params = [];
+            }
+
+            if ( !isset($params["daily_refresh"]) ) {
+                $params["daily_refresh"] = true;
+            }
+
+            if ( !empty($usertask) &&  $task["type"] == "repeatable" && $task["daily_limit"] > 0 && $params["daily_refresh"] ) {
 
                 $time = strtotime( date("Y-m-d 00:00:00", strtotime($usertask["created_at"])) );
                 $today = strtotime(date("Y-m-d 00:00:00"));
