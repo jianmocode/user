@@ -54,7 +54,7 @@ class User extends Model {
         ]);
 
          // 读取 client_token | GET  || cookies
-         $client_token = $_GET["client_token"];
+         $client_token = $_GET["__client_token"];
          if ( empty($client_token) ) {
              $client_token = $_COOKIE["__client_token"];
          }
