@@ -52,6 +52,13 @@ class User extends Model {
             "port" => Conf::G("mem/redis/port"),
             "passwd"=> Conf::G("mem/redis/password")
         ]);
+
+         // 读取 client_token | GET  || cookies
+         $client_token = $_GET["client_token"];
+         if ( empty($client_token) ) {
+             $client_token = $_COOKIE["__client_token"];
+         }
+         $this->client_token = $client_token;
 	}
 
 
@@ -594,7 +601,7 @@ class User extends Model {
 	 * 读取用户信息
 	 * @return [type] [description]
 	 */
-	function getUserInfo( $client_token = null ) {
+	function getUserInfo() {
 
         @session_start();
 
@@ -606,12 +613,12 @@ class User extends Model {
         }
         
         // 无登录信息
-        if ( empty($client_token) ) {
+        if ( empty($this->client_token) ) {
             return [];
         }
 
         // 根据客户端凭证读取信息 || USER_LOGIN_CLIENT
-        $this->tokenSetSession( $client_token );
+        $this->tokenSetSession( $this->client_token );
         $rs = !empty($_SESSION['USER:info']) ? $_SESSION['USER:info'] : $_SESSION['_uinfo'] ;
         if ( !empty($rs) ) {
             $rs['session_id'] = session_id();
@@ -1187,7 +1194,7 @@ class User extends Model {
         
         $cache_name = "login:{$user_id}:level";
         if( $level == USER_LOGIN_CLIENT ) {
-            $this->catch->del( $cache_name );
+            $this->cache->del( $cache_name );
             return $this;
         }
         

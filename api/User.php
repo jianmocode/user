@@ -19,11 +19,12 @@ use \Xpmsns\Pages\Model\Special; # pages 1.3.3 required
  */
 class User extends Api {
 
+
 	/**
 	 * 初始化
 	 * @param array $param [description]
 	 */
-	function __construct() {
+	function __construct(  $option = []  ) {
 
 		parent::__construct();
         $this->forbidden(['wechatRouter']);
@@ -57,7 +58,7 @@ class User extends Api {
      */
     protected function getCoin( $query, $data ) {
         $u = new UserModel();
-		$uinfo = $u->getUserInfo();
+		$uinfo = $u->getUserInfo(  );
 		if ( empty($uinfo['user_id']) ) {
 			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
         }
@@ -70,7 +71,7 @@ class User extends Api {
      */
     protected function getBalance( $query, $data ) {
         $u = new UserModel();
-		$uinfo = $u->getUserInfo();
+		$uinfo = $u->getUserInfo(  );
 		if ( empty($uinfo['user_id']) ) {
 			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
         }
@@ -84,7 +85,7 @@ class User extends Api {
      */
     protected function getBalanceAndCoin( $query, $data ) {
         $u = new UserModel();
-		$uinfo = $u->getUserInfo();
+		$uinfo = $u->getUserInfo(  );
 		if ( empty($uinfo['user_id']) ) {
 			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
         }
@@ -113,7 +114,7 @@ class User extends Api {
 
 		// 用户身份验证
 		$u = new UserModel();
-		$uinfo = $u->getUserInfo();
+		$uinfo = $u->getUserInfo(  );
 		if ( empty($uinfo['user_id']) ) {
 			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
 		}
@@ -164,7 +165,7 @@ class User extends Api {
             \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/profile", $u->getUserInfo());
         }catch(Excp $e) { $e->log(); }
 
-		return ['code'=>0, 'message'=>'数据保存成功', 'user_info'=>$u->getUserInfo()];
+		return ['code'=>0, 'message'=>'数据保存成功', 'user_info'=>$u->getUserInfo(  )];
 	}
 
 
@@ -181,7 +182,7 @@ class User extends Api {
 
 		// 用户身份验证
 		$u = new UserModel();
-		$uinfo = $u->getUserInfo();
+		$uinfo = $u->getUserInfo( );
 		if ( empty($uinfo['user_id']) ) {
 			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
 		}
@@ -216,7 +217,7 @@ class User extends Api {
 		
 		// 用户身份验证
 		$u = new UserModel();
-		$uinfo = $u->getUserInfo();
+		$uinfo = $u->getUserInfo( );
 		if ( empty($uinfo['user_id']) ) {
 			throw new Excp("用户尚未登录", 403,  ['user'=>$uinfo]);
 		}
@@ -603,8 +604,9 @@ class User extends Api {
 	 * @return [type]		[description]
 	 */
 	protected function getUserInfo( $query=[], $data=[] ) {
+
 		$u = new UserModel();
-		return $u->getUserInfo();
+		return $u->getUserInfo( );
     }
     
     
@@ -612,8 +614,10 @@ class User extends Api {
      * 读取用户账户信息
      */
     protected function getUserAccountInfo( $query=[], $data=[] ) {
-		$u = new UserModel();
-        $user = $u->getUserInfo();
+        
+        
+        $u = new UserModel();
+        $user = $u->getUserInfo(  );
         $user_id = $user["user_id"];
 
         if ( empty($user_id) ) {
@@ -727,7 +731,7 @@ class User extends Api {
 
 		$this->authVcode();
 
-		$uinfo = $this->getUserInfo();
+		$uinfo = $this->getUserInfo(  );
 		$user_id = $uinfo['user_id'];
 		$data['user_id'] = $user_id;
 
