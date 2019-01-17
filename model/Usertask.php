@@ -328,7 +328,7 @@ class Usertask extends Model {
      */
     public function getTasks( $query, $user_id ) {
 
-        $select = empty($query['select']) ? ["task.task_id", "task.daily_limit", "task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"] : $query['select'];
+        $select = empty($query['select']) ? ["task.task_id", "task.daily_limit", "task.cover","task.slug", "task.params", "task.name","category.name","task.type","task.process","task.quantity","task.status"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
         }
