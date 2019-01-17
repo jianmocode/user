@@ -13,6 +13,7 @@ use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
 use \Xpmse\Conf;
+use \Xpmse\Log;
 use \Xpmse\Loader\App as App;
 
 
