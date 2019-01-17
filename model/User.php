@@ -610,9 +610,16 @@ class User extends Model {
             return [];
         }
 
-        // 校验客户端登录凭证
-		
-		return $rs;
+        // 根据客户端凭证读取信息 || USER_LOGIN_CLIENT
+        $this->tokenSetSession( $client_token );
+        $rs = !empty($_SESSION['USER:info']) ? $_SESSION['USER:info'] : $_SESSION['_uinfo'] ;
+        if ( !empty($rs) ) {
+            $rs['session_id'] = session_id();
+            $rs['session_level'] = $this->getSessionLevel( $rs["user_id"] );
+			return $rs;
+        }
+
+		return [];
     }
     
     /**
@@ -1105,6 +1112,36 @@ class User extends Model {
 
 
     /**
+     * 使用客户端登录凭据，建立会话信息
+     * @param string $client_token 客户端登录凭据
+     */
+    function tokenSetSession( $client_token ) {
+
+        // Get From Cache
+        $cache_name = "login:token:{$token}";
+        $info = $this->cache->getJSON($cache_name);
+
+        $user_id = null;
+        if ( $info === false ) {
+            $user_id = $this->getVar("user_id","WHERE `client_token`=? limit 1", [$client_token]);
+            if ( empty($user_id) ) {
+                return $this;
+            }
+        } else {
+            $user_id = $info["user_id"];
+        }
+
+        if (empty($user_id) ) {
+           return $this;
+        }
+
+        $this->loginSetSession( $user_id, USER_LOGIN_CLIENT );
+        return $this;
+    }
+
+
+
+    /**
      * 生成客户端登录凭据
      * @param string $user_id 用户ID 
      * @param array $extra  登录时身份信息
@@ -1136,6 +1173,8 @@ class User extends Model {
         return $token;
     }
 
+
+    
 
 
 
