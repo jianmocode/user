@@ -339,6 +339,9 @@ class User extends Api {
 		$user = $u->getByUid($user_id);
         $user["_id"] = $user_id;
 
+        // 更新 Session 
+        $u->loginSetSession($user_id);
+
         if ( $resp["method"] == "signin") {
             try {  // 触发用户登录行为
                 \Xpmsns\User\Model\Behavior::trigger("xpmsns/user/user/signin", $user );

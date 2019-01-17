@@ -10,8 +10,13 @@ use \Xpmse\Model as Model;
 use \Xpmse\Utils as Utils;
 use \Xpmse\Wechat as Wechat;
 use \Xpmse\Option as Option;
+use \Mina\Cache\Redis as Cache;
 use \Xpmse\Job;
 use \Xpmse\Log;
+
+define("USER_LOGIN_CLIENT", 0);   // 客户端留存登录凭据, 服务端未校验
+define("USER_LOGIN_PASSWD", 1);   // 已校验登录密码, 会话有效时长 2小时
+define("USER_LOGIN_SECOND", 2);   // 已校验二级密码(短信验证等), 会话有效时长 20分钟
 
 /**
  * 用户数据模型
@@ -32,12 +37,21 @@ class User extends Model {
 	 * @param array $param [description]
 	 */
 	function __construct( $param=[] ) {
+
 		parent::__construct(['prefix'=>'xpmsns_user_']);
 		$this->table('user');
 
 		// 微信公众号授权表
         $this->user_wechat = Utils::getTab('user_wechat', "xpmsns_user_");  
         $this->log = new Log("User");
+
+        // 缓存
+        $this->cache = new Cache( [
+            "prefix" => "xpmsns_user_user:",
+            "host" => Conf::G("mem/redis/host"),
+            "port" => Conf::G("mem/redis/port"),
+            "passwd"=> Conf::G("mem/redis/password")
+        ]);
 	}
 
 
@@ -137,12 +151,6 @@ class User extends Model {
 			// 扩展属性字段
 			->putColumn( 'extra', $this->type('text',  ['json'=>true]) )  // 扩展属性 JSON
 
-			// 登录密码
-			->putColumn( 'password', $this->type('string', ['length'=>128] ) )
-
-			// 支付密码 (二级密码)
-            ->putColumn( 'pay_password', $this->type('string', ['length'=>128] ) )
-
 			// 用户状态 on/off/lock
              ->putColumn( 'status', $this->type('string', ['length'=>10,'index'=>true, 'default'=>'on']) )
             
@@ -150,6 +158,12 @@ class User extends Model {
             ->putColumn( 'inviter', $this->type('string', ['length'=>128] ) ) // 邀请者 (user_id)
             ->putColumn( 'follower_cnt', $this->type('integer', ['length'=>1] ) )  // 粉丝数量 (缓存数据)
             ->putColumn( 'following_cnt', $this->type('integer', ['length'=>1] ) )  // 关注数量 (缓存数据)
+
+            // 安全
+			->putColumn( 'password', $this->type('string', ['length'=>128] ) ) // 登录密码
+            ->putColumn( 'pay_password', $this->type('string', ['length'=>128] ) )  // 支付密码 (暂不使用)
+            ->putColumn( 'client_token', $this->type('string', ['length'=>128] ) )  // 客户端登录凭据
+
 		;
 
 		// 微信公众号授权表
@@ -580,28 +594,33 @@ class User extends Model {
 	 * 读取用户信息
 	 * @return [type] [description]
 	 */
-	function getUserInfo() {
+	function getUserInfo( $client_token = null ) {
 
-		@session_start();
+        @session_start();
+
 		$rs = !empty($_SESSION['USER:info']) ? $_SESSION['USER:info'] : $_SESSION['_uinfo'] ;
-		if ( !is_array($rs) ) {
-			$rs = [];
-		}
-		$rs['session_id'] = session_id();
+		if ( !empty($rs) ) {
+            $rs['session_id'] = session_id();
+            $rs['session_level'] = $this->getSessionLevel( $rs["user_id"] );
+			return $rs;
+        }
+        
+        // 无登录信息
+        if ( empty($client_token) ) {
+            return [];
+        }
+
+        // 校验客户端登录凭证
+		
 		return $rs;
     }
     
     /**
      * 读取用户信息
      */
-    static public function info() {
-        @session_start();
-		$rs = !empty($_SESSION['USER:info']) ? $_SESSION['USER:info'] : $_SESSION['_uinfo'] ;
-		if ( !is_array($rs) ) {
-			$rs = [];
-		}
-		$rs['session_id'] = session_id();
-		return $rs;
+    static public function info( $client_token = null ) {
+        $u = new Self();
+        return $u->getUserInfo( $client_token );
     }
 
 
@@ -685,7 +704,7 @@ class User extends Model {
 	 */
 	function loginByOpenId( $appid, $openid, $session_id ) {
 		$user_id = $this->updateWechatUser($appid, $openid);
-		$this->loginSetSession( $user_id, $session_id );
+		$this->loginSetSession( $user_id, USER_LOGIN_PASSWD, $session_id );
 		return $this;
 	}
 
@@ -856,9 +875,6 @@ class User extends Model {
 		$this->openid = $openid;
 		$this->unionid = $u['unionid'];
         $this->cfg = $cfg;
-        
-        // 更新 Session 
-        $this->loginSetSession($user_id);
 
 		return [
             "user_id"=>$user_id, 
@@ -974,9 +990,6 @@ class User extends Model {
 		$this->unionid = $u['unionid'];
         $this->cfg = $cfg;
         
-        // 更新 Session 
-        $this->loginSetSession($user_id);
-
 		return $user_id;
 	}
 
@@ -1015,15 +1028,18 @@ class User extends Model {
 		return $rs;
 	}
 
-
-
 	/**
 	 * 设定用户会话信息
-	 * @param  [type] $user_id    [description]
-	 * @param  [type] $session_id [description]
-	 * @return [type]             [description]
+	 * @param  string $user_id    用户ID
+	 * @param  string $session_id  Session id
+     * @param  string $level  会话等级, 默认为 USER_LOGIN_PASSWD 1
+     *                    USER_LOGIN_CLIENT: 客户端留存登录凭据, 服务端未校验 (0)
+     *                    USER_LOGIN_PASSWD: 校验登录密码, 会话有效期时长 2小时 (1)
+     *                    USER_LOGIN_SECOND: 校验二级密码(短信验证码), 会话有效期市场 20分钟 (2)
+     * 
+	 * @return User 用户数据模型对象
 	 */
-	function loginSetSession( $user_id, $session_id=null ) {
+	function loginSetSession( $user_id, $level=USER_LOGIN_PASSWD, $session_id=null ) {
 		
 		$rows = $this->query()
 				->leftJoin("group", 'group.group_id', "=", "user.group_id" )
@@ -1035,7 +1051,8 @@ class User extends Model {
 					"mobile", "mobile_nation", "mobile_verified","extra",
 					"email", "email_verified",
 					"zip", "address", "user.remark as remark", "user.tag as tag",
-					"password", "pay_password",
+                    "password", "pay_password",
+                    "client_token",
 					"user.status as status",
 					"group.name as group_name",
 					"group.slug as group_slug",
@@ -1058,19 +1075,107 @@ class User extends Model {
 
 		if ( $session_id != null ) {
 			@session_id($session_id);
-		}
-
-		@session_start();
+        }
+    
+        @session_start();
 		$userinfo = $rs;
 		$userinfo['signin_at'] = time();
 		unset($userinfo['password']);
-		unset($userinfo['pay_password']);
+        unset($userinfo['pay_password']);
+
+        // 保存会话等级信息
+        $this->setSessionLevel( $user_id, $level );
+
+        // 生成& 设定客户端会话 Token
+        if ( $level !== USER_LOGIN_CLIENT || empty($userinfo["client_token"]) ) {
+            $token = $this->genClientToken( $user_id );
+            $userinfo["client_token"] = $token;
+        }
+
+        // 客户端会话等级
+        $userinfo["session_level"] = $level;
+
+        // 设定 Session
 		$_SESSION['USER:info'] = $userinfo;
 		$this->userinfo = $userinfo;
-		$this->user_id = $userinfo['user_id']; 
-		return $this;
+        $this->user_id = $userinfo['user_id']; 
+        
+        return $this;
     }
-    
+
+
+    /**
+     * 生成客户端登录凭据
+     * @param string $user_id 用户ID 
+     * @param array $extra  登录时身份信息
+     *                    string ip:  登录时IP地址
+     *                string device:  设备信息
+     */
+    function genClientToken( $user_id, $extra=[] ) {
+
+        // 清除旧的 Token
+        $token = $this->getVar("client_token","WHERE `user_id`=? limit 1", [$user_id]);
+        if ( !empty($token) ){
+            $cache_name = "login:token:{$token}";
+            $this->cache->del($cache_name);
+        }
+
+        // 生成新的 Token
+        $now = time();
+        $token = sha1("{$user_id}{$time}");
+        $cache_name = "login:token:{$token}";
+        $browser = Utils::browser();
+        $extra["user_id"] = $user_id;
+        $extra["ip"] = empty($extra["ip"]) ?  Utils::clientIP() : $extra["ip"];
+        $extra["device"] = empty($extra["device"]) ? $browser["device_type"] : $extra["device"];
+        $this->updateBy("user_id", [
+            "user_id" => $user_id,
+            "client_token" => $token
+        ]);
+        $this->cache->setJSON( $cache_name, $extra );
+        return $token;
+    }
+
+
+
+
+    /**
+     * 设定当前用户会话等级
+     * @param  string $user_id    用户ID
+     * @param  string $level      会话等级
+     */
+    function setSessionLevel( $user_id, $level ) {
+        
+        $cache_name = "login:{$user_id}:level";
+        if( $level == USER_LOGIN_CLIENT ) {
+            $this->catch->del( $cache_name );
+            return $this;
+        }
+        
+        $timeout = [
+            USER_LOGIN_PASSWD => 7200,
+            USER_LOGIN_SECOND => 1200,
+        ];
+        $cache_name = "login:{$user_id}:level";
+        $this->cache->set( $cache_name, $level, $timeout[$level] );
+        return $this;
+    }
+
+    /**
+     * 读取当前用户会话等级
+     * @param  string $user_id    用户ID
+     * @param  string $level      会话等级
+     */
+    function getSessionLevel( $user_id ) {
+
+        $cache_name = "login:{$user_id}:level";
+        $level = $this->cache->get( $cache_name );
+        if( $level === false ) {
+            return USER_LOGIN_CLIENT;
+        }
+        return intval($level);
+    }
+
 
 
 	/**
