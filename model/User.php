@@ -58,6 +58,7 @@ class User extends Model {
          if ( empty($client_token) ) {
              $client_token = $_COOKIE["__client_token"];
          }
+
          $this->client_token = $client_token;
 	}
 
