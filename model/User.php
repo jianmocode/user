@@ -1638,7 +1638,7 @@ class User extends Model {
 				$userWechats[$user_id]  = [];
 			}
             $userWechats[$user_id][] = $we;
-            $openids[$user_id][$appid][] = $we["openid"];
+            $openids[$user_id][$appid] = $we["openid"];
             $form_ids[$user_id][$appid][$we["openid"]] = $we["form_id"];
         }
         
