@@ -1487,17 +1487,24 @@ class User extends Model {
 	 */
 	function search( $query=[] ) {
 
-		$qb = $this->query();
+        // $qb = $this->query();
+        $select = empty($query['select']) ? ["user.*", "group.name as group_name"] : $query['select'];
+		if ( is_string($select) ) {
+			$select = explode(',', $select);
+        }
+        
+        $qb = Utils::getTab("xpmsns_user_user as user", "{none}")->query();
+        $qb->leftJoin("xpmsns_user_group as group", "group.group_id", "=", "user.group_id");
+
 
 		// 按关键词查找 (昵称/手机号/邮箱)
 		if ( array_key_exists('keyword', $query) && !empty($query['keyword']) ) {
 			$qb->where(function ( $qb ) use($query) {
-			   	$qb->where("nickname", "like", "%{$query['keyword']}%");
-			   	$qb->orWhere("name", "like", "%{$query['keyword']}%");
-				$qb->orWhere("mobile","like", "%{$query['keyword']}%");
-				$qb->orWhere('email', 'like', "%{$query['keyword']}%");
-			})
-			;
+			   	$qb->where("user.nickname", "like", "%{$query['keyword']}%");
+			   	$qb->orWhere("user.name", "like", "%{$query['keyword']}%");
+				$qb->orWhere("user.mobile","like", "%{$query['keyword']}%");
+				$qb->orWhere('user.email', 'like', "%{$query['keyword']}%");
+			});
 		}
 
 		// 按性别查找
@@ -1533,7 +1540,18 @@ class User extends Model {
 		// 按ID列表
 		if ( array_key_exists('user_ids', $query)  ) {
 			$qb->whereIn('user_id', $query['user_ids'] );
+        }
+        
+        // 按Group列表
+		if ( array_key_exists('group_ids', $query)  ) {
+			$qb->whereIn('group_id', $query['group_ids'] );
+        }
+        
+        // 按Group列表 (Or) 
+		if ( array_key_exists('or_group_ids', $query)  ) {
+			$qb->orWhereIn('group_id', $query['group_ids'] );
 		}
+
 
 		// 排序: 最新注册
 		if ( array_key_exists('order', $query)  ) {
@@ -1548,7 +1566,7 @@ class User extends Model {
 		$perpage = array_key_exists('perpage', $query) ?  intval( $query['perpage']) : 20;
 
 		// 查询用户信息
-		$users = $qb->select("*")->pgArray($perpage, ['_id'], 'page', $page);
+		$users = $qb->select($select)->pgArray($perpage, ['user._id'], 'page', $page);
 		$this->formatUsers($users['data']);
 
 
@@ -1589,11 +1607,17 @@ class User extends Model {
 			return;
 		}
 
-		$upad = Utils::pad( $users, 'user_id' );
-		$uids = $upad['data'];
+        $uids = [];
+        if ( isset($users["user_id"]) ){
+            $upad = Utils::pad( $users, 'user_id' );
+            $uids = $upad['data'];
+        }
 
-		$gpad = Utils::pad( $users, 'group_id');
-		$gids = $gpad['data'];
+        $gids = [];
+        if ( isset($users["group_id"]) ){
+            $gpad = Utils::pad( $users, 'group_id');
+            $gids = $gpad['data'];
+        }
 
 		$userWechats = []; $userGroups = [];
 
