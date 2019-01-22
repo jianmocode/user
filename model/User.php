@@ -1620,7 +1620,8 @@ class User extends Model {
 		// 读取微信授权信息
 		$conf = Utils::getConf();  
 		$wemap = $conf['_map'];
-		$wechats = $this->user_wechat->query()->whereIn("user_id", $uids)->get()->toArray();
+        $wechats = $this->user_wechat->query()->whereIn("user_id", $uids)->get()->toArray();
+        $openids = []; $unionid = null; $form_ids=[];
 		
 		foreach ($wechats as $we ) {
 
@@ -1637,7 +1638,11 @@ class User extends Model {
 				$userWechats[$user_id]  = [];
 			}
             $userWechats[$user_id][] = $we;
-		}
+            $openids[$appid][] = $we["openid"];
+            $form_ids[$appid][$we["openid"]] = $we["form_id"];
+        }
+        
+        $unionid = array_unique( array_column($wechat, "unionid") );
 
 		// 读取分组信息
 		$g = new Group;
@@ -1676,7 +1681,10 @@ class User extends Model {
 
 			$users[$idx]['group_name'] = $group_name;
 			$users[$idx]['groups']= $userGroups[$gid] ;
-			$users[$idx]['wechats']=$userWechats[$uid] ;
+            $users[$idx]['wechats']=$userWechats[$uid] ;
+            $users[$idx]['openids'] = $openids;
+            $users[$idx]['form_ids'] = $form_ids;
+            $users[$idx]['unionid'] = $unionid;
 			
 			if ( $remove_password === true ) {
 				unset($users[$idx]["pay_password"]);
