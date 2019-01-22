@@ -914,8 +914,14 @@ class User extends Model {
 			throw new Excp( "未找到配置信息($appid)", 404, ['openid'=>$openid, 'appid'=>$appid]);
 		}
 
-		$wechat = new Wechat( $cfg );
-		$u = $wechat->getUser( $openid );
+        $wechat = new Wechat( $cfg );
+        try {
+            $u = $wechat->getUser( $openid );
+        }catch( Excp $e ){ 
+            $e->log(); 
+            return null;
+        }
+        
 		$u['appid'] = $appid;
 		$u['appid_openid'] = "{$appid}_{$u['openid']}";
 
