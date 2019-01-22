@@ -1605,15 +1605,11 @@ class User extends Model {
 
 		if ( empty($users) ) {
 			return;
-		}
-
-        $uids = [];
-        if ( isset($users["user_id"]) ){
-            $upad = Utils::pad( $users, 'user_id' );
-            $uids = $upad['data'];
         }
+        
+        $uids = array_unique(array_column( $users, 'user_id'));
+        $gids = array_unique(array_column( $users, 'group_id'));
 
-        $gids = [];
         if ( isset($users["group_id"]) ){
             $gpad = Utils::pad( $users, 'group_id');
             $gids = $gpad['data'];
@@ -1640,7 +1636,7 @@ class User extends Model {
 			if ( !is_array($userWechats[$user_id])) {
 				$userWechats[$user_id]  = [];
 			}
-			$userWechats[$user_id][] = $we;
+            $userWechats[$user_id][] = $we;
 		}
 
 		// 读取分组信息
