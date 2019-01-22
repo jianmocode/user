@@ -1253,7 +1253,6 @@ class User extends Model {
 		$sms = $c["user/sms/vcode"];
 		$sms['option']['mobile'] = $mobile;
 		$sms['option']['nationcode'] = $nationcode;
-
 		return Utils::SendSMS($sms, [$code] );
 	}
 
