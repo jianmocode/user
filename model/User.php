@@ -1621,7 +1621,7 @@ class User extends Model {
 		$conf = Utils::getConf();  
 		$wemap = $conf['_map'];
         $wechats = $this->user_wechat->query()->whereIn("user_id", $uids)->get()->toArray();
-        $openids = []; $unionid = null; $form_ids=[];
+        $openids = []; $unionid = []; $form_ids=[];
 		
 		foreach ($wechats as $we ) {
 
@@ -1638,11 +1638,11 @@ class User extends Model {
 				$userWechats[$user_id]  = [];
 			}
             $userWechats[$user_id][] = $we;
-            $openids[$appid][] = $we["openid"];
-            $form_ids[$appid][$we["openid"]] = $we["form_id"];
+            $openids[$user_id][$appid][] = $we["openid"];
+            $form_ids[$user_id][$appid][$we["openid"]] = $we["form_id"];
         }
         
-        $unionid = array_unique( array_column($wechat, "unionid") );
+        $unionid[$user_id] = array_unique( array_column($wechat, "unionid") );
 
 		// 读取分组信息
 		$g = new Group;
@@ -1682,9 +1682,9 @@ class User extends Model {
 			$users[$idx]['group_name'] = $group_name;
 			$users[$idx]['groups']= $userGroups[$gid] ;
             $users[$idx]['wechats']=$userWechats[$uid] ;
-            $users[$idx]['openids'] = $openids;
-            $users[$idx]['form_ids'] = $form_ids;
-            $users[$idx]['unionid'] = $unionid;
+            $users[$idx]['openids'] = is_array($openids[$uid] ) ?  $openids[$uid] : [];
+            $users[$idx]['form_ids'] = is_array($form_ids[$uid]) ? $form_ids[$uid] :[];
+            $users[$idx]['unionid'] = $unionid[$uid];
 			
 			if ( $remove_password === true ) {
 				unset($users[$idx]["pay_password"]);
