@@ -147,7 +147,7 @@ class Checkin extends Model {
             $last_7days[$i] = $last_time - 86400 * $i;
 
             // DEBUG
-            $job->info( "last_7days[{$i}]:" . $last_7days[$i] . ' ' . date('Y-m-d H:i:s', $last_7days[$i]) );
+            // $job->info( "last_7days[{$i}]:" . $last_7days[$i] . ' ' . date('Y-m-d H:i:s', $last_7days[$i]) );
         }
 
         // 判断连续签到
@@ -155,7 +155,7 @@ class Checkin extends Model {
             
             $ci = $data["history"][$i];
             if ( empty($ci) ) { 
-                $job->info("? empty($ci): process=" . $process );
+                // $job->info("? empty($ci): process=" . $process );
                 break; 
             }
 
@@ -165,25 +165,24 @@ class Checkin extends Model {
             $curr = strtotime(date("Y-m-d 00:00:00", strtotime($ci["time"])));
             if ( $last_7days[$i]  != $curr ) {
                 $process = $process -1;
-                $job->info("? $last_7days[$i] != {$curr} :" .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' != ' . date('Y-m-d H:i:s', $curr) . "  process=" . $process  );
+                // DEBUG
+                // $job->info("? $last_7days[$i] != {$curr} :" .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' != ' . date('Y-m-d H:i:s', $curr) . "  process=" . $process  );
                 break;
             }
 
             // DEBUG
-            $job->info("? $last_7days[$i] == {$curr}  :" .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' == ' . date('Y-m-d H:i:s', $curr)  . "  process=" . $process  );
+            // $job->info("? $last_7days[$i] == {$curr}  :" .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' == ' . date('Y-m-d H:i:s', $curr)  . "  process=" . $process  );
         }
-
-        
 
         // 超过7天重置到第一天
         $force = false;  // 是否强制重置
-        if ( $process >= 7 ) {
+        if ( $process > 7 ) {
             $process = 1;
             $force = true;
         }
 
         // DEBUG
-        $job->info( "result: process=" . $process . " force={$force}");
+        $job->info( "\tresult: process=" . $process . " force={$force}");
 
 
         // // 计算当前累计步骤
