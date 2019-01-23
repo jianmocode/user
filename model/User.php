@@ -116,7 +116,8 @@ class User extends Model {
 		$this->putColumn( 'user_id', $this->type('string', ['length'=>128, 'unique'=>true]) )    // 用户ID 
 			 ->putColumn( 'group_id', $this->type('string',  ['length'=>128, 'index'=>true]) )   // 用户组
 
-			 // 用户资料
+             // 用户资料
+             ->putColumn( 'user_name', $this->type('string',  ['length'=>128, 'unique'=>true]) )  // 账号名称
 			 ->putColumn( 'name', $this->type('string',  ['length'=>128, 'index'=>true]) )  // 真实姓名
 			 ->putColumn( 'idno', $this->type('string',  ['length'=>256]) )  // 身份证件号码
 			 ->putColumn( 'idtype', $this->type('string',  ['length'=>40, 'index'=>true]) )  // 身份证件类型 ID:身份证 MID:军人身份证  APID: 警察身份证  HMLP:港澳通行证 MTPS:台胞证  PASSPORT:护照  OTHER:其他
