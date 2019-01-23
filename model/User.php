@@ -1647,7 +1647,9 @@ class User extends Model {
             $form_ids[$user_id][$appid][$we["openid"]] = $we["form_id"];
         }
         
-        $unionid[$user_id] = array_unique( array_column($wechat, "unionid") );
+        if ( is_array($wechat) ) {
+            $unionid[$user_id] = array_unique( array_column($wechat, "unionid") );
+        }
 
 		// 读取分组信息
 		$g = new Group;
