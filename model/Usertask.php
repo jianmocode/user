@@ -153,6 +153,7 @@ class Usertask extends Model {
                         ->where("task_id", "=", $task["task_id"])
                         ->where("user_id", "=", $user_id )
                         ->where("created_at" ,">" ,date('Y-m-d H:i:s', time()-3600) )
+                        ->where("status" , "=", "accepted" )
                         ->count("usertask_id");
             if ($cnt >= $task["hourly_limit"]) {
                 return ["limit"=>"hourly", "count"=>$cnt, "message"=>"一小时内不能超过{$task["hourly_limit"]}次" ];
@@ -167,6 +168,7 @@ class Usertask extends Model {
                         ->where("user_id", "=",$user_id )
                         ->where("created_at", ">", date('Y-m-d 00:00:00') )
                         ->where("created_at", "<", date('Y-m-d 23:59:59') )
+                        ->where("status" , "=", "accepted" )
                         ->count("usertask_id");
             
             if ($cnt >= $task["daily_limit"]) {
@@ -182,6 +184,7 @@ class Usertask extends Model {
                         ->where("user_id", "=",$user_id )
                         ->where("created_at", ">", date('Y-m-d 00:00:00', strtotime('monday this week')) )
                         ->where("created_at", "<", date('Y-m-d 23:59:59', strtotime('sunday this week')) )
+                        ->where("status" , "=", "accepted" )
                         ->count("usertask_id");
             if ($cnt >= $task["weekly_limit"]) {
                 return ["limit"=>"weekly", "count"=>$cnt, "message"=>"一周内不能超过{$task["weekly_limit"]}次"];
@@ -196,6 +199,7 @@ class Usertask extends Model {
                         ->where("user_id", "=",$user_id )
                         ->where("created_at", ">", date('Y-m-01 00:00:00') )
                         ->where("created_at", "<", date('Y-m-t 23:59:59') )
+                        ->where("status" , "=", "accepted" )
                         ->count("usertask_id");
             if ($cnt >= $task["monthly_limit"]) {
                 return ["limit"=>"monthly", "count"=>$cnt, "message"=>"一月内不能超过{$task["monthly_limit"]}次"];
@@ -210,6 +214,7 @@ class Usertask extends Model {
                         ->where("user_id", "=",$user_id )
                         ->where("created_at", ">", date('Y-01-01 00:00:00') )
                         ->where("created_at", "<", date('Y-12-31 23:59:59') )
+                        ->where("status" , "=", "accepted" )
                         ->count("usertask_id");
             if ($cnt >= $task["yearly_limit"]) {
                 return ["limit"=>"yearly", "count"=>$cnt, "message"=>"一年内不能超过{$task["yearly_limit"]}次"];
@@ -378,11 +383,8 @@ class Usertask extends Model {
                 $time = strtotime( date("Y-m-d 00:00:00", strtotime($usertask["created_at"])) );
                 $today = strtotime(date("Y-m-d 00:00:00"));
                 
-                $this->log->info( "usertask={$usertask['usertask_id']} created_at={$usertask["created_at"]} today=".date("Y-m-d H:i:s", $today)." time=".date("Y-m-d H:i:s", $time)." (today - time = ".($today - $time).") ", $params );
+                // $this->log->info( "usertask={$usertask['usertask_id']} created_at={$usertask["created_at"]} today=".date("Y-m-d H:i:s", $today)." time=".date("Y-m-d H:i:s", $time)." (today - time = ".($today - $time).") ", $params );
 
-                // echo "{$usertask["created_at"]} \n";
-                // echo date("Y-m-d H:i:s", $time)." \n";
-                // echo date("Y-m-d H:i:s", $today)." \n\n";
                 // 超过1天
                 if ( ($today - $time) >= 86400 ) { 
                     continue;
@@ -442,7 +444,7 @@ class Usertask extends Model {
                 $time = strtotime( date("Y-m-d 00:00:00", strtotime($usertask["created_at"])) );
                 $today = strtotime(date("Y-m-d 00:00:00"));
                 
-                $this->log->info( "usertask={$usertask['usertask_id']} created_at={$usertask["created_at"]} today=".date("Y-m-d H:i:s", $today)." time=".date("Y-m-d H:i:s", $time)." (today - time = ".($today - $time).") ", $params );
+                // $this->log->info( "usertask={$usertask['usertask_id']} created_at={$usertask["created_at"]} today=".date("Y-m-d H:i:s", $today)." time=".date("Y-m-d H:i:s", $time)." (today - time = ".($today - $time).") ", $params );
 
                 // echo "{$usertask["created_at"]} \n";
                 // echo date("Y-m-d H:i:s", $time)." \n";
@@ -565,6 +567,7 @@ class Usertask extends Model {
        
        $this->process( current($usertasks), $process );
    }
+
 
 
     /**

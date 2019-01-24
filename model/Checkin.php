@@ -139,23 +139,19 @@ class Checkin extends Model {
 
         $job = new Job(["name"=>"XpmsnsUserBehavior"]);
         
-        // 最近7天日期
-        $last_7days = [];
+        // 最近8天日期
+        $last_8days = [];
         $last_time = strtotime(date("Y-m-d 00:00:00", strtotime($last_ci["time"])));
-        for( $i=0; $i<7; $i++) {
+        for( $i=0; $i<8; $i++) {
 
-            $last_7days[$i] = $last_time - 86400 * $i;
-
-            // DEBUG
-            // $job->info( "last_7days[{$i}]:" . $last_7days[$i] . ' ' . date('Y-m-d H:i:s', $last_7days[$i]) );
+            $last_8days[$i] = $last_time - 86400 * $i;
         }
 
         // 判断连续签到
-        for( $i=0; $i<7; $i++) { 
+        for( $i=0; $i<8; $i++) { 
             
             $ci = $data["history"][$i];
             if ( empty($ci) ) { 
-                // $job->info("? empty($ci): process=" . $process );
                 break; 
             }
 
@@ -163,63 +159,63 @@ class Checkin extends Model {
 
             // 历史时间对比
             $curr = strtotime(date("Y-m-d 00:00:00", strtotime($ci["time"])));
-            if ( $last_7days[$i]  != $curr ) {
+            if ( $last_8days[$i]  != $curr ) {
                 $process = $process -1;
-                // DEBUG
-                // $job->info("? $last_7days[$i] != {$curr} :" .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' != ' . date('Y-m-d H:i:s', $curr) . "  process=" . $process  );
                 break;
             }
-
-            // DEBUG
-            // $job->info("? $last_7days[$i] == {$curr}  :" .  ' ' . date('Y-m-d H:i:s', $last_7days[$i]) .  ' == ' . date('Y-m-d H:i:s', $curr)  . "  process=" . $process  );
+            
         }
-
-        // 超过7天重置到第一天
-        $force = false;  // 是否强制重置
-        if ( $process > 7 ) {
-            $process = 1;
-            $force = true;
-        }
-
-        // DEBUG
-        $job->info( "\tresult: process=" . $process . " force={$force}");
-
-
-        // // 计算当前累计步骤
-        // $process = 1; $next = null; 
-        // foreach( $data["history"] as $ci ){
-        //     $curr = strtotime(date("Y-m-d 00:00:00", strtotime($ci["time"])));
-        //     $curr_shouldbe = strtotime(date("Y-m-d 00:00:00", strtotime("-1d",$next)));
-        //     // echo  "\tcurr=".   date("Y-m-d H:i:s",$curr) .  "  curr_shouldbe=". date("Y-m-d H:i:s",$curr_shouldbe). " process={$process} \n";
-        //     if ( $next == null ) {
-        //         $next = $curr;
-        //         continue;
-        //     } else if ( intval($curr_shouldbe)  == intval($next) ) {
-        //         $process++;
-        //     } else {
-        //         break;
-        //     }
-        // }
-
-       
 
         // 自动接受任务
         $usertask = $task["usertask"];
+        $force = false;  // 是否强制重置
+        if ( $process > 7 ) { // 超过7天, 重新计算步骤
+
+            $nextProcess = 1; 
+            if ( !empty($usertask) ) {  // 关闭当前任务标记为完毕 
+                
+                $nextProcess =  $usertask["process"]  + 1;
+
+                // 一轮签到已完成/标记任务已完成
+                if ( $nextProcess > 7 ) {
+                    $job->info( "\tcompleted: process={$process} usertask_id={$usertask["usertask_id"]}");
+                    $nextProcess = 1;
+                    $t->updateBy("usertask_id", [
+                        "usertask_id" =>  $usertask["usertask_id"],
+                        "status"=>"completed"
+                    ]);
+                    $usertask = null;
+                }
+            }
+
+            $process = $nextProcess;
+        } 
+
+        // 签到过程中有中断，标记任务已完成
+        if ( !empty($usertask) && $usertask["process"] >= $process ) {
+            $job->info( "\tcompleted: process={$process} usertask_id={$usertask["usertask_id"]}");
+            $t->updateBy("usertask_id", [
+                "usertask_id" =>  $usertask["usertask_id"],
+                "status"=>"completed"
+            ]);
+            $usertask = null;
+            $process = 1;
+        }
+
+        // DEBUG
+        $job->info( "\tresult: process=" . $process . " force=", $force ? 1 : 0);
+
         if( 
             $task["auto_accept"] == 1 &&
             ( empty($usertask) || ( $usertask["status"] != "accepted" &&  $task["type"] == "repeatable" ) )
         ) {
             $task["usertask"] = $usertask = $t->acceptBySlug( $task_slug, $user_id );
+            $job->info( "\treset: process={$process} usertask_id={$usertask["usertask_id"]}");
         }
 
         // 设定进展并发放奖励
         $t->processByUsertaskId( $usertask["usertask_id"], $process, $force );
-        
-        // print_r( $usertask );
-        // print_r( $task );
-        // print_r( $data );
-        // print_r( $env );
-        // echo "\t----- end -----\n";
+
     }
 
 
