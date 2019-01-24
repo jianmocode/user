@@ -607,6 +607,11 @@ class Usertask extends Model {
         $task["process"] = intval($task["process"]);
         $usertask["process"] = intval($usertask["process"]);
 
+        // 任务已完成
+        if ( "completed" == $usertask["status"] ){
+            throw new Excp("任务已经完成 ( usertask_id = {$usertask["usertask_id"]} )", 402, ["status"=>$usertask["status"], "usertask"=>$usertask]);
+        }
+        
         // 非法步骤
         if ( ($process > $task["process"] || $process  < 1 ) && !$force ) {
             throw new Excp("步骤信息不合法 ( process = {$process}  process > {$task['process']} 或 process < 1 )", 402, ["process"=>$process, "max"=>$task["process"], "current"=>$usertask["process"]]);
@@ -616,6 +621,9 @@ class Usertask extends Model {
         if (( $process <= $usertask["process"]) && !$force ) {
             throw new Excp("步骤信息不合法  ( process = {$process}  process <= {$usertask['process']} ) ", 402, ["process"=>$process,"max"=>$task["process"], "current"=>$usertask["process"]]);
         }
+
+        
+
 
         // 发放当前步骤奖励积分
         $current = $process - 1;
