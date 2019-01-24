@@ -705,8 +705,13 @@ class User extends Model {
 	 * @return [type] [description]
 	 */
 	function logout() {
-		@session_start();
-		unset($_SESSION['USER:info']);
+        @session_start();
+        $user_id = $_SESSION['USER:info']["user_id"];
+        unset($_SESSION['USER:info']);
+        $this->updateBy("user_id", [
+            "client_token" => '',
+            "user_id" => $user_id
+        ]);
 		return $this;
 	}
 
