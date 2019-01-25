@@ -4,17 +4,19 @@
  * 任务数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-03 22:51:58
+ * 最后修改: 2019-01-25 14:47:13
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
-                          
+                           
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
 use \Xpmse\Conf;
 use \Xpmse\Media;
+use \Mina\Cache\Redis as Cache;
 use \Xpmse\Loader\App as App;
+use \Xpmse\Job;
 
 
 class Task extends Model {
@@ -94,6 +96,8 @@ class Task extends Model {
 		$this->putColumn( 'yearly_limit', $this->type("integer", ["length"=>1, "null"=>true]));
 		// 完成时限
 		$this->putColumn( 'time_limit', $this->type("integer", ["length"=>1, "null"=>true]));
+		// 刷新周期
+		$this->putColumn( 'refresh', $this->type("string", ["length"=>32, "index"=>true, "default"=>"no", "null"=>true]));
 		// 步骤
 		$this->putColumn( 'process', $this->type("integer", ["length"=>1, "null"=>true]));
 		// 自动接受
@@ -115,28 +119,16 @@ class Task extends Model {
 	 * @return
 	 */
 	public function format( & $rs ) {
-
+     
+		$fileFields = []; 
 		// 格式化: 封面
 		// 返回值: [{"url":"访问地址...", "path":"文件路径...", "origin":"原始文件访问地址..." }]
 		if ( array_key_exists('cover', $rs ) ) {
-			$is_string = is_string($rs["cover"]);
-			$rs["cover"] = $is_string ? [$rs["cover"]] : $rs["cover"];
-			$rs["cover"] = !is_array($rs["cover"]) ? [] : $rs["cover"];
-			foreach ($rs["cover"] as & $file ) {
-				if ( is_array($file) && !empty($file['path']) ) {
-					$fs = $this->media->get( $file['path'] );
-					$file = array_merge( $file, $fs );
-				} else if ( is_string($file) ) {
-					$file =empty($file) ? [] : $this->media->get( $file );
-				} else {
-					$file = [];
-				}
-			}
-			if ($is_string) {
-				$rs["cover"] = current($rs["cover"]);
-			}
+            array_push($fileFields, 'cover');
 		}
 
+        // 处理图片和文件字段 
+        $this->__fileFields( $rs, $fileFields );
 
 		// 格式化: 状态
 		// 返回值: "_status_types" 所有状态表述, "_status_name" 状态名称,  "_status" 当前状态表述, "status" 当前状态数值
@@ -176,6 +168,55 @@ class Task extends Model {
 			$rs["_type"] = $rs["_type_types"][$rs["type"]];
 		}
 
+		// 格式化: 刷新周期
+		// 返回值: "_refresh_types" 所有状态表述, "_refresh_name" 状态名称,  "_refresh" 当前状态表述, "refresh" 当前状态数值
+		if ( array_key_exists('refresh', $rs ) && !empty($rs['refresh']) ) {
+			$rs["_refresh_types"] = [
+		  		"no" => [
+		  			"value" => "no",
+		  			"name" => "不刷新",
+		  			"style" => "muted"
+		  		],
+		  		"hourly" => [
+		  			"value" => "hourly",
+		  			"name" => "每小时",
+		  			"style" => "primary"
+		  		],
+		  		"daily" => [
+		  			"value" => "daily",
+		  			"name" => "每天",
+		  			"style" => "danger"
+		  		],
+		  		"weekly" => [
+		  			"value" => "weekly",
+		  			"name" => "每周",
+		  			"style" => "primary"
+		  		],
+		  		"monthly" => [
+		  			"value" => "monthly",
+		  			"name" => "每月",
+		  			"style" => "primary"
+		  		],
+		  		"quarterly" => [
+		  			"value" => "quarterly",
+		  			"name" => "每季度",
+		  			"style" => "primary"
+		  		],
+		  		"" => [
+		  			"value" => "",
+		  			"name" => "",
+		  			"style" => ""
+		  		],
+		  		"yearly" => [
+		  			"value" => "yearly",
+		  			"name" => "每年",
+		  			"style" => "primary"
+		  		],
+			];
+			$rs["_refresh_name"] = "refresh";
+			$rs["_refresh"] = $rs["_refresh_types"][$rs["refresh"]];
+		}
+
  
 		// <在这里添加更多数据格式化逻辑>
 		
@@ -203,6 +244,7 @@ class Task extends Model {
 	 *          	  $rs["monthly_limit"],  // 月限额 
 	 *          	  $rs["yearly_limit"],  // 年限额 
 	 *          	  $rs["time_limit"],  // 完成时限 
+	 *          	  $rs["refresh"],  // 刷新周期 
 	 *          	  $rs["process"],  // 步骤 
 	 *          	  $rs["auto_accept"],  // 自动接受 
 	 *          	  $rs["accept"],  // 接受条件 
@@ -245,7 +287,7 @@ class Task extends Model {
 
 		// 创建查询构造器
 		$qb = Utils::getTab("xpmsns_user_task as task", "{none}")->query();
- 		$qb->where('task_id', '=', $task_id );
+ 		$qb->where('task.task_id', '=', $task_id );
 		$qb->limit( 1 );
 		$qb->select($select);
 		$rows = $qb->get()->toArray();
@@ -278,7 +320,7 @@ class Task extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 任务记录MAP {"task_id1":{"key":"value",...}...}
 	 */
-	public function getInByTaskId($task_ids, $select=["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
+	public function getInByTaskId($task_ids, $select=["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.refresh","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -361,6 +403,7 @@ class Task extends Model {
 	 *          	  $rs["monthly_limit"],  // 月限额 
 	 *          	  $rs["yearly_limit"],  // 年限额 
 	 *          	  $rs["time_limit"],  // 完成时限 
+	 *          	  $rs["refresh"],  // 刷新周期 
 	 *          	  $rs["process"],  // 步骤 
 	 *          	  $rs["auto_accept"],  // 自动接受 
 	 *          	  $rs["accept"],  // 接受条件 
@@ -403,7 +446,7 @@ class Task extends Model {
 
 		// 创建查询构造器
 		$qb = Utils::getTab("xpmsns_user_task as task", "{none}")->query();
- 		$qb->where('slug', '=', $slug );
+ 		$qb->where('task.slug', '=', $slug );
 		$qb->limit( 1 );
 		$qb->select($select);
 		$rows = $qb->get()->toArray();
@@ -436,7 +479,7 @@ class Task extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 任务记录MAP {"slug1":{"key":"value",...}...}
 	 */
-	public function getInBySlug($slugs, $select=["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
+	public function getInBySlug($slugs, $select=["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.refresh","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -570,7 +613,7 @@ class Task extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 任务记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.refresh","task.process","task.quantity","task.status"], $order=["task.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -615,7 +658,7 @@ class Task extends Model {
 	/**
 	 * 按条件检索任务记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"]
+	 *         	      $query['select'] 选取字段，默认选择 ["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.refresh","task.process","task.quantity","task.status"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
@@ -627,6 +670,7 @@ class Task extends Model {
 	 *			      $query["auto_accept"] 按自动接受查询 ( = )
 	 *			      $query["category_category_id"] 按查询 ( IN )
 	 *			      $query["category_slug"] 按查询 ( IN )
+	 *			      $query["refresh"] 按刷新周期查询 ( = )
 	 *			      $query["orderby_created_at_desc"]  按name=created_at DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按name=updated_at DESC 排序
 	 *           
@@ -647,6 +691,7 @@ class Task extends Model {
 	 *               	["monthly_limit"],  // 月限额 
 	 *               	["yearly_limit"],  // 年限额 
 	 *               	["time_limit"],  // 完成时限 
+	 *               	["refresh"],  // 刷新周期 
 	 *               	["process"],  // 步骤 
 	 *               	["auto_accept"],  // 自动接受 
 	 *               	["accept"],  // 接受条件 
@@ -678,7 +723,7 @@ class Task extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.process","task.quantity","task.status"] : $query['select'];
+		$select = empty($query['select']) ? ["task.task_id","task.cover","task.slug","task.name","category.name","task.type","task.refresh","task.process","task.quantity","task.status"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
@@ -744,6 +789,11 @@ class Task extends Model {
 				$query['category_slug'] = explode(',', $query['category_slug']);
 			}
 			$qb->whereIn("category.slug",  $query['category_slug'] );
+		}
+		  
+		// 按刷新周期查询 (=)  
+		if ( array_key_exists("refresh", $query) &&!empty($query['refresh']) ) {
+			$qb->where("task.refresh", '=', "{$query['refresh']}" );
 		}
 		  
 
@@ -850,6 +900,7 @@ class Task extends Model {
 			"monthly_limit",  // 月限额
 			"yearly_limit",  // 年限额
 			"time_limit",  // 完成时限
+			"refresh",  // 刷新周期
 			"process",  // 步骤
 			"auto_accept",  // 自动接受
 			"accept",  // 接受条件

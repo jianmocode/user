@@ -4,11 +4,11 @@
  * 任务数据接口 
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-03 22:51:57
+ * 最后修改: 2019-01-25 14:47:13
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/api/Name.php
  */
 namespace Xpmsns\User\Api;
-                          
+                           
 
 use \Xpmse\Loader\App;
 use \Xpmse\Excp;
@@ -172,6 +172,7 @@ class Task extends Api {
 	 *               	["monthly_limit"],  // 月限额 
 	 *               	["yearly_limit"],  // 年限额 
 	 *               	["time_limit"],  // 完成时限 
+	 *               	["refresh"],  // 刷新周期 
 	 *               	["process"],  // 步骤 
 	 *               	["auto_accept"],  // 自动接受 
 	 *               	["accept"],  // 接受条件 
@@ -263,6 +264,7 @@ class Task extends Api {
 	 *			      $query["auto_accept"] 按自动接受查询 ( AND = )
 	 *			      $query["category_category_id"] 按查询 ( AND IN )
 	 *			      $query["category_slug"] 按查询 ( AND IN )
+	 *			      $query["refresh"] 按刷新周期查询 ( AND = )
 	 *			      $query["orderby_created_at_desc"]  按 DESC 排序
 	 *			      $query["orderby_updated_at_desc"]  按 DESC 排序
      *
@@ -279,6 +281,7 @@ class Task extends Api {
 	 *			      $data["auto_accept"] 按自动接受查询 ( AND = )
 	 *			      $data["category_category_id"] 按查询 ( AND IN )
 	 *			      $data["category_slug"] 按查询 ( AND IN )
+	 *			      $data["refresh"] 按刷新周期查询 ( AND = )
 	 *			      $data["orderby_created_at_desc"]  按 DESC 排序
 	 *			      $data["orderby_updated_at_desc"]  按 DESC 排序
 	 *
@@ -300,6 +303,7 @@ class Task extends Api {
 	 *               	["monthly_limit"],  // 月限额 
 	 *               	["yearly_limit"],  // 年限额 
 	 *               	["time_limit"],  // 完成时限 
+	 *               	["refresh"],  // 刷新周期 
 	 *               	["process"],  // 步骤 
 	 *               	["auto_accept"],  // 自动接受 
 	 *               	["accept"],  // 接受条件 

@@ -46,6 +46,8 @@ class Usertask extends Model {
      * @param string $task  任务结构体
      *                  task_id         required
      *                  type            required
+     *                  slug            required
+     *                  auto_accept     required 
      *                  hourly_limit    ( type == repeatable) ? required
      *                  daily_limit     ( type == repeatable) ? required
      *                  weekly_limit    ( type == repeatable) ? required
@@ -60,6 +62,11 @@ class Usertask extends Model {
      * @return array 任务副本结构体
      */
     private function accept( $task, $user_id ) {
+
+        // 自动接受任务 （忽略处理）
+        if ( $task["auto_accept"] == 1 ) {
+            throw new Excp("该任务自动接受，无需调用accpet方法", 404, ["task"=>$task, "user_id"=>$user_id]);
+        }
 
         // 校验任务是否已被接受
         if ( $this->hasAccepted($task, $user_id) ) {
@@ -78,6 +85,12 @@ class Usertask extends Model {
             throw new Excp("未达到接受条件({$err["message"]})", 404, ["task"=>$task, "user_id"=>$user_id, "error"=>$err]);
         }
 
+        // 将历史副本标记为已完成
+        $cnt = $this->statusByUserIdAndTaskId($user_id, $task["task_id"]);
+        if ( $cnt != 0 ) {
+            throw new Excp("有仍未完成的任务副本(count={$cnt})", 404, ["task"=>$task, "user_id"=>$user_id, "count"=>$cnt]);
+        }
+
         // 创建任务副本
         return $this->create([
             "user_id"=>$user_id,
@@ -87,6 +100,22 @@ class Usertask extends Model {
         ]);
     }
 
+    /**
+     * 批量修改任务状态
+     * @param string $user_id  用户ID
+     * @param string $task_id  任务ID
+     * @return int 等于accepted的副本数量
+     */
+    public function statusByUserIdAndTaskId( $user_id, $task_id ) {
+        // 取消任务副本
+        $this->runsql("UPDATE {{table}} SET `status`='completed' WHERE `user_id`=? AND `task_id`=? AND `status`='accepted' ", fasle, [$user_id, $task_id] );
+        return $this->query()
+                   ->where("user_id", "=", $user_id) 
+                   ->where("task_id","=",$task_id)
+                   ->where("status", "=", "accepted")
+                   ->count("_id")
+            ;
+    }
 
     /**
      * 取消指定任务(任务副本)
@@ -243,6 +272,7 @@ class Usertask extends Model {
             $rows = $this->query()
                          ->where("task_id", "=", $task["task_id"])
                          ->where("user_id", "=", $user_id )
+                         ->where("status", "=", "accepted")
                          ->limit(1)
                          ->select("usertask_id")
                          ->get()->toArray();
@@ -250,13 +280,22 @@ class Usertask extends Model {
         }
 
         // 可重复任务
-        $rows = $this->query()
+        $qb = $this->query()
                      ->where("task_id", "=", $task["task_id"])
                      ->where("user_id", "=", $user_id )
+                     ->where("status", "=", "accepted")
                      ->orderBy("created_at","desc")
-                     ->limit(1)
-                     ->select("usertask_id", "created_at", "updated_at", "status")
-                     ->get()->toArray();
+                    ;
+        
+        // 如果是每天刷新，则历史任务副本失效
+        if( $task["refresh"] == 'daily' ) {
+            $today = date("Y-m-d 00:00:00");
+            $qb->where("created_at", ">", $today );
+        }
+
+        $rows = $qb->limit(1)
+                   ->select("usertask_id", "created_at", "updated_at", "status")
+                   ->get()->toArray();
         
         // 从未接受任务
         if ( empty($rows) ) {
@@ -268,7 +307,7 @@ class Usertask extends Model {
 
         // 已接受任务，且未完成
         if ($usertask["status"] == "accepted") {
-            
+
             // 未设定任务完成时限
             if ( $task["time_limit"] <= 0 ) {
                 return true;

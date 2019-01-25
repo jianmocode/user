@@ -162,6 +162,72 @@ use \Xpmse\T;
 								</ul>
 							</div> <!-- END 类型过滤 -->
 
+							<!-- 刷新周期过滤 -->
+							<div class="btn-group pull-right push-20-l" role="group">  
+								<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" >
+									<i class="glyphicon glyphicon-list-alt"></i> 
+									<?=($query['refresh'] == 'no') ? '不刷新' : '' ?>
+									<?=($query['refresh'] == 'hourly') ? '每小时' : '' ?>
+									<?=($query['refresh'] == 'daily') ? '每天' : '' ?>
+									<?=($query['refresh'] == 'weekly') ? '每周' : '' ?>
+									<?=($query['refresh'] == 'monthly') ? '每月' : '' ?>
+									<?=($query['refresh'] == 'quarterly') ? '每季度' : '' ?>
+									<?=($query['refresh'] == '') ? '' : '' ?>
+									<?=($query['refresh'] == 'yearly') ? '每年' : '' ?>
+									<?=(empty($query['refresh'])) ? '刷新周期' : '' ?>
+									<span class="caret"></span> 
+								</button>
+
+								<ul class="dropdown-menu dropdown-menu-right"  style="min-width: 87px;">
+									<li class="dropdown-header">刷新周期</li>
+									<li>
+										<a href="javascript:search('refresh','')">
+										   全部
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('refresh','no')">
+										   不刷新
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('refresh','hourly')">
+										   每小时
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('refresh','daily')">
+										   每天
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('refresh','weekly')">
+										   每周
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('refresh','monthly')">
+										   每月
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('refresh','quarterly')">
+										   每季度
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('refresh','')">
+										   
+										</a>
+									</li>
+									<li >
+										<a href="javascript:search('refresh','yearly')">
+										   每年
+										</a>
+									</li>
+								</ul>
+							</div> <!-- END 刷新周期过滤 -->
+
 
 						</div><!-- END col-xs-7 -->
 
@@ -178,6 +244,7 @@ use \Xpmse\T;
 								<th class="font-w300"> 名称 </th>
 								<th class="font-w300"> 分类 </th>
 								<th class="font-w300"> 类型 </th>
+								<th class="font-w300"> 刷新周期 </th>
 								<th class="font-w300"> 步骤 </th>
 								<th class="font-w300"> 积分数量 </th>
 								<th class="font-w300"> 状态 </th>
@@ -211,6 +278,9 @@ use \Xpmse\T;
 									<span class="text-<?=$rs['_type']['style']?>"><?=$rs['_type']['name'] ? $rs['_type']['name']  : $rs['type'] ?></span>
 								</td>
 								<td class="font-w300">
+									<span class="text-<?=$rs['_refresh']['style']?>"><?=$rs['_refresh']['name'] ? $rs['_refresh']['name']  : $rs['refresh'] ?></span>
+								</td>
+								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{process}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
 								<td class="font-w300">
@@ -225,7 +295,7 @@ use \Xpmse\T;
 						</tbody>
 
 						<tfoot>
-							<tr><td colspan="9"> <nav class="pull-right">
+							<tr><td colspan="10"> <nav class="pull-right">
 
 								<ul class="pagination">
 									<?php if ($response['prev'] !== false): ?>

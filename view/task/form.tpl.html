@@ -84,11 +84,12 @@ use \Xpmse\T;
 		<div class="form-group">
 			<label class="col-xs-2 control-label">接受处理器</label>
 			<div class="col-xs-8">
-                <textarea class="form-control input-lg disabled" name="accept"  type="text"  rows="6" 
+                
+                                <textarea class="form-control input-lg disabled" name="accept"  type="text"  rows="6" 
                     disabled
-                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=accept | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
+                    placeholder="任务接受处理器"><?=T::v('<%=accept | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
                 <input type="hidden" name="__json_cols" value="accept" />
-			</div>
+                			</div>
 			<div class="col-xs-2 push-10-t"></div>
 		</div>
 
@@ -324,6 +325,23 @@ use \Xpmse\T;
 	</div><!-- END 单行文本: 完成时限 (time_limit) -->
 
 
+	<!-- 单选框: 刷新周期 (refresh) 开始  -->
+	<div class="form-group    ">
+		<label class="col-xs-2 control-label" for="refresh">刷新周期</label>
+		<div class="col-xs-8">
+			<?php if (is_null($rs["refresh"])) { $rs["refresh"] = "no"; } ?>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="refresh" data-uncheck-value="no" value="no" <?=("no" == $rs["refresh"]) ? "checked" : ""?> > <span></span> 不刷新</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="refresh" data-uncheck-value="hourly" value="hourly" <?=("hourly" == $rs["refresh"]) ? "checked" : ""?> > <span></span>  每小时</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="refresh" data-uncheck-value="daily" value="daily" <?=("daily" == $rs["refresh"]) ? "checked" : ""?> > <span></span>  每天</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="refresh" data-uncheck-value="weekly" value="weekly" <?=("weekly" == $rs["refresh"]) ? "checked" : ""?> > <span></span>  每周</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="refresh" data-uncheck-value="monthly" value="monthly" <?=("monthly" == $rs["refresh"]) ? "checked" : ""?> > <span></span>  每月</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="refresh" data-uncheck-value="quarterly" value="quarterly" <?=("quarterly" == $rs["refresh"]) ? "checked" : ""?> > <span></span>  每季度</label>
+<label class="css-input  css-radio css-radio-lg css-radio-primary push-10-r"><input   type="radio" name="refresh" data-uncheck-value="yearly" value="yearly" <?=("yearly" == $rs["refresh"]) ? "checked" : ""?> > <span></span>  每年</label>
+			<div class="help-block">仅对可重复接受任务有效</div>
+		</div>
+	</div><!-- END 单选框: 刷新周期 (refresh) 开始  -->
+
+
 
 
     <!-- JSON编辑器(json-editor): 参数 (params) 开始  -->
@@ -337,11 +355,12 @@ use \Xpmse\T;
 		<div class="form-group">
 			<label class="col-xs-2 control-label">参数</label>
 			<div class="col-xs-8">
-                <textarea class="form-control input-lg " name="params"  type="text"  rows="6" 
+                
+                                <textarea class="form-control input-lg " name="params"  type="text"  rows="6" 
                     
-                    placeholder="请填写自定义JavaScript代码"><?=T::v('<%=params | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
+                    placeholder=""><?=T::v('<%=params | json_encode(constant(\'JSON_PRETTY_PRINT\') b-or constant(\'JSON_UNESCAPED_UNICODE\') )%>', $rs )?></textarea>
                 <input type="hidden" name="__json_cols" value="params" />
-			</div>
+                			</div>
 			<div class="col-xs-2 push-10-t"></div>
 		</div>
 
@@ -416,7 +435,7 @@ use \Xpmse\T;
 										<i class="fa fa-save push-5-r"></i> 保存
 								</button>
 
-								<!-- <button  
+								<button  
 									type="button" 
 									data-param-id="<?=$rs['task_id']?>"
 									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate  ">
@@ -464,7 +483,7 @@ use \Xpmse\T;
 	
 									 >
 										<i class="fa fa-minus-circle push-5-r"></i> 删除
-								</button> -->
+								</button>
 
 							</div>
 						</div>
