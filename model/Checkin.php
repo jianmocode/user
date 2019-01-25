@@ -157,9 +157,8 @@ class Checkin extends Model {
 
             $process = $i + 1;
 
-            $job->info( "\thistory: user_id={$ci["user_id"]} time={$ci["time"]} process={$process} ");
-            $job->info( "\t---\n" . json_encode($ci) . "\n---" );
-
+            $job->info( "\thistory: nickname={$ci["user_nickname"]} time={$ci["time"]} process={$process} ");
+            // $job->info( "\t---\n" . json_encode($ci) . "\n---" );
             // 历史时间对比
             $curr = strtotime(date("Y-m-d 00:00:00", strtotime($ci["time"])));
             if ( $last_8days[$i]  != $curr ) {
