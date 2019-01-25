@@ -178,7 +178,7 @@ class Checkin extends Model {
 
                 // 一轮签到已完成/标记任务已完成
                 if ( $nextProcess > 7 ) {
-                    $job->info( "\tcompleted: process={$process} usertask_id={$usertask["usertask_id"]}");
+                    $job->info( "\tcompleted@1: process={$process} usertask_id={$usertask["usertask_id"]}");
                     $nextProcess = 1;
                     $t->updateBy("usertask_id", [
                         "usertask_id" =>  $usertask["usertask_id"],
@@ -189,11 +189,11 @@ class Checkin extends Model {
             }
 
             $process = $nextProcess;
-        } 
+        }
 
         // 签到过程中有中断，标记任务已完成
         if ( !empty($usertask) && $usertask["process"] >= $process ) {
-            $job->info( "\tcompleted: process={$process} usertask_id={$usertask["usertask_id"]}");
+            $job->info( "\tcompleted@2: process={$process} usertask_id={$usertask["usertask_id"]}");
             $t->updateBy("usertask_id", [
                 "usertask_id" =>  $usertask["usertask_id"],
                 "status"=>"completed"
