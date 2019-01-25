@@ -85,10 +85,14 @@ class Usertask extends Model {
             throw new Excp("未达到接受条件({$err["message"]})", 404, ["task"=>$task, "user_id"=>$user_id, "error"=>$err]);
         }
 
-        // 将历史副本标记为已完成
-        $cnt = $this->statusByUserIdAndTaskId($user_id, $task["task_id"]);
-        if ( $cnt != 0 ) {
-            throw new Excp("有仍未完成的任务副本(count={$cnt})", 404, ["task"=>$task, "user_id"=>$user_id, "count"=>$cnt]);
+         // 如果是每天刷新，则历史任务副本失效
+         if( $task["refresh"] == 'daily' ) {
+             
+            // 将历史副本标记为已完成
+            $cnt = $this->statusByUserIdAndTaskId($user_id, $task["task_id"]);
+            if ( $cnt != 0 ) {
+                throw new Excp("有仍未完成的任务副本(count={$cnt})", 404, ["task"=>$task, "user_id"=>$user_id, "count"=>$cnt]);
+            }          
         }
 
         // 创建任务副本
