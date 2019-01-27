@@ -1503,6 +1503,13 @@ class User extends Model {
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
         }
+
+        // 自动增加前缀
+        foreach( $select as &$field ) {
+            if (count( explode(".", $field) ) == 1) {
+                $field = "user.{$field}";
+            }
+        }
         
         $qb = Utils::getTab("xpmsns_user_user as user", "{none}")->query();
         $qb->leftJoin("xpmsns_user_group as group", "group.group_id", "=", "user.group_id");
