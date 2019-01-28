@@ -114,6 +114,17 @@
 			}
 		]
     },{
+        "slug":"xpmsns/user/follow/index",
+        "name":"关注",
+        "icon":{
+            "default":"/static/icons/follow.svg"
+        },
+        "icontype": "img",
+        "linktype":"i",
+        "link":"{follow,index}",
+        "permission": "boss,admin,manager,user",
+        "order":9999
+    },{
         "slug":"xpmsns/user/favorite/index",
         "name":"收藏",
         "icon":{
