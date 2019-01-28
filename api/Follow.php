@@ -94,7 +94,12 @@ class Follow extends Api {
         $id = "{$data["user_id"]}_{$data["follower_id"]}";
 
         // 关注
-        return $fo->remove( $id,"user_follower");
+        $resp = $fo->remove( $id,"user_follower");
+        if ( $resp == true ) {
+            return ["code"=>0, "message"=>"取关成功"];
+        }
+
+        throw new Excp("取关失败", 403, ["query"=>$query, "data"=>$data, "response"=>$resp]);  
    }
 
 
