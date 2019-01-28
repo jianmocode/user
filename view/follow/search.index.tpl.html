@@ -110,6 +110,7 @@ use \Xpmse\T;
 					<table class="js-table-checkable table table-hover remove-margin">
 						<thead>
 							<tr>
+								<th class="font-w300"> 关注ID </th>
 								<th class="font-w300"> 用户 </th>
 								<th class="font-w300"> 粉丝 </th>
 								<th class="font-w300"> 来源 </th>
@@ -121,6 +122,9 @@ use \Xpmse\T;
 							<?php foreach ($response['data'] as $rs) :?>
 							<tr data-toggle="block-group" 
 								onclick="window.location='<?=App::R('follow', 'detail', ['follow_id'=>$rs['follow_id']])?>'" >
+								<td class="font-w300">
+									<?php $v=null; $v=T::s("{{follow_id}}", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
+								</td>
 								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{user_name ? user_name : user_nickname}} ( ID: {{user_user_id}} 手机: {{user_mobile}} )", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>
@@ -139,7 +143,7 @@ use \Xpmse\T;
 						</tbody>
 
 						<tfoot>
-							<tr><td colspan="4"> <nav class="pull-right">
+							<tr><td colspan="5"> <nav class="pull-right">
 
 								<ul class="pagination">
 									<?php if ($response['prev'] !== false): ?>

@@ -4,7 +4,7 @@
  * 关注数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-28 11:28:58
+ * 最后修改: 2019-01-28 11:56:45
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
@@ -281,7 +281,7 @@ class Follow extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 关注记录MAP {"follow_id1":{"key":"value",...}...}
 	 */
-	public function getInByFollowId($follow_ids, $select=["user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"], $order=["follow.created_at"=>"desc"] ) {
+	public function getInByFollowId($follow_ids, $select=["follow.follow_id","user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"], $order=["follow.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -484,7 +484,7 @@ class Follow extends Model {
 	 * @param array   $select       选取字段，默认选取所有
 	 * @return array 关注记录MAP {"user_follower1":{"key":"value",...}...}
 	 */
-	public function getInByUserFollower($user_followers, $select=["user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"], $order=["follow.created_at"=>"desc"] ) {
+	public function getInByUserFollower($user_followers, $select=["follow.follow_id","user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"], $order=["follow.created_at"=>"desc"] ) {
 		
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -547,11 +547,16 @@ class Follow extends Model {
 	 * @return array 数据记录数组 (key:value 结构)
 	 */
 	function create( $data ) {
+		if ( empty($data["follow_id"]) ) { 
+			$data["follow_id"] = $this->genId();
+        }
+        
         // @KEEP BEGIN
         if ( !empty($data["user_id"]) &&  !empty($data["follower_id"]) ) {
             $data["user_follower"] = "DB::RAW(CONCAT(`user_id`,'_', `follower_id`))";
         }
         // @KEEP END
+        
 		return parent::create( $data );
 	}
 
@@ -563,7 +568,7 @@ class Follow extends Model {
 	 * @param array   $order   排序方式 ["field"=>"asc", "field2"=>"desc"...]
 	 * @return array 关注记录数组 [{"key":"value",...}...]
 	 */
-	public function top( $limit=100, $select=["user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"], $order=["follow.created_at"=>"desc"] ) {
+	public function top( $limit=100, $select=["follow.follow_id","user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"], $order=["follow.created_at"=>"desc"] ) {
 
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
@@ -601,7 +606,7 @@ class Follow extends Model {
 	/**
 	 * 按条件检索关注记录
 	 * @param  array  $query
-	 *         	      $query['select'] 选取字段，默认选择 ["user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"]
+	 *         	      $query['select'] 选取字段，默认选择 ["follow.follow_id","user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"]
 	 *         	      $query['page'] 页码，默认为 1
 	 *         	      $query['perpage'] 每页显示记录数，默认为 20
 	 *			      $query["keyword"] 按关键词查询
@@ -721,7 +726,7 @@ class Follow extends Model {
 	 */
 	public function search( $query = [] ) {
 
-		$select = empty($query['select']) ? ["user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"] : $query['select'];
+		$select = empty($query['select']) ? ["follow.follow_id","user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"] : $query['select'];
 		if ( is_string($select) ) {
 			$select = explode(',', $select);
 		}
