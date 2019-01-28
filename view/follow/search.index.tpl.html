@@ -120,7 +120,7 @@ use \Xpmse\T;
 						<tbody>
 							<?php foreach ($response['data'] as $rs) :?>
 							<tr data-toggle="block-group" 
-								onclick="window.location='<?=App::R('follow', 'detail', ['user_follower'=>$rs['user_follower']])?>'" >
+								onclick="window.location='<?=App::R('follow', 'detail', ['follow_id'=>$rs['follow_id']])?>'" >
 								<td class="font-w300">
 									<?php $v=null; $v=T::s("{{user_name ? user_name : user_nickname}} ( ID: {{user_user_id}} 手机: {{user_mobile}} )", $rs ); echo empty($v) ? T::s("", $rs ) : $v; ?>
 								</td>

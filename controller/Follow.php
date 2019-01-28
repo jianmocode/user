@@ -4,7 +4,7 @@
  * 关注控制器
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-28 11:07:56
+ * 最后修改: 2019-01-28 11:28:58
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/controller/Name.php
  */
 
@@ -74,20 +74,20 @@ class FollowController extends \Xpmse\Loader\Controller {
 	 */
 	function detail() {
 
-		$user_follower = trim($_GET['user_follower']);
+		$follow_id = trim($_GET['follow_id']);
 		$action_name = '新建关注';
 		$inst = new \Xpmsns\User\Model\Follow;
 		
-		if ( !empty($user_follower) ) {
-			$rs = $inst->getByUserFollower($user_follower);
+		if ( !empty($follow_id) ) {
+			$rs = $inst->getByFollowId($follow_id);
 			if ( !empty($rs) ) {
-				$action_name =  $rs['user_follower'];
+				$action_name =  $rs['follow_id'];
 			}
 		}
 
 		$data = [
 			'action_name' =>  $action_name,
-			'user_follower'=>$user_follower,
+			'follow_id'=>$follow_id,
 			'rs' => $rs
 		];
 
@@ -173,7 +173,7 @@ class FollowController extends \Xpmse\Loader\Controller {
         $data = $_POST;
         Utils::JsonFromInput( $data );
 		$inst = new \Xpmsns\User\Model\Follow;
-		$rs = $inst->saveByUserFollower( $data );
+		$rs = $inst->saveByFollowId( $data );
 		echo json_encode($rs);
 	}
 
@@ -182,10 +182,10 @@ class FollowController extends \Xpmse\Loader\Controller {
 	 * @return [type] [description]
 	 */
 	function remove(){
-		$user_follower = $_POST['user_follower'];
+		$follow_id = $_POST['follow_id'];
 		$inst = new \Xpmsns\User\Model\Follow;
-		$user_followers =$inst->remove( $user_follower, "user_follower" );
-		echo json_encode(['message'=>"删除成功", 'extra'=>['$user_followers'=>$user_followers]]);
+		$follow_ids =$inst->remove( $follow_id, "follow_id" );
+		echo json_encode(['message'=>"删除成功", 'extra'=>['$follow_ids'=>$follow_ids]]);
 	}
 
 	/**
@@ -193,19 +193,20 @@ class FollowController extends \Xpmse\Loader\Controller {
 	 * @return
 	 */
 	function duplicate(){
-		$user_follower = $_GET['user_follower'];
+		$follow_id = $_GET['follow_id'];
 		$inst = new \Xpmsns\User\Model\Follow;
-		$rs = $inst->getByUserFollower( $user_follower );
-		$action_name =  $rs['user_follower'] . ' 副本';
+		$rs = $inst->getByFollowId( $follow_id );
+		$action_name =  $rs['follow_id'] . ' 副本';
 
 		// 删除唯一索引字段
+		unset($rs['follow_id']);
 		unset($rs['user_follower']);
 
 		// 复制图片
 
 		$data = [
 			'action_name' =>  $action_name,
-			'user_follower'=>$user_follower,
+			'follow_id'=>$follow_id,
 			'rs' => $rs
 		];
 

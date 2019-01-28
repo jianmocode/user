@@ -4,11 +4,11 @@
  * 关注数据模型
  *
  * 程序作者: XpmSE机器人
- * 最后修改: 2019-01-28 11:07:56
+ * 最后修改: 2019-01-28 11:28:58
  * 程序母版: /data/stor/private/templates/xpmsns/model/code/model/Name.php
  */
 namespace Xpmsns\User\Model;
-        
+           
 use \Xpmse\Excp;
 use \Xpmse\Model;
 use \Xpmse\Utils;
@@ -53,6 +53,44 @@ class Follow extends Model {
 	 * 自定义函数 
 	 */
 
+    // @KEEP BEGIN
+    /**
+     * 重载SaveBy
+     */
+    public function saveBy( $uniqueKey,  $data,  $keys=null , $select=["*"]) {
+        if ( !empty($data["user_id"]) &&  !empty($data["follower_id"]) ) {
+            $data["user_follower"] = "DB::RAW(CONCAT(`user_id`,'_', `follower_id`))";
+        }
+        return parent::saveBy( $uniqueKey,  $data,  $keys , $select );
+    }
+
+
+	/**
+	 * 重载Remove
+	 * @return [type] [description]
+	 */
+	function remove( $data_key, $uni_key="_id", $mark_only=true ){ 
+		
+		if ( $mark_only === true ) {
+
+			$time = date('Y-m-d H:i:s');
+			$_id = $this->getVar("_id", "WHERE {$uni_key}=? LIMIT 1", [$data_key]);
+			$row = $this->update( $_id, [
+				"deleted_at"=>$time, 
+				"user_follower"=>"DB::RAW(CONCAT('_','".time() . rand(10000,99999). "_', `user_follower`))"
+			]);
+
+			if ( $row['deleted_at'] == $time ) {	
+				return true;
+			}
+			return false;
+		}
+
+		return parent::remove($data_key, $uni_key, $mark_only);
+	}
+
+    // @KEEP END
+
 
 	/**
 	 * 创建数据表
@@ -60,6 +98,8 @@ class Follow extends Model {
 	 */
 	public function __schema() {
 
+		// 关注ID
+		$this->putColumn( 'follow_id', $this->type("string", ["length"=>128, "unique"=>true, "null"=>true]));
 		// 用户ID
 		$this->putColumn( 'user_id', $this->type("string", ["length"=>128, "index"=>true, "null"=>true]));
 		// 粉丝ID
@@ -95,9 +135,213 @@ class Follow extends Model {
 
 	
 	/**
+	 * 按关注ID查询一条关注记录
+	 * @param string $follow_id 唯一主键
+	 * @return array $rs 结果集 
+	 *          	  $rs["follow_id"],  // 关注ID 
+	 *          	  $rs["user_id"],  // 用户ID 
+	 *                $rs["user_user_id"], // user.user_id
+	 *          	  $rs["follower_id"],  // 粉丝ID 
+	 *                $rs["follower_user_id"], // user.user_id
+	 *          	  $rs["origin"],  // 来源 
+	 *          	  $rs["user_follower"],  // 唯一ID 
+	 *          	  $rs["data"],  // 数据 
+	 *          	  $rs["created_at"],  // 创建时间 
+	 *          	  $rs["updated_at"],  // 更新时间 
+	 *                $rs["user_created_at"], // user.created_at
+	 *                $rs["user_updated_at"], // user.updated_at
+	 *                $rs["user_group_id"], // user.group_id
+	 *                $rs["user_name"], // user.name
+	 *                $rs["user_idno"], // user.idno
+	 *                $rs["user_idtype"], // user.idtype
+	 *                $rs["user_iddoc"], // user.iddoc
+	 *                $rs["user_nickname"], // user.nickname
+	 *                $rs["user_sex"], // user.sex
+	 *                $rs["user_city"], // user.city
+	 *                $rs["user_province"], // user.province
+	 *                $rs["user_country"], // user.country
+	 *                $rs["user_headimgurl"], // user.headimgurl
+	 *                $rs["user_language"], // user.language
+	 *                $rs["user_birthday"], // user.birthday
+	 *                $rs["user_bio"], // user.bio
+	 *                $rs["user_bgimgurl"], // user.bgimgurl
+	 *                $rs["user_mobile"], // user.mobile
+	 *                $rs["user_mobile_nation"], // user.mobile_nation
+	 *                $rs["user_mobile_full"], // user.mobile_full
+	 *                $rs["user_email"], // user.email
+	 *                $rs["user_contact_name"], // user.contact_name
+	 *                $rs["user_contact_tel"], // user.contact_tel
+	 *                $rs["user_title"], // user.title
+	 *                $rs["user_company"], // user.company
+	 *                $rs["user_zip"], // user.zip
+	 *                $rs["user_address"], // user.address
+	 *                $rs["user_remark"], // user.remark
+	 *                $rs["user_tag"], // user.tag
+	 *                $rs["user_user_verified"], // user.user_verified
+	 *                $rs["user_name_verified"], // user.name_verified
+	 *                $rs["user_verify"], // user.verify
+	 *                $rs["user_verify_data"], // user.verify_data
+	 *                $rs["user_mobile_verified"], // user.mobile_verified
+	 *                $rs["user_email_verified"], // user.email_verified
+	 *                $rs["user_extra"], // user.extra
+	 *                $rs["user_password"], // user.password
+	 *                $rs["user_pay_password"], // user.pay_password
+	 *                $rs["user_status"], // user.status
+	 *                $rs["user_inviter"], // user.inviter
+	 *                $rs["user_follower_cnt"], // user.follower_cnt
+	 *                $rs["user_following_cnt"], // user.following_cnt
+	 *                $rs["user_name_message"], // user.name_message
+	 *                $rs["user_verify_message"], // user.verify_message
+	 *                $rs["user_client_token"], // user.client_token
+	 *                $rs["user_user_name"], // user.user_name
+	 *                $rs["follower_created_at"], // user.created_at
+	 *                $rs["follower_updated_at"], // user.updated_at
+	 *                $rs["follower_group_id"], // user.group_id
+	 *                $rs["follower_name"], // user.name
+	 *                $rs["follower_idno"], // user.idno
+	 *                $rs["follower_idtype"], // user.idtype
+	 *                $rs["follower_iddoc"], // user.iddoc
+	 *                $rs["follower_nickname"], // user.nickname
+	 *                $rs["follower_sex"], // user.sex
+	 *                $rs["follower_city"], // user.city
+	 *                $rs["follower_province"], // user.province
+	 *                $rs["follower_country"], // user.country
+	 *                $rs["follower_headimgurl"], // user.headimgurl
+	 *                $rs["follower_language"], // user.language
+	 *                $rs["follower_birthday"], // user.birthday
+	 *                $rs["follower_bio"], // user.bio
+	 *                $rs["follower_bgimgurl"], // user.bgimgurl
+	 *                $rs["follower_mobile"], // user.mobile
+	 *                $rs["follower_mobile_nation"], // user.mobile_nation
+	 *                $rs["follower_mobile_full"], // user.mobile_full
+	 *                $rs["follower_email"], // user.email
+	 *                $rs["follower_contact_name"], // user.contact_name
+	 *                $rs["follower_contact_tel"], // user.contact_tel
+	 *                $rs["follower_title"], // user.title
+	 *                $rs["follower_company"], // user.company
+	 *                $rs["follower_zip"], // user.zip
+	 *                $rs["follower_address"], // user.address
+	 *                $rs["follower_remark"], // user.remark
+	 *                $rs["follower_tag"], // user.tag
+	 *                $rs["follower_user_verified"], // user.user_verified
+	 *                $rs["follower_name_verified"], // user.name_verified
+	 *                $rs["follower_verify"], // user.verify
+	 *                $rs["follower_verify_data"], // user.verify_data
+	 *                $rs["follower_mobile_verified"], // user.mobile_verified
+	 *                $rs["follower_email_verified"], // user.email_verified
+	 *                $rs["follower_extra"], // user.extra
+	 *                $rs["follower_password"], // user.password
+	 *                $rs["follower_pay_password"], // user.pay_password
+	 *                $rs["follower_status"], // user.status
+	 *                $rs["follower_inviter"], // user.inviter
+	 *                $rs["follower_follower_cnt"], // user.follower_cnt
+	 *                $rs["follower_following_cnt"], // user.following_cnt
+	 *                $rs["follower_name_message"], // user.name_message
+	 *                $rs["follower_verify_message"], // user.verify_message
+	 *                $rs["follower_client_token"], // user.client_token
+	 *                $rs["follower_user_name"], // user.user_name
+	 */
+	public function getByFollowId( $follow_id, $select=['*']) {
+		
+		if ( is_string($select) ) {
+			$select = explode(',', $select);
+		}
+
+
+		// 增加表单查询索引字段
+		array_push($select, "follow.follow_id");
+		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
+
+		// 创建查询构造器
+		$qb = Utils::getTab("xpmsns_user_follow as follow", "{none}")->query();
+ 		$qb->leftJoin("xpmsns_user_user as user", "user.user_id", "=", "follow.user_id"); // 连接用户
+ 		$qb->leftJoin("xpmsns_user_user as follower", "follower.user_id", "=", "follow.follower_id"); // 连接粉丝
+		$qb->where('follow.follow_id', '=', $follow_id );
+		$qb->limit( 1 );
+		$qb->select($select);
+		$rows = $qb->get()->toArray();
+		if( empty($rows) ) {
+			return [];
+		}
+
+		$rs = current( $rows );
+		$this->format($rs);
+
+  
+  
+		return $rs;
+	}
+
+		
+
+	/**
+	 * 按关注ID查询一组关注记录
+	 * @param array   $follow_ids 唯一主键数组 ["$follow_id1","$follow_id2" ...]
+	 * @param array   $order        排序方式 ["field"=>"asc", "field2"=>"desc"...]
+	 * @param array   $select       选取字段，默认选取所有
+	 * @return array 关注记录MAP {"follow_id1":{"key":"value",...}...}
+	 */
+	public function getInByFollowId($follow_ids, $select=["user.user_id","user.name","user.nickname","user.mobile","follower.user_id","follower.name","follower.nickname","follower.mobile","follow.origin","follow.created_at","follow.updated_at"], $order=["follow.created_at"=>"desc"] ) {
+		
+		if ( is_string($select) ) {
+			$select = explode(',', $select);
+		}
+
+		// 增加表单查询索引字段
+		array_push($select, "follow.follow_id");
+		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
+
+		// 创建查询构造器
+		$qb = Utils::getTab("xpmsns_user_follow as follow", "{none}")->query();
+ 		$qb->leftJoin("xpmsns_user_user as user", "user.user_id", "=", "follow.user_id"); // 连接用户
+ 		$qb->leftJoin("xpmsns_user_user as follower", "follower.user_id", "=", "follow.follower_id"); // 连接粉丝
+		$qb->whereIn('follow.follow_id', $follow_ids);
+		
+		// 排序
+		foreach ($order as $field => $order ) {
+			$qb->orderBy( $field, $order );
+		}
+		$qb->select( $select );
+		$data = $qb->get()->toArray(); 
+
+		$map = [];
+
+  		foreach ($data as & $rs ) {
+			$this->format($rs);
+			$map[$rs['follow_id']] = $rs;
+			
+  		}
+
+  
+
+		return $map;
+	}
+
+
+	/**
+	 * 按关注ID保存关注记录。(记录不存在则创建，存在则更新)
+	 * @param array $data 记录数组 (key:value 结构)
+	 * @param array $select 返回的字段，默认返回全部
+	 * @return array 数据记录数组
+	 */
+	public function saveByFollowId( $data, $select=["*"] ) {
+
+		if ( is_string($select) ) {
+			$select = explode(',', $select);
+		}
+
+		// 增加表单查询索引字段
+		array_push($select, "follow.follow_id");
+		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
+		$rs = $this->saveBy("follow_id", $data, ["follow_id", "user_follower"], ['_id', 'follow_id']);
+		return $this->getByFollowId( $rs['follow_id'], $select );
+	}
+	
+	/**
 	 * 按唯一ID查询一条关注记录
 	 * @param string $user_follower 唯一主键
 	 * @return array $rs 结果集 
+	 *          	  $rs["follow_id"],  // 关注ID 
 	 *          	  $rs["user_id"],  // 用户ID 
 	 *                $rs["user_user_id"], // user.user_id
 	 *          	  $rs["follower_id"],  // 粉丝ID 
@@ -208,7 +452,7 @@ class Follow extends Model {
 
 
 		// 增加表单查询索引字段
-		array_push($select, "follow.user_follower");
+		array_push($select, "follow.follow_id");
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 
 		// 创建查询构造器
@@ -247,7 +491,7 @@ class Follow extends Model {
 		}
 
 		// 增加表单查询索引字段
-		array_push($select, "follow.user_follower");
+		array_push($select, "follow.follow_id");
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 
 		// 创建查询构造器
@@ -290,10 +534,10 @@ class Follow extends Model {
 		}
 
 		// 增加表单查询索引字段
-		array_push($select, "follow.user_follower");
+		array_push($select, "follow.follow_id");
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
-		$rs = $this->saveBy("user_follower", $data, ["user_follower"], ['_id', 'user_follower']);
-		return $this->getByUserFollower( $rs['user_follower'], $select );
+		$rs = $this->saveBy("user_follower", $data, ["follow_id", "user_follower"], ['_id', 'follow_id']);
+		return $this->getByFollowId( $rs['follow_id'], $select );
 	}
 
 
@@ -303,6 +547,11 @@ class Follow extends Model {
 	 * @return array 数据记录数组 (key:value 结构)
 	 */
 	function create( $data ) {
+        // @KEEP BEGIN
+        if ( !empty($data["user_id"]) &&  !empty($data["follower_id"]) ) {
+            $data["user_follower"] = "DB::RAW(CONCAT(`user_id`,'_', `follower_id`))";
+        }
+        // @KEEP END
 		return parent::create( $data );
 	}
 
@@ -321,7 +570,7 @@ class Follow extends Model {
 		}
 
 		// 增加表单查询索引字段
-		array_push($select, "follow.user_follower");
+		array_push($select, "follow.follow_id");
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 
 		// 创建查询构造器
@@ -367,6 +616,7 @@ class Follow extends Model {
 	 *			      $query["orderby_updated_at_desc"]  按更新时间倒序 DESC 排序
 	 *           
 	 * @return array 关注记录集 {"total":100, "page":1, "perpage":20, data:[{"key":"val"}...], "from":1, "to":1, "prev":false, "next":1, "curr":10, "last":20}
+	 *               	["follow_id"],  // 关注ID 
 	 *               	["user_id"],  // 用户ID 
 	 *               	["user_user_id"], // user.user_id
 	 *               	["follower_id"],  // 粉丝ID 
@@ -477,7 +727,7 @@ class Follow extends Model {
 		}
 
 		// 增加表单查询索引字段
-		array_push($select, "follow.user_follower");
+		array_push($select, "follow.follow_id");
 		$inwhereSelect = $this->formatSelect( $select ); // 过滤 inWhere 查询字段
 
 		// 创建查询构造器
@@ -665,6 +915,7 @@ class Follow extends Model {
 	 */
 	public static function getFields() {
 		return [
+			"follow_id",  // 关注ID
 			"user_id",  // 用户ID
 			"follower_id",  // 粉丝ID
 			"origin",  // 来源

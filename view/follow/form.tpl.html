@@ -30,7 +30,7 @@ use \Xpmse\T;
 			<form class="form-horizontal follow-form form-lg" action= '<?=App::NR("follow", "save");?>' >
 
 				<!-- 隐藏域 -->
-				<input type="hidden" name="user_follower" value="<?=$rs['user_follower']?>" >
+				<input type="hidden" name="follow_id" value="<?=$rs['follow_id']?>" >
 	
 
 
@@ -171,7 +171,7 @@ use \Xpmse\T;
 
 								<button  
 									type="button" 
-									data-param-id="<?=$rs['user_follower']?>"
+									data-param-id="<?=$rs['follow_id']?>"
 									class="btn btn-lg btn-primary font-w300 btn-minw  push-50-r fn-action fn-saved-only fn-duplicate  ">
 										<i class="fa fa-files-o push-5-r"></i> 复制
 								</button>
@@ -180,7 +180,7 @@ use \Xpmse\T;
 									type="button"
 									class="btn btn-lg btn-danger btn-minw ajax-confirm fn-action fn-saved-only fn-remove"
 									confirm-title="请确认删除关注 "
-						            confirm-content="您确定删除关注 <strong><?=$rs['name=user_follower']?>(<?=$rs['user_follower']?> )</strong>"
+						            confirm-content="您确定删除关注 <strong><?=$rs['name=follow_id']?>(<?=$rs['follow_id']?> )</strong>"
 						            confirm-dismiss = "取消"
 						            confirm-submit= "确定"
 						            confirm-action="<?=App::NR('follow','remove')?>"
@@ -213,7 +213,7 @@ use \Xpmse\T;
 										}
 									"
 
-									data-param-user_follower="<?=$rs['user_follower']?>" 
+									data-param-follow_id="<?=$rs['follow_id']?>" 
 	
 									 >
 										<i class="fa fa-minus-circle push-5-r"></i> 删除
@@ -306,7 +306,7 @@ function save( form, validation ) {
 			return;
 		}
 
-		if ( typeof  data['user_follower'] == 'undefined' ) {
+		if ( typeof  data['follow_id'] == 'undefined' ) {
 			var message = data['message'] || "未知错误";
 			failure( message );
 			return;
@@ -314,9 +314,9 @@ function save( form, validation ) {
 		
 
 		// 更新ID
-		$('input[name=user_follower]').val( data['user_follower'] );
+		$('input[name=follow_id]').val( data['follow_id'] );
 		$('.fn-saved-only').removeClass('hidden');
-		$('.fn-saved-only').attr('data-param-id', data['user_follower']);
+		$('.fn-saved-only').attr('data-param-id', data['follow_id']);
 
 		// 保存成功
 		success('保存成功');
@@ -369,13 +369,13 @@ $(function(){
 
 
 	$('.fn-duplicate').click(function(){
-		var api = "<?=App::R('follow','duplicate', ['user_follower'=>''])?>";
+		var api = "<?=App::R('follow','duplicate', ['follow_id'=>''])?>";
 		var id = $(this).attr('data-param-id');
 		var url = api + id;
 		window.location = url;
 	})
 
-	if ( $('input[name="user_follower"]').val() == '' || $('input[name="user_follower"]').val() == undefined ) {
+	if ( $('input[name="follow_id"]').val() == '' || $('input[name="follow_id"]').val() == undefined ) {
 		$('.fn-saved-only').addClass('hidden');
 	}
 
