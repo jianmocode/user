@@ -107,6 +107,35 @@ class Follow extends Api {
     * 查询粉丝列表
     */
    function getFollowers(  $query, $data  ) {
+
+        // 支持POST和GET查询
+        $data = array_merge( $query, $data );
+        $u = new \Xpmsns\User\Model\User;
+        $user = $u->getUserInfo();
+        $user_id = $user["user_id"];
+
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $select = $data['select'];
+        if (empty($select) ) {
+            $select = [
+                "follow_id", "origin",
+                "user_id", "user.nickname as user_nickname", "user.name  as user_name","user.headimgurl as user_headimgurl",
+                "follower_id", "follower.nickname as follower_nickname", "follower.name  as follower_name","follower.headimgurl as follower_headimgurl",
+            ];
+        }
+
+        if ( is_string($select) ) {
+			$select = explode(',', $select);
+        }
+        
+        $fo = new \Xpmsns\User\Model\Follow;
+        $data["user_id"] = $user_id;
+
+        return $fo->search( $data );
+    
    }
 
 
@@ -114,12 +143,41 @@ class Follow extends Api {
     * 查询关注者列表
     */
    function getFollowings( $query, $data  ) {
+
+        // 支持POST和GET查询
+        $data = array_merge( $query, $data );
+        $u = new \Xpmsns\User\Model\User;
+        $user = $u->getUserInfo();
+        $user_id = $user["user_id"];
+
+        if ( empty($user_id) ) {
+            throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
+        }
+
+        $select = $data['select'];
+        if (empty($select) ) {
+            $select = [
+                "follow_id", "origin",
+                "user_id", "user.nickname as user_nickname", "user.name  as user_name","user.headimgurl as user_headimgurl",
+                "follower_id", "follower.nickname as follower_nickname", "follower.name  as follower_name","follower.headimgurl as follower_headimgurl",
+            ];
+        }
+
+        if ( is_string($select) ) {
+            $select = explode(',', $select);
+        }
+        
+        $fo = new \Xpmsns\User\Model\Follow;
+        $data["follower_id"] = $user_id;
+
+        return $fo->search( $data );
    }
 
    /**
     * 查询好友列表
     */
    function getFriends() {
+
    }
 
    
