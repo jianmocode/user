@@ -60,6 +60,8 @@ class Follow extends Model {
     public function saveBy( $uniqueKey,  $data,  $keys=null , $select=["*"]) {
         if ( !empty($data["user_id"]) &&  !empty($data["follower_id"]) ) {
             $data["user_follower"] = "DB::RAW(CONCAT(`user_id`,'_', `follower_id`))";
+            // 清除缓存
+            $this->clearRelationCache($data["user_id"], $data["follower_id"]);
         }
         return parent::saveBy( $uniqueKey,  $data,  $keys , $select );
     }
@@ -72,6 +74,11 @@ class Follow extends Model {
 	function remove( $data_key, $uni_key="_id", $mark_only=true ){ 
 		
 		if ( $mark_only === true ) {
+
+            if ( $uni_key == "user_follower" ) {
+                $fo = explode("_", $data_key);
+                $this->clearRelationCache($fo[0], $fo[1]);
+            }
 
 			$time = date('Y-m-d H:i:s');
 			$_id = $this->getVar("_id", "WHERE {$uni_key}=? LIMIT 1", [$data_key]);
@@ -87,7 +94,168 @@ class Follow extends Model {
 		}
 
 		return parent::remove($data_key, $uni_key, $mark_only);
-	}
+    }
+    
+
+    /**
+     * 清空用户关系缓存
+     * @param string $my_id 用户ID 
+     * @param array  $user_id 待检验的用户ID
+     */
+    function clearRelationCache( string $my_id = null, string $user_id = null ) {
+
+        if ( empty($my_id) ) {
+            return $this->cache->delete();
+        } else if ( empty($user_id) ) {
+            return $this->cache->delete($my_id);
+        } else {
+            $cache_name = "{$my_id}:{$user_id}";
+            return $this->cache->del($cache_name);
+        }
+    }
+
+    /**
+     * 从缓存中读取用户关系
+     * @param string $my_id 用户ID 
+     * @param array  $user_id 待检验的用户ID
+     * @return string|bool self 自己, follower 粉丝, following 关注的人, friend 互相关注,  no-relation 不是粉丝,也不是关注的人,  false 缓存中没有数据
+     */
+    function getRelationFromCache( string $my_id, string $user_id ) {
+        $cache_name = "{$my_id}:{$user_id}";
+        return $this->cache->get($cache_name);
+    }
+
+
+    /**
+     * 批量读取用户关系
+     * @param string $my_id 用户ID 
+     * @param array  $user_ids 待检验的用户ID清单
+     * @return 待检测用户与$my_id用户关系映射  {":user_id": "follower", .... }
+     *         关系有效值: self 自己, follower 粉丝, following 关注的人, friend 互相关注,  no-relation 路人 不是粉丝,也不是关注的人,  false 缓存中没有数据
+     */
+    function getRelation(string $my_id, array $user_ids) {
+
+        $relation = [];
+        $followers = []; $followings = []; $friends = []; 
+
+        // 读取粉丝
+        $followerRows = $this->query()
+                          ->where("user_id", $my_id)
+                          ->whereIn("follower_id", $user_ids)
+                          ->select("follower_id")
+                          ->get()->toArray();
+        $followers = array_column( $followerRows, "follower_id" );
+        
+        // 读取关注的人
+        $followingRows = $this->query()
+                          ->where("follower_id", $my_id)
+                          ->whereIn("user_id", $user_ids)
+                          ->select("user_id")
+                          ->get()->toArray();
+        
+        $followings = array_column( $followingRows, "user_id" );
+
+        // 计算互相关注关系
+        $friends = array_intersect($followers, $followings);
+
+        // 返回关系映射
+        foreach( $user_ids as $user_id ) {
+
+            // self
+            if ( $user_id == $my_id) {
+                $relation[$user_id] = "self";
+            }
+
+            // 互相关注
+            elseif ( in_array($user_id, $friends) ) {
+                $relation[$user_id] = "friend";
+            }
+
+            // 粉丝
+            elseif ( in_array($user_id, $followers) ) {
+                $relation[$user_id] = "follower";
+            }
+
+            // 关注的人
+            elseif ( in_array($user_id, $followings) ) {
+                $relation[$user_id] = "following";
+            }
+
+            // 路人 不是粉丝,也不是关注的人
+            else {
+                $relation[$user_id] = 'no-relation';
+            }
+
+            // 数据缓存1个小时
+            $cache_name = "{$my_id}:{$user_id}";
+            $this->cache->set($cache_name, $relation[$user_id], 3600);
+        }
+        
+        return $relation;
+    }
+
+
+    /**
+     * 查询粉丝列表
+     * @param string $my_id 用户ID 
+     * @param array|string  $select 查询字段清单
+     */
+    function getFollowers( string $my_id, $select = [] ) {
+
+        if (empty($select) ) {
+            $select = [
+                "follow_id", "origin",
+                "user_id", "user.nickname as user_nickname", "user.name  as user_name","user.headimgurl as user_headimgurl",
+                "follower_id", "follower.nickname as follower_nickname", "follower.name  as follower_name","follower.headimgurl as follower_headimgurl",
+            ];
+        }
+
+        if ( is_string($select) ) {
+            $select = explode(',', $select);
+        }
+        
+        $fo = new \Xpmsns\User\Model\Follow;
+        $data["user_id"] = $my_id;
+
+        return $fo->search( $data );
+
+    }
+
+
+    /**
+     * 查询关注者列表
+     * @param string $my_id 用户ID 
+     * @param array|string  $select 查询字段清单
+     */
+    function getFollowings( string $my_id, $select = [] ) {
+
+        if (empty($select) ) {
+            $select = [
+                "follow_id", "origin",
+                "user_id", "user.nickname as user_nickname", "user.name  as user_name","user.headimgurl as user_headimgurl",
+                "follower_id", "follower.nickname as follower_nickname", "follower.name  as follower_name","follower.headimgurl as follower_headimgurl",
+            ];
+        }
+
+        if ( is_string($select) ) {
+            $select = explode(',', $select);
+        }
+        
+        $fo = new \Xpmsns\User\Model\Follow;
+        $data["follower_id"] = $my_id;
+
+        return $fo->search( $data );
+    }
+
+    /**
+     * 查询好友列表
+     * @param string $my_id 用户ID 
+     * @param array|string  $select 查询字段清单
+     */
+    function getFriends( string $my_id, $select = [] ) {
+
+    }
+
 
     // @KEEP END
 

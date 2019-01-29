@@ -641,20 +641,20 @@ class User extends Model {
 
 
     /**
-     * 读取用户关系
+     * 批量读取用户关系
      * @param string $my_id 用户ID 
      * @param array  $user_ids 待检验的用户ID清单
      * @return 待检测用户与$my_id用户关系映射  {":user_id": "follower", .... }
      */
     public function getUserRelation( string $my_id, array $user_ids ) {
 
-        $fo = new Flollow();
+        $fo = new Follow();
         $relation = [];
 
         // 从缓存中读取数据
         foreach ( $user_ids as $idx=>$user_id ) {
             $value = $fo->getRelationFromCache( $my_id, $user_id );
-            if ( !empty($re) ) {
+            if ( $value !== false ) {
                 $relation[$user_id] = $value;
                 unset( $user_ids[$idx] );
             }
