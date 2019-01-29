@@ -198,10 +198,10 @@ class Follow extends Model {
     /**
      * 查询粉丝列表
      * @param string $my_id 用户ID 
-     * @param array|string  $select 查询字段清单
+     * @param array $query 查询条件
      */
-    function getFollowers( string $my_id, $select = [] ) {
-
+    function getFollowers( string $my_id, $query=[] ) {
+        $select = $query["select"];
         if (empty($select) ) {
             $select = [
                 "follow_id", "origin",
@@ -214,8 +214,8 @@ class Follow extends Model {
             $select = explode(',', $select);
         }
         
-        $data["user_id"] = $my_id;
-        return $this->search( $data );
+        $query["user_id"] = $my_id;
+        return $this->search( $query );
 
     }
 
@@ -223,9 +223,11 @@ class Follow extends Model {
     /**
      * 查询关注者列表
      * @param string $my_id 用户ID 
-     * @param array|string  $select 查询字段清单
+     * @param array $query 查询条件
      */
-    function getFollowings( string $my_id, $select = [] ) {
+    function getFollowings( string $my_id, $query=[] ) {
+
+        $select = $query["select"];
 
         if (empty($select) ) {
             $select = [
@@ -239,9 +241,9 @@ class Follow extends Model {
             $select = explode(',', $select);
         }
         
-        $data["follower_id"] = $my_id;
+        $query["follower_id"] = $my_id;
 
-        return $this->search( $data );
+        return $this->search( $query );
     }
 
     /**
@@ -249,7 +251,9 @@ class Follow extends Model {
      * @param string $my_id 用户ID 
      * @param array|string  $select 查询字段清单
      */
-    function getFriends( string $my_id, $select = [] ) {
+    function getFriends( string $my_id, $query=[],  $select = [] ) {
+
+        $select = $query["select"];
         
         if (empty($select) ) {
             $select = [

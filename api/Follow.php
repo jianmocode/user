@@ -140,7 +140,7 @@ class Follow extends Api {
         }
         
         $fo = new \Xpmsns\User\Model\Follow;
-        return $fo->getFollowings( $user_id, $data["select"] );
+        return $fo->getFollowings( $user_id, $data );
    }
 
    /**
@@ -159,7 +159,7 @@ class Follow extends Api {
         }
         
         $fo = new \Xpmsns\User\Model\Follow;
-        return $fo->getFriends( $user_id, $data["select"] );
+        return $fo->getFriends( $user_id, $data );
    }
 
    // @KEEP END
