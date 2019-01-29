@@ -640,6 +640,34 @@ class User extends Model {
     }
 
 
+    /**
+     * 读取用户关系
+     * @param string $my_id 用户ID 
+     * @param array  $user_ids 待检验的用户ID清单
+     * @return 待检测用户与$my_id用户关系映射  {":user_id": "follower", .... }
+     */
+    public function getUserRelation( string $my_id, array $user_ids ) {
+
+        $fo = new Flollow();
+        $relation = [];
+
+        // 从缓存中读取数据
+        foreach ( $user_ids as $idx=>$user_id ) {
+            $value = $fo->getRelationFromCache( $my_id, $user_id );
+            if ( !empty($re) ) {
+                $relation[$user_id] = $value;
+                unset( $user_ids[$idx] );
+            }
+        }
+
+        // 从数据库中读取数据
+        if ( !empty($user_ids) ) {
+            $relation = array_merge( $relation, $fo->getRelation( $my_id, $user_ids ));
+        }
+
+        return $relation;
+    }
+
 
 	/**
 	 * 解压扫描登录指令

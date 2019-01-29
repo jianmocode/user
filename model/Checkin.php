@@ -211,7 +211,7 @@ class Checkin extends Model {
             $task["auto_accept"] == 1 &&
             ( empty($usertask) || ( $usertask["status"] != "accepted" &&  $task["type"] == "repeatable" ) )
         ) {
-            $task["usertask"] = $usertask = $t->acceptBySlug( $task_slug, $user_id );
+            $task["usertask"] = $usertask = $t->acceptBySlug( $task_slug, $user_id, true );
             $job->info( "\treset: process={$process} usertask_id={$usertask["usertask_id"]}");
         }
 

@@ -61,10 +61,10 @@ class Usertask extends Model {
      * @param string $user_id  用户ID
      * @return array 任务副本结构体
      */
-    private function accept( $task, $user_id ) {
+    private function accept( $task, $user_id, $force=false ) {
 
         // 自动接受任务 （忽略处理）
-        if ( $task["auto_accept"] == 1 ) {
+        if ( $task["auto_accept"] == 1 && $force === false) {
             throw new Excp("该任务自动接受，无需调用accpet方法", 404, ["task"=>$task, "user_id"=>$user_id]);
         }
 
@@ -332,7 +332,7 @@ class Usertask extends Model {
      * @param string $user_id  用户ID
      * @return array 任务副本结构体
      */
-    public function acceptByTaskId( $task_id, $user_id ) {
+    public function acceptByTaskId( $task_id, $user_id , $force=false) {
 
         $t = new Task;
         $task = $t->getByTaskId( $task_id );
@@ -344,7 +344,7 @@ class Usertask extends Model {
             throw new Excp("任务已下线", 403, ["task"=>$task]);
         }
 
-        return $this->accept( $task, $user_id );
+        return $this->accept( $task, $user_id, $force );
 
     }
 
@@ -354,7 +354,7 @@ class Usertask extends Model {
      * @param string $slug 任务别名
      * @param string $user_id  用户ID
      */
-    public function acceptBySlug( $slug, $user_id ) {
+    public function acceptBySlug( $slug, $user_id , $force=false) {
         $t = new Task;
         $task = $t->getBySlug( $slug );
         if ( empty($task) ) {
@@ -365,7 +365,7 @@ class Usertask extends Model {
             throw new Excp("任务已下线", 403, ["task"=>$task]);
         }
 
-        return $this->accept( $task, $user_id );
+        return $this->accept( $task, $user_id, $force );
     }
 
 
