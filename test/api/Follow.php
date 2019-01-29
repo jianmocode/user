@@ -57,8 +57,8 @@ class testArticleModel extends PHPUnit_Framework_TestCase {
      * 
      * 丢了灵魂的孩纸 0: 
      *      friend: 只因太美 1 
-     *    follower: 敷衍不停的重演 3
-     *   following: 渔美人 2
+     *    follower: 只因太美 1, 敷衍不停的重演 3
+     *   following: 只因太美 1, 渔美人 2
      * no-relation: 大扎王后 4, 森系女孩 5, 樱桃娃娃 6, 超人小叮当 7, 我是飞车妞 8, 我迷了鹿 9, 
      * 
      * 数据统计:
@@ -160,6 +160,60 @@ class testArticleModel extends PHPUnit_Framework_TestCase {
             $this->assertTrue($fo->getRelationFromCache($user_id, $user_ids[$i]) == "no-relation" );
         }
     }
+
+    /**
+     * 测试读取粉丝列表
+     */
+    function testGetFollowers() {
+        $u = new \Xpmsns\User\Model\User;
+        $fo = new \Xpmsns\User\Model\Follow;
+        $users = $u->getData("WHERE `inviter`='unit-test'");
+        $user_id = $users[0]["user_id"];
+        $user_ids = array_column($users, "user_id");
+
+        $followers = $fo->getFollowers( $user_id );
+        $follower_ids = array_column($followers["data"], "follower_user_id");
+
+        $this->assertTrue($user_ids[1] == $follower_ids[0] );
+        $this->assertTrue($user_ids[3] == $follower_ids[1] );
+    }
+
+    /**
+     * 测试读取关注的人列表
+     */
+    function testGetFollowings() {
+        $u = new \Xpmsns\User\Model\User;
+        $fo = new \Xpmsns\User\Model\Follow;
+        $users = $u->getData("WHERE `inviter`='unit-test'");
+        $user_id = $users[0]["user_id"];
+        $user_ids = array_column($users, "user_id");
+
+        $followings = $fo->getFollowings( $user_id );
+        $following_ids = array_column($followings["data"], "user_user_id");
+
+        $this->assertTrue($user_ids[1] == $following_ids[0] );
+        $this->assertTrue($user_ids[2] == $following_ids[1] );
+    }
+
+
+    /**
+     * 测试读取互相关注的人列表
+     */
+    function testGetFriends() {
+        $u = new \Xpmsns\User\Model\User;
+        $fo = new \Xpmsns\User\Model\Follow;
+        $users = $u->getData("WHERE `inviter`='unit-test'");
+        $user_id = $users[0]["user_id"];
+        $user_ids = array_column($users, "user_id");
+        $friends = $fo->getFriends( $user_id );
+
+        // print_r( $friends );
+
+        // $friends_ids = array_column($friends["data"], "follower_user_id");
+
+        // $this->assertTrue($user_ids[1] == $friends_ids[0] );
+    }
+
 
 
     /**

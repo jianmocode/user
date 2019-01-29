@@ -205,8 +205,8 @@ class Follow extends Model {
         if (empty($select) ) {
             $select = [
                 "follow_id", "origin",
-                "user_id", "user.nickname as user_nickname", "user.name  as user_name","user.headimgurl as user_headimgurl",
-                "follower_id", "follower.nickname as follower_nickname", "follower.name  as follower_name","follower.headimgurl as follower_headimgurl",
+                "follow.user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl",
+                "follow.follower_id", "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl",
             ];
         }
 
@@ -214,10 +214,8 @@ class Follow extends Model {
             $select = explode(',', $select);
         }
         
-        $fo = new \Xpmsns\User\Model\Follow;
         $data["user_id"] = $my_id;
-
-        return $fo->search( $data );
+        return $this->search( $data );
 
     }
 
@@ -232,8 +230,8 @@ class Follow extends Model {
         if (empty($select) ) {
             $select = [
                 "follow_id", "origin",
-                "user_id", "user.nickname as user_nickname", "user.name  as user_name","user.headimgurl as user_headimgurl",
-                "follower_id", "follower.nickname as follower_nickname", "follower.name  as follower_name","follower.headimgurl as follower_headimgurl",
+                "follow.user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl",
+                "follow.follower_id", "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl",
             ];
         }
 
@@ -241,10 +239,9 @@ class Follow extends Model {
             $select = explode(',', $select);
         }
         
-        $fo = new \Xpmsns\User\Model\Follow;
         $data["follower_id"] = $my_id;
 
-        return $fo->search( $data );
+        return $this->search( $data );
     }
 
     /**
@@ -253,7 +250,21 @@ class Follow extends Model {
      * @param array|string  $select 查询字段清单
      */
     function getFriends( string $my_id, $select = [] ) {
+        
+        if (empty($select) ) {
+            $select = [
+                "follow.follow_id", "follow.origin", 
+                "friend.user_id as friend_user_id", "friend.follower_id as friend_follower_id",  
+                "follow.user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl",
+                "follow.follower_id", "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl",
+            ];
+        }
 
+        if ( is_string($select) ) {
+            $select = explode(',', $select);
+        }
+
+        return [];
     }
 
 
