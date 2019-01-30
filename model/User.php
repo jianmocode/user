@@ -230,6 +230,29 @@ class User extends Model {
 
 
     /**
+     * 读取当前用户关系
+     * @param array &$rows 回答数据
+     * @param string $user_id 用户ID 
+     * @return null
+     */
+    static public function withRelation( & $rows, $user_id ) {
+        
+        $ids = array_column( $rows, "user_id");
+        if ( empty( $ids) ) {
+            return;
+        }
+
+        $u = new self;
+        $relation = $u->getUserRelation( $user_id, $ids );
+    
+        // 合并到数据表
+        foreach( $rows as & $rs ) {
+            $rs["relation"] = $relation[$rs["user_id"]];
+        }
+    }
+
+
+    /**
      * 用户初始化( 注册行为/注册任务/设置默认值等... )
      */
     public function __defaults() {
