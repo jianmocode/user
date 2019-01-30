@@ -78,6 +78,13 @@ class Follow extends Model {
             throw $e;
         }
 
+
+        $u = new User();
+        // 更新被关注的人粉丝数量
+        $u->runSql("update {{table}} SET `follower_cnt`=? WHERE `user_id`=? LIMIT 1", false, [ $this->countFollowers($user_id), $user_id ] );
+        // 更新我的关注的人数量
+        $u->runSql("update {{table}} SET `following_cnt`=? WHERE `user_id`=? LIMIT 1", false, [ $this->countFollowings($my_id), $my_id ] );
+
         return $resp;
 
     }
@@ -94,6 +101,12 @@ class Follow extends Model {
         $resp = $this->remove( $id,"user_follower");
         if ( $resp == true ) {
             $this->clearRelationCache($user_id, $my_id);
+
+            $u = new User();
+            // 更新被关注的人粉丝数量
+            $u->runSql("update {{table}} SET `follower_cnt`=? WHERE `user_id`=? LIMIT 1", false, [ $this->countFollowers($user_id), $user_id ] );
+            // 更新我的关注的人数量
+            $u->runSql("update {{table}} SET `following_cnt`=? WHERE `user_id`=? LIMIT 1", false, [ $this->countFollowings($my_id), $my_id ] );
             return ["code"=>0, "message"=>"取关成功"];
         }
 
@@ -246,7 +259,7 @@ class Follow extends Model {
         if (empty($select) ) {
             $select = [
                 "follow_id", "origin",
-                "follow.user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl",
+                "follow.user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl", 
                 "follow.follower_id", "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl",
             ];
         }
@@ -258,6 +271,16 @@ class Follow extends Model {
         $query["user_id"] = $my_id;
         return $this->search( $query );
 
+    }
+
+    /**
+     * 查询粉丝数量
+     * @param string $my_id 用户ID 
+     * @return int 粉丝总数
+     */
+    function countFollowers( string $my_id ){
+        $qb = $this->query();
+        return $qb->where("user_id", "=", $my_id )->count("_id");
     }
 
 
@@ -286,6 +309,17 @@ class Follow extends Model {
 
         return $this->search( $query );
     }
+
+    /**
+     * 查询关注的人数量
+     * @param string $my_id 用户ID 
+     * @return int 关注人总数
+     */
+    function countFollowings( string $my_id ){
+        $qb = $this->query();
+        return $qb->where("follower_id", "=", $my_id )->count("_id");
+    }
+
 
     /**
      * 查询好友列表
