@@ -54,14 +54,60 @@ class Follow extends Model {
 	 */
 
     // @KEEP BEGIN
+
+
+    /**
+     * 关注某人
+     */
+    public function follow( $my_id, $user_id, $data=[] ) {
+
+        $data["follower_id"] = $my_id;
+        $data["user_id"]  = $user_id;
+
+        if ( $data["user_id"] == $data["follower_id"] ) {
+            throw new Excp("不可以关注自己", 403, ["query"=>$query, "data"=>$data]);
+        }
+
+        // 关注
+        try {
+            $resp =  $this->create( $data );
+        } catch( Excp $e ) {
+            if ( $e->getCode() == 1062 ) {
+                throw new Excp("你已经关注了该用户", 403, ["query"=>$query, "data"=>$data]);  
+            }
+            throw $e;
+        }
+
+        return $resp;
+
+    }
+
+
+    /**
+     * 取关某人
+     */
+    public function unfollow( $my_id, $user_id ) {
+        $fo = new \Xpmsns\User\Model\Follow;
+        $id = "{$user_id}_{$my_id}";
+
+        // 取关
+        $resp = $this->remove( $id,"user_follower");
+        if ( $resp == true ) {
+            $this->clearRelationCache($user_id, $my_id);
+            return ["code"=>0, "message"=>"取关成功"];
+        }
+
+        throw new Excp("取关失败", 403, ["my_id"=>$my_id, "user_id"=>$user_id, "response"=>$resp]);  
+    }
+
+
+
     /**
      * 重载SaveBy
      */
     public function saveBy( $uniqueKey,  $data,  $keys=null , $select=["*"]) {
         if ( !empty($data["user_id"]) &&  !empty($data["follower_id"]) ) {
-            $data["user_follower"] = "DB::RAW(CONCAT(`user_id`,'_', `follower_id`))";
-            // 清除缓存
-            $this->clearRelationCache($data["user_id"], $data["follower_id"]);
+            $data["user_follower"] = "DB::RAW(CONCAT(`user_id`,'_', `follower_id`))";           
         }
         return parent::saveBy( $uniqueKey,  $data,  $keys , $select );
     }
@@ -74,11 +120,6 @@ class Follow extends Model {
 	function remove( $data_key, $uni_key="_id", $mark_only=true ){ 
 		
 		if ( $mark_only === true ) {
-
-            if ( $uni_key == "user_follower" ) {
-                $fo = explode("_", $data_key);
-                $this->clearRelationCache($fo[0], $fo[1]);
-            }
 
 			$time = date('Y-m-d H:i:s');
 			$_id = $this->getVar("_id", "WHERE {$uni_key}=? LIMIT 1", [$data_key]);

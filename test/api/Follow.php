@@ -26,7 +26,6 @@ class testArticleModel extends PHPUnit_Framework_TestCase {
      * 
      */
     function testCreateUser() {
-        return;
         $this->out( "\n创建单元测试用户.....");
         $u = new \Xpmsns\User\Model\User;
         $users = &$this->getUsers();
@@ -71,7 +70,6 @@ class testArticleModel extends PHPUnit_Framework_TestCase {
      * 
      */
     function testBuildRelation() {
-        return;
         $users = &$this->getUsers();
         $this->out( "\n建立用户关系.....");
         $fo = new \Xpmsns\User\Model\Follow;
@@ -239,8 +237,6 @@ class testArticleModel extends PHPUnit_Framework_TestCase {
 
     // 清除测试数据
     function testClean(){
-
-        return;
         $this->out( "\n清除测试数据.....");
     
         // 清除单元测试数据

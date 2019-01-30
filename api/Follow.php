@@ -48,27 +48,13 @@ class Follow extends Api {
         }
 
         $fo = new \Xpmsns\User\Model\Follow;
-        $data["follower_id"] = $user_id;
-        if ( $data["user_id"] == $data["follower_id"] ) {
-            throw new Excp("不可以关注自己", 403, ["query"=>$query, "data"=>$data]);
-        }
-
         // 处理特殊数值
         if ( array_key_exists('data', $data) && is_string($data['data']) ) {
             $data['data'] = json_decode(trim($data['data']), true);
         }
 
-        // 关注
-        try {
-            $resp =  $fo->create( $data );
-        } catch( Excp $e ) {
-            if ( $e->getCode() == 1062 ) {
-                throw new Excp("你已经关注了该用户", 403, ["query"=>$query, "data"=>$data]);  
-            }
-            throw $e;
-        }
-    
-        return $resp;
+        return $fo->follow( $user_id, $data["user_id"], $data );
+
    }
 
 
@@ -84,22 +70,13 @@ class Follow extends Api {
         $u = new \Xpmsns\User\Model\User;
         $user = $u->getUserInfo();
         $user_id = $user["user_id"];
-
         if ( empty($user_id) ) {
             throw new Excp("用户尚未登录", 402, ["query"=>$query, "data"=>$data]);
         }
 
         $fo = new \Xpmsns\User\Model\Follow;
-        $data["follower_id"] = $user_id;
-        $id = "{$data["user_id"]}_{$data["follower_id"]}";
-
-        // 关注
-        $resp = $fo->remove( $id,"user_follower");
-        if ( $resp == true ) {
-            return ["code"=>0, "message"=>"取关成功"];
-        }
-
-        throw new Excp("取关失败", 403, ["query"=>$query, "data"=>$data, "response"=>$resp]);  
+        return $fo->unfollow( $user_id, $data["user_id"]);
+        
    }
 
 
