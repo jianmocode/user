@@ -1,0 +1,519 @@
+{
+    "name": "简墨-用户任务",
+    "data": {
+        "general": {
+            "app": "user",
+            "org": "xpmsns",
+            "model": "_create",
+            "name": "usertask",
+            "cname": "任务副本"
+        },
+        "struct": {
+            "table": "usertask",
+            "fields": [
+                {
+                    "name": "usertask_id",
+                    "cname": "用户任务ID",
+                    "type": "string",
+                    "length": "128",
+                    "default": "",
+                    "unique": "1",
+                    "index": "",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "1",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "user_id",
+                    "cname": "用户ID",
+                    "type": "string",
+                    "length": "128",
+                    "default": "",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "task_id",
+                    "cname": "任务ID",
+                    "type": "string",
+                    "length": "128",
+                    "default": "",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "process",
+                    "cname": "进度",
+                    "type": "integer",
+                    "length": "1",
+                    "default": "",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "status",
+                    "cname": "状态",
+                    "type": "string",
+                    "length": "32",
+                    "default": "",
+                    "unique": "",
+                    "index": "1",
+                    "nullable": "",
+                    "json": "",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                },
+                {
+                    "name": "data",
+                    "cname": "数据",
+                    "type": "text",
+                    "length": "",
+                    "default": "",
+                    "unique": "",
+                    "index": "",
+                    "nullable": "",
+                    "json": "1",
+                    "auto": "",
+                    "file": "",
+                    "private": ""
+                }
+            ],
+            "methods": [
+                {
+                    "name": "",
+                    "cname": "",
+                    "source": ""
+                }
+            ]
+        },
+        "links": {
+            "fields": [
+                {
+                    "cname": "用户",
+                    "type": "leftJoin",
+                    "model": "\\Xpmsns\\User\\Model\\User",
+                    "table": "user",
+                    "prefix": "xpmsns_user_",
+                    "field": "user_id",
+                    "on": "=",
+                    "name": "user_id",
+                    "alias": "user"
+                },
+                {
+                    "cname": "用户",
+                    "type": "leftJoin",
+                    "model": "\\Xpmsns\\User\\Model\\Task",
+                    "table": "task",
+                    "prefix": "xpmsns_user_",
+                    "field": "task_id",
+                    "on": "=",
+                    "name": "task_id",
+                    "alias": "task"
+                }
+            ]
+        },
+        "detail": {
+            "index": "name=usertask_id",
+            "title": "name=usertask_id",
+            "columns": [
+                {
+                    "cname": "用户",
+                    "name": "user_id",
+                    "type": "select-remote",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "table": "user",
+                        "prefix": "xpmsns_user_",
+                        "model": "\\Xpmsns\\User\\Model\\User",
+                        "fields": [
+                            "user_id",
+                            "name",
+                            "nickname",
+                            "mobile"
+                        ],
+                        "option": "user_id",
+                        "style": "{{name?name:nickname}}(ID:{{user_id}} 手机:{{mobile}})",
+                        "default": "",
+                        "multiple": "",
+                        "api": "",
+                        "cancel": "",
+                        "cancelable": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "任务",
+                    "name": "task_id",
+                    "type": "select-remote",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "table": "task",
+                        "prefix": "xpmsns_user_",
+                        "model": "\\Xpmsns\\User\\Model\\Task",
+                        "fields": [
+                            "task_id",
+                            "name"
+                        ],
+                        "option": "task_id",
+                        "style": "{{name}}(ID:{{task_id}})",
+                        "default": "",
+                        "multiple": "",
+                        "api": "",
+                        "cancel": "",
+                        "cancelable": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "当前进度",
+                    "name": "process",
+                    "type": "input",
+                    "placeholder": "请填写完成进度",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "default": "0"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "数据",
+                    "name": "data",
+                    "type": "json-editor",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "default": "",
+                        "rows": "",
+                        "autoheight": ""
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                },
+                {
+                    "cname": "状态",
+                    "name": "status",
+                    "type": "radio",
+                    "placeholder": "",
+                    "helper": "",
+                    "exp": "",
+                    "readonly": "",
+                    "attr": {
+                        "option": "已接受=accepted,已完成=completed,已取消=canceled",
+                        "default": "accepted"
+                    },
+                    "validator": [
+                        {
+                            "method": "",
+                            "value": "",
+                            "message": ""
+                        }
+                    ]
+                }
+            ],
+            "jscode": [
+                ""
+            ],
+            "undefined": [
+                "",
+                "",
+                ""
+            ]
+        },
+        "list": {
+            "keyword_param": "keyword",
+            "keyword": [
+                "name=usertask_id",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=user_id&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=mobile_full&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=name&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=nickname&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=task_id&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=slug&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=name&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin"
+            ],
+            "jscode": [
+                ""
+            ],
+            "conditions": [
+                {
+                    "or": "0",
+                    "field": "name=usertask_id",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=user_id",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=task_id",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=process",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                },
+                {
+                    "or": "0",
+                    "field": "name=status",
+                    "type": "=",
+                    "cname": "",
+                    "param": "",
+                    "default": ""
+                }
+            ],
+            "orderby": [
+                {
+                    "field": "name=created_at",
+                    "type": "desc",
+                    "cname": "",
+                    "param": ""
+                },
+                {
+                    "field": "name=updated_at",
+                    "type": "desc",
+                    "cname": "",
+                    "param": ""
+                }
+            ],
+            "statusby": [
+                {
+                    "name": "name=status",
+                    "cname": "",
+                    "status": "已接受=accepted|primary,已完成=completed|success,已取消=canceled|muted"
+                }
+            ],
+            "columns": [
+                {
+                    "fields": [
+                        "name=usertask_id"
+                    ],
+                    "cname": "",
+                    "filter": "",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "model=%5CXpmsns%5CUser%5CModel%5CUser&name=name&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                        "model=%5CXpmsns%5CUser%5CModel%5CUser&name=nickname&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin"
+                    ],
+                    "cname": "用户",
+                    "filter": "{{user_name ? user_name : user_nickname }}",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "model=%5CXpmsns%5CUser%5CModel%5CTask&name=name&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin"
+                    ],
+                    "cname": "任务",
+                    "filter": "{{task_name}}",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "model=%5CXpmsns%5CUser%5CModel%5CUser&name=mobile&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin"
+                    ],
+                    "cname": "手机号",
+                    "filter": "{{user_mobile}}",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "name=process",
+                        "model=%5CXpmsns%5CUser%5CModel%5CTask&name=process&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin"
+                    ],
+                    "cname": "进度",
+                    "filter": "{{process}}/{{task_process}}",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "name=status"
+                    ],
+                    "cname": "状态",
+                    "filter": "",
+                    "default": ""
+                },
+                {
+                    "fields": [
+                        "name=created_at",
+                        "name=updated_at"
+                    ],
+                    "cname": "最后更新",
+                    "filter": "{{updated_at ?  updated_at | date(\"Y年m月d日 @H:i:s\") : created_at | date(\"Y年m月d日 @H:i:s\")  }}",
+                    "default": ""
+                }
+            ]
+        },
+        "api": {
+            "uploadparam": "",
+            "getstatus": "0",
+            "createstatus": "0",
+            "updatestatus": "0",
+            "deletestatus": "0",
+            "searchstatus": "0",
+            "uploadstatus": "0",
+            "getkey": [
+                "name=usertask_id"
+            ],
+            "getfields": [
+                "name=status",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=user_id&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=name&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=nickname&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=mobile&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=task_id&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=slug&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=name&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=quantity&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=type&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=cover&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=process&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin"
+            ],
+            "createfields": [
+                "name=usertask_id",
+                "name=user_id",
+                "name=task_id",
+                "name=process",
+                "name=status"
+            ],
+            "updatekey": [
+                "name=usertask_id"
+            ],
+            "deletekey": [
+                "name=usertask_id"
+            ],
+            "searchfields": [
+                "name=usertask_id",
+                "name=user_id",
+                "name=task_id",
+                "name=process",
+                "name=status",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=name&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=nickname&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CUser&name=mobile&table=user&prefix=xpmsns_user_&alias=user&type=leftJoin",
+                "model=%5CXpmsns%5CUser%5CModel%5CTask&name=name&table=task&prefix=xpmsns_user_&alias=task&type=leftJoin"
+            ],
+            "getauth": {
+                "sign": "",
+                "secret": "",
+                "image": ""
+            },
+            "createauth": {
+                "sign": "1",
+                "secret": "1",
+                "image": ""
+            },
+            "updateauth": {
+                "sign": "1",
+                "secret": "1",
+                "image": ""
+            },
+            "deleteauth": {
+                "sign": "",
+                "secret": "",
+                "image": ""
+            },
+            "searchauth": {
+                "sign": "",
+                "secret": "",
+                "image": ""
+            },
+            "uploadauth": {
+                "sign": "",
+                "secret": "1",
+                "image": ""
+            },
+            "methods": [
+                {
+                    "name": "",
+                    "cname": "",
+                    "source": ""
+                }
+            ]
+        }
+    },
+    "process": {
+        "general": "saved",
+        "struct": "saved",
+        "links": "saved",
+        "detail": "saved",
+        "list": "saved",
+        "api": "saved"
+    },
+    "next": null,
+    "prev": null,
+    "templete": {
+        "org": "xpmsns",
+        "name": "model",
+        "slug": "xpmsns_model",
+        "cname": "XpmSE 应用数据模型母版",
+        "version": "1.0.0",
+        "summary": "生成 XpmSE 应用数据模型。涵盖资源模型CURD、API CURD和标准资源管理界面。"
+    }
+}
