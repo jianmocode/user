@@ -96,8 +96,7 @@ class Follow extends Api {
         }
 
         $fo = new \Xpmsns\User\Model\Follow;
-        return $fo->getFollowers( $user_id, $data["select"] );
-    
+        return $fo->getFollowers( $user_id, $data );
    }
 
 

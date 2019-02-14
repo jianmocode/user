@@ -238,7 +238,6 @@ class testArticleModel extends PHPUnit_Framework_TestCase {
     // 清除测试数据
     function testClean(){
         $this->out( "\n清除测试数据.....");
-    
         // 清除单元测试数据
         $u = new \Xpmsns\User\Model\User;
         $fo = new \Xpmsns\User\Model\Follow;
