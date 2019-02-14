@@ -258,9 +258,9 @@ class Follow extends Model {
         $select = $query["select"];
         if (empty($select) ) {
             $select = [
-                "follow_id", "origin",
-                "follow.user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl", 
-                "follow.follower_id", "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl",
+                "follow_id", "origin", 
+                "follow.user_id", "user.user_id as user_user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl", "user.follower_cnt as user_follower_cnt","user.following_cnt as user_following_cnt",
+                "follow.follower_id", "follower.user_id as follower_user_id",  "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl", "follower.follower_cnt as follower_follower_cnt","follower.following_cnt as follower_following_cnt",
             ];
         }
 
@@ -268,6 +268,7 @@ class Follow extends Model {
             $select = explode(',', $select);
         }
         
+        $query["select"] = $select;
         $query["user_id"] = $my_id;
         return $this->search( $query );
 
@@ -280,7 +281,8 @@ class Follow extends Model {
      */
     function countFollowers( string $my_id ){
         $qb = $this->query();
-        return $qb->where("user_id", "=", $my_id )->count("_id");
+        $cnt = $qb->where("user_id", "=", $my_id )->count("_id");
+        return intval( $cnt );
     }
 
 
@@ -295,9 +297,9 @@ class Follow extends Model {
 
         if (empty($select) ) {
             $select = [
-                "follow_id", "origin",
-                "follow.user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl",
-                "follow.follower_id", "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl",
+                "follow_id", "origin", "user_id",
+                "follow.user_id","user.user_id as user_user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl", "user.follower_cnt as user_follower_cnt","user.following_cnt as user_following_cnt",
+                "follow.follower_id", "follower.user_id as follower_user_id","follow.follower_id", "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl","follower.follower_cnt as follower_follower_cnt","follower.following_cnt as follower_following_cnt",
             ];
         }
 
@@ -305,8 +307,8 @@ class Follow extends Model {
             $select = explode(',', $select);
         }
         
+        $query["select"] = $select;
         $query["follower_id"] = $my_id;
-
         return $this->search( $query );
     }
 
@@ -317,7 +319,8 @@ class Follow extends Model {
      */
     function countFollowings( string $my_id ){
         $qb = $this->query();
-        return $qb->where("follower_id", "=", $my_id )->count("_id");
+        $cnt = $qb->where("follower_id", "=", $my_id )->count("_id");
+        return intval( $cnt );
     }
 
 
@@ -381,6 +384,16 @@ class Follow extends Model {
 	public function format( & $rs ) {
      
 		$fileFields = []; 
+
+        
+        // @KEEP BEGIN
+        $fileFields = ["user_headimgurl", "follower_headimgurl"]; 
+        foreach( $fileFields as $fd ) {
+            if ( is_string($rs["{$fd}"])  && !empty($rs["{$fd}"])) {
+                $rs["{$fd}"] = json_decode( $rs["{$fd}"] );   
+            }
+        }
+        // @KEEP END
 
         // 处理图片和文件字段 
         $this->__fileFields( $rs, $fileFields );

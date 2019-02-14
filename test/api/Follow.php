@@ -75,17 +75,26 @@ class testArticleModel extends PHPUnit_Framework_TestCase {
         $fo = new \Xpmsns\User\Model\Follow;
 
         // 丢了灵魂的孩纸 0  关注: 只因太美 1, 渔美人 2 
-        $fo->create(["follower_id"=>$users[0]["user_id"], "user_id"=>$users[1]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
-        $fo->create(["follower_id"=>$users[0]["user_id"], "user_id"=>$users[2]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
+        $fo->follow($users[0]["user_id"],  $users[1]["user_id"], ["origin"=>"unit-test", "data"=>["v"=>"from-unit-test"]] );
+        $fo->follow($users[0]["user_id"],  $users[2]["user_id"], ["origin"=>"unit-test", "data"=>["v"=>"from-unit-test"]] );
+
+        // $fo->create(["follower_id"=>$users[0]["user_id"], "user_id"=>$users[1]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
+        // $fo->create(["follower_id"=>$users[0]["user_id"], "user_id"=>$users[2]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
 
         // 只因太美 1  关注: 丢了灵魂的孩纸 0, 敷衍不停的重演 3
-        $fo->create(["follower_id"=>$users[1]["user_id"], "user_id"=>$users[0]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
-        $fo->create(["follower_id"=>$users[1]["user_id"], "user_id"=>$users[3]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
+        $fo->follow($users[1]["user_id"],  $users[0]["user_id"], ["origin"=>"unit-test", "data"=>["v"=>"from-unit-test"]] );
+        $fo->follow($users[1]["user_id"],  $users[3]["user_id"], ["origin"=>"unit-test", "data"=>["v"=>"from-unit-test"]] );
+
+        // $fo->create(["follower_id"=>$users[1]["user_id"], "user_id"=>$users[0]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
+        // $fo->create(["follower_id"=>$users[1]["user_id"], "user_id"=>$users[3]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
 
         // 敷衍不停的重演 3  关注: 丢了灵魂的孩纸 0, 大扎王后 4, 森系女孩 5 
-        $fo->create(["follower_id"=>$users[3]["user_id"], "user_id"=>$users[0]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
-        $fo->create(["follower_id"=>$users[3]["user_id"], "user_id"=>$users[4]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
-        $fo->create(["follower_id"=>$users[3]["user_id"], "user_id"=>$users[5]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
+        $fo->follow($users[3]["user_id"],  $users[0]["user_id"], ["origin"=>"unit-test", "data"=>["v"=>"from-unit-test"]] );
+        $fo->follow($users[3]["user_id"],  $users[4]["user_id"], ["origin"=>"unit-test", "data"=>["v"=>"from-unit-test"]] );
+        $fo->follow($users[3]["user_id"],  $users[5]["user_id"], ["origin"=>"unit-test", "data"=>["v"=>"from-unit-test"]] );
+        // $fo->create(["follower_id"=>$users[3]["user_id"], "user_id"=>$users[0]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
+        // $fo->create(["follower_id"=>$users[3]["user_id"], "user_id"=>$users[4]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
+        // $fo->create(["follower_id"=>$users[3]["user_id"], "user_id"=>$users[5]["user_id"], "origin"=>"unit-test", "data"=>["v"=>"from-unit-test"] ]);
 
         $this->out( "完成\n");
     }
