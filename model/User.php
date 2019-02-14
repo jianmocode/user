@@ -163,10 +163,20 @@ class User extends Model {
 			// 用户状态 on/off/lock
              ->putColumn( 'status', $this->type('string', ['length'=>10,'index'=>true, 'default'=>'on']) )
             
-            // 社会化
+            // 社会化数据
             ->putColumn( 'inviter', $this->type('string', ['length'=>128] ) ) // 邀请者 (user_id)
-            ->putColumn( 'follower_cnt', $this->type('integer', ['length'=>1] ) )  // 粉丝数量 (缓存数据)
-            ->putColumn( 'following_cnt', $this->type('integer', ['length'=>1] ) )  // 关注数量 (缓存数据)
+            ->putColumn( 'follower_cnt', $this->type('integer', ['length'=>1,'index'=>true] ) )  // 粉丝数量 (缓存数据)
+            ->putColumn( 'following_cnt', $this->type('integer', ['length'=>1,'index'=>true] ) )  // 关注数量 (缓存数据)
+
+            // UGC统计数据
+            ->putColumn( 'article_cnt', $this->type('integer', ['length'=>1,'index'=>true] ) )   // 发布文章数量 (缓存数据)
+            ->putColumn( 'question_cnt', $this->type('integer', ['length'=>1,'index'=>true] ) )  // 提问数量 (缓存数据)
+            ->putColumn( 'answer_cnt', $this->type('integer', ['length'=>1,'index'=>true] ) )    // 回答数量 (缓存数据)
+            ->putColumn( 'favorite_cnt', $this->type('integer', ['length'=>1,'index'=>true] ) )    // 收藏数量 (缓存数据)
+
+            // 积分统计数据
+            ->putColumn( 'coin', $this->type('integer', ['length'=>1,'index'=>true] ) )    // 积分余额 (缓存数据)
+            ->putColumn( 'balance', $this->type('integer', ['length'=>1,'index'=>true] ) )    // 账户余额 (缓存数据，单位分)
 
             // 安全
 			->putColumn( 'password', $this->type('string', ['length'=>128] ) ) // 登录密码
@@ -175,8 +185,7 @@ class User extends Model {
 
 		;
 
-		// 微信公众号授权表
-		
+		// 微信公众号授权表		
 		$this->user_wechat
 
 			// 用户ID 
