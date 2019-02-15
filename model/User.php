@@ -247,7 +247,12 @@ class User extends Model {
     static public function withRelation( & $rows, $user_id ) {
         
         $ids = array_column( $rows, "user_id");
+        
         if ( empty( $ids) ) {
+            $ids = array_column( $rows, "user_user_id");
+        }
+
+        if ( empty($ids) ) {
             return;
         }
 
@@ -682,6 +687,7 @@ class User extends Model {
 
         $fo = new Follow();
         $relation = [];
+        $user_ids  = array_filter($user_ids );
 
         // 从缓存中读取数据
         foreach ( $user_ids as $idx=>$user_id ) {
