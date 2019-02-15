@@ -692,7 +692,7 @@ class User extends Model {
         // 从缓存中读取数据
         foreach ( $user_ids as $idx=>$user_id ) {
             $value = $fo->getRelationFromCache( $my_id, $user_id );
-            if ( $value !== false ) {
+            if ( $value !== false && $value !== null ) {
                 $relation[$user_id] = $value;
                 unset( $user_ids[$idx] );
             }
