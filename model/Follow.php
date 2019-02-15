@@ -392,7 +392,7 @@ class Follow extends Model {
 
         
         // @KEEP BEGIN
-        $fileFields = ["user_headimgurl", "follower_headimgurl"]; 
+        $fileFields = ["user_headimgurl", "follower_headimgurl", "following_headimgurl"]; 
         foreach( $fileFields as $fd ) {
             if ( is_string($rs["{$fd}"])  && !empty($rs["{$fd}"])) {
                 $rs["{$fd}"] = json_decode( $rs["{$fd}"], true);   
