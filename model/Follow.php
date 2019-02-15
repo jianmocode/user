@@ -264,8 +264,8 @@ class Follow extends Model {
         if (empty($select) ) {
             $select = [
                 "follow_id", "origin", 
-                "follow.user_id", "user.user_id as user_user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl", "user.follower_cnt as user_follower_cnt","user.following_cnt as user_following_cnt",
-                "follow.follower_id", "follower.user_id as follower_user_id",  "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl", "follower.follower_cnt as follower_follower_cnt","follower.following_cnt as follower_following_cnt",
+                "follow.user_id", "user.user_id as user_user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl", "user.follower_cnt as user_follower_cnt","user.following_cnt as user_following_cnt","user.question_cnt as user_question_cnt", "user.answer_cnt as user_answer_cnt", "user.article_cnt as user_article_cnt", "user.favorite_cnt as user_favorite_cnt", "user.bio as user_bio",
+                "follow.follower_id", "follower.user_id as follower_user_id",  "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl", "follower.follower_cnt as follower_follower_cnt","follower.following_cnt as follower_following_cnt","follower.question_cnt as follower_question_cnt", "follower.answer_cnt as follower_answer_cnt", "follower.article_cnt as follower_article_cnt", "follower.favorite_cnt as follower_favorite_cnt", "follower.bio as follower_bio",
             ];
         }
 
@@ -302,9 +302,9 @@ class Follow extends Model {
 
         if (empty($select) ) {
             $select = [
-                "follow_id", "origin", "user_id",
-                "follow.user_id","user.user_id as user_user_id", "user.nickname as user_nickname", "user.name as user_name","user.headimgurl as user_headimgurl", "user.follower_cnt as user_follower_cnt","user.following_cnt as user_following_cnt",
-                "follow.follower_id", "follower.user_id as follower_user_id","follow.follower_id", "follower.nickname as follower_nickname", "follower.name as follower_name","follower.headimgurl as follower_headimgurl","follower.follower_cnt as follower_follower_cnt","follower.following_cnt as follower_following_cnt",
+                "follow_id", "origin", "follower.user_id as user_id",
+                "follow.follower_id as user_id", "follower.user_id as user_user_id","follower.nickname as user_nickname", "follower.name as user_name","follower.headimgurl as user_headimgurl","follower.follower_cnt as user_follower_cnt","follower.following_cnt as user_following_cnt", "follower.question_cnt as user_question_cnt", "follower.answer_cnt as user_answer_cnt", "follower.article_cnt as user_article_cnt", "follower.favorite_cnt as user_favorite_cnt", "follower.bio as user_bio",
+                "user.user_id as following_id", "user.nickname as following_nickname", "user.name as following_name","user.headimgurl as following_headimgurl", "user.follower_cnt as following_follower_cnt","user.following_cnt as following_following_cnt","user.question_cnt as following_question_cnt", "user.answer_cnt as following_answer_cnt", "user.article_cnt as following_article_cnt", "user.favorite_cnt as following_favorite_cnt", "user.bio as following_bio",
             ];
         }
 
