@@ -85,6 +85,10 @@ class Follow extends Model {
         // 更新我的关注的人数量
         $u->runSql("update {{table}} SET `following_cnt`=? WHERE `user_id`=? LIMIT 1", false, [ $this->countFollowings($my_id), $my_id ] );
 
+        // 清除缓存
+        $this->clearRelationCache( $my_id, $user_id );
+        $this->clearRelationCache( $user_id, $my_id );
+
         return $resp;
 
     }
@@ -101,6 +105,7 @@ class Follow extends Model {
         $resp = $this->remove( $id,"user_follower");
         if ( $resp == true ) {
             $this->clearRelationCache($user_id, $my_id);
+            $this->clearRelationCache($my_id,$user_id);
 
             $u = new User();
             // 更新被关注的人粉丝数量
