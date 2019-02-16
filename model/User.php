@@ -262,8 +262,8 @@ class User extends Model {
         // 合并到数据表
         foreach( $rows as & $rs ) {
             $rs["relation"] = $relation[$rs["user_id"]];
-            $rs["isFollowing"] = in_array($rs["relation"], ["self","friend", "following"]);
-            $rs["isFollower"] = in_array($rs["relation"], ["self","friend", "follower"]);
+            $rs["isfollowing"] = in_array($rs["relation"], ["self","friend", "following"]);
+            $rs["isfollower"] = in_array($rs["relation"], ["self","friend", "follower"]);
         }
     }
 
