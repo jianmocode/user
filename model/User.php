@@ -1607,7 +1607,7 @@ class User extends Model {
 
 		// 按用户组查找
 		if ( array_key_exists('group_id', $query)  ) {
-			$qb->where("group_id", "=", "{$query['group_id']}");
+			$qb->where("user.group_id", "=", "{$query['group_id']}");
 		}
 
 		// 按城市查找
