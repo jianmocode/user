@@ -183,6 +183,8 @@ class User extends Model {
             ->putColumn( 'pay_password', $this->type('string', ['length'=>128] ) )  // 支付密码 (暂不使用)
             ->putColumn( 'client_token', $this->type('string', ['length'=>128] ) )  // 客户端登录凭据
 
+            // 追加
+            ->putColumn( 'priority', $this->type('integer', ['length'=>1, "index"=>true, "default"=>99999] ) )  // 优先级
 		;
 
 		// 微信公众号授权表		
