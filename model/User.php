@@ -1144,10 +1144,11 @@ class User extends Model {
 				->limit(1)
 				->select(
 					"user_id", "user.group_id as group_id", 
-					"user.name","nickname", "sex", "city", "province", "country","headimgurl", "language", "bio", "bgimgurl",
+					"user.name","nickname", "birthday", "sex", "city", "province", "country","headimgurl", "language", "bio", "bgimgurl",
 					"mobile", "mobile_nation", "mobile_verified","extra",
 					"email", "email_verified",
                     "zip", "address", "user.remark as remark", "user.tag as tag",
+                    "user_name", "contact_name", "title", "user.priority as user_priority", "idno", "name_verified",  "contact_tel",
                     "follower_cnt", "following_cnt", "article_cnt", "question_cnt", "answer_cnt","favorite_cnt",
                     "coin", "balance",
                     "password", "pay_password",
