@@ -1148,7 +1148,7 @@ class User extends Model {
 					"mobile", "mobile_nation", "mobile_verified","extra",
 					"email", "email_verified",
                     "zip", "address", "user.remark as remark", "user.tag as tag",
-                    "user_name", "contact_name", "title", "user.priority as user_priority", "idno", "name_verified",  "contact_tel",
+                    "user_name","company","contact_name", "title", "user.priority as user_priority", "idno", "name_verified",  "contact_tel",
                     "verify",
                     "follower_cnt", "following_cnt", "article_cnt", "question_cnt", "answer_cnt","favorite_cnt",
                     "coin", "balance",
