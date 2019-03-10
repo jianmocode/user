@@ -60,22 +60,6 @@ class SetupController extends \Xpmse\Loader\Controller {
         }
         
 
-        // // 用户为收集队列
-		// if ( $opt->get("user/server/behavior") === null ) {
-		// 	$opt->register(
-		// 		"用户行为收集队列", 
-		// 		"user/server/behavior", 
-		// 		[
-		// 			"host" => "127.0.0.1",
-		// 			"home" => Utils::getHome(),
-		// 			"port" => 7749,
-        //             "user" => 0,
-        //             "worker_num" =>1
-		// 		],
-		// 		91
-		// 	);
-		// }
-
 		// 是否开启短信验证码登录
 		$sms_on = $opt->get("user/sms/on");		
 		if ( $sms_on === null ) {
@@ -165,7 +149,18 @@ class SetupController extends \Xpmse\Loader\Controller {
 				["sex", "name"],
 				6
 			);
-		}
+        }
+        
+        // 我的资料扩展字段 (下一版优化/集成到defaults)
+        $profile_extfields = "user/profile/extfields";
+		if ( $opt->get("{$profile_extfields}") === null ) {
+			$opt->register(
+				"我的资料扩展字段", 
+				"{$profile_extfields}", 
+				[],
+				7
+			);
+        }
 	}
 
 
