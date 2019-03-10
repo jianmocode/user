@@ -442,6 +442,29 @@ use \Xpmse\T;
 
 					<div class="col-xs-6 push-20-t">
 						<div class="form-material">
+							<input class="form-control" type="text" id="team_name" name="team_name" 
+							value="<?=$user['team_name']?>"
+							placeholder="填写团队/战队名称">
+							<label for="team_name">团队/战队</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+					<div class="col-xs-6 push-20-t">
+						<div class="form-material">
+							 <input class="js-datepicker form-control" type="text" id="birthday" name="birthday" 
+							 value="<?=empty($user['birthday'])?'':date('Y年m月d日')?>"
+							 data-date-format="yyyy年mm月dd日" placeholder="请选择出生日期..">
+							<label for="birthday">生日</label>
+							<div class="help-block text-right"></div>
+						</div>
+					</div>
+
+                </div>
+                
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <div class="form-material">
 							<div>
 								<label class="css-input css-radio css-radio-primary push-10-r">
 									<input type="radio" name="sex" value="1" 
@@ -456,19 +479,8 @@ use \Xpmse\T;
 							</div>
 							<label for="sex">性别</label>
 						</div>
-					</div>
-
-					<div class="col-xs-6 push-20-t">
-						<div class="form-material">
-							 <input class="js-datepicker form-control" type="text" id="birthday" name="birthday" 
-							 value="<?=empty($user['birthday'])?'':date('Y年m月d日')?>"
-							 data-date-format="yyyy年mm月dd日" placeholder="请选择出生日期..">
-							<label for="birthday">生日</label>
-							<div class="help-block text-right"></div>
-						</div>
-					</div>
-
-				</div>
+                    </div>
+                </div>
 
 				
 				<div class="form-group">
@@ -569,8 +581,29 @@ use \Xpmse\T;
 							<div class="help-block text-right"></div>
 						</div>
 					</div>
-					
-				</div>
+                </div>
+                
+                <div class="form-group">
+                        <div class="col-xs-8">
+                            <div class="form-material">
+                                <input class="form-control" type="text" id="school" name="school" 
+                                value="<?=$user['school']?>"
+                                placeholder="填写学校名称">
+                                <label for="school">学校名称</label>
+                                <div class="help-block text-right"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xs-4">
+                            <div class="form-material">
+                                <input class="form-control" type="text" id="grade" name="grade" 
+                                value="<?=$user['grade']?>"
+                                placeholder="填写所在年级/班级">
+                                <label for="title">年级/班级</label>
+                                <div class="help-block text-right"></div>
+                            </div>
+                        </div>
+                    </div>
 
 				<div class="form-group">
 					<div class="col-xs-12">

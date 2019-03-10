@@ -100,7 +100,10 @@ class User extends Model {
 			'email_verified', 
 			'extra',
 			'password',
-			'pay_password',
+            'pay_password',
+            'team_name',
+            'school',
+            'grade',
 			'status'
 		];
 	}
@@ -118,7 +121,8 @@ class User extends Model {
 
              // 用户资料
              ->putColumn( 'user_name', $this->type('string',  ['length'=>128, 'unique'=>true]) )  // 账号名称
-			 ->putColumn( 'name', $this->type('string',  ['length'=>128, 'index'=>true]) )  // 真实姓名
+             ->putColumn( 'name', $this->type('string',  ['length'=>128, 'index'=>true]) )  // 真实姓名
+             ->putColumn( 'team_name', $this->type('string',  ['length'=>128, 'index'=>true]) )  // 团队名称
 			 ->putColumn( 'idno', $this->type('string',  ['length'=>256]) )  // 身份证件号码
 			 ->putColumn( 'idtype', $this->type('string',  ['length'=>40, 'index'=>true]) )  // 身份证件类型 ID:身份证 MID:军人身份证  APID: 警察身份证  HMLP:港澳通行证 MTPS:台胞证  PASSPORT:护照  OTHER:其他
 			 ->putColumn( 'iddoc', $this->type('text',  ["json"=>true]) )  // 身份证件文件地址
@@ -145,7 +149,9 @@ class User extends Model {
 			 ->putColumn( 'zip', $this->type('string',  ['length'=>40]) )  // 邮编
 			 ->putColumn( 'address', $this->type('string',  ['length'=>256]) )  // 收货地址
 			 ->putColumn( 'remark', $this->type('string',  ['length'=>256]) )  // 用户备注
-			 ->putColumn( 'tag', $this->type('text',  ['json'=>true]) )  // 用户标签
+             ->putColumn( 'tag', $this->type('text',  ['json'=>true]) )  // 用户标签
+             ->putColumn( 'school', $this->type('string',  ['length'=>256]) )  // 所在学校
+             ->putColumn( 'grade', $this->type('string',  ['length'=>256]) )   // 所在年级
 
 			// 身份校验
 			 ->putColumn( 'user_verified', $this->type('string',  ["length"=>40, 'default'=>"unverified"]) )    // 身份认证 unverified 未通过认证  verified 已认证  verifying 认证中
