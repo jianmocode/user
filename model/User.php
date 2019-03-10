@@ -1160,6 +1160,7 @@ class User extends Model {
                     "coin", "balance",
                     "password", "pay_password",
                     "client_token",
+                    "school","grade","team_name",
 					"user.status as status",
 					"group.name as group_name",
 					"group.slug as group_slug",
