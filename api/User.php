@@ -109,7 +109,7 @@ class User extends Api {
 		// 许可字段清单
 		$allowed = [
             "extra", "mobile", "bio", "sex", "nickname", "country", "province", "city", "headimgurl", "bgimgurl", "birthday", "language",
-            "contact_name", "contact_tel", "title","company","zip", "tag", "address",
+            "contact_name", "contact_tel", "title","company","zip", "tag", "address", "school", "grade", "team_name"
         ];
 
 		// 用户身份验证
