@@ -824,7 +824,22 @@ class User extends Model {
 		if ( array_key_exists('tag', $data) && is_string($data['tag']) ) {
 			$data['tag'] = str_replace("，", ",", $data['tag']);
 			$data['tag'] = explode(',', $data['tag']);
-		}
+        }
+        
+        // 修改密码逻辑
+        if ( array_key_exists('password', $data) ){
+
+            if ( empty($data["password"]) ) {
+                unset($data["password"] );
+            
+            // 校验密码
+            } else if ( $data["password"] != $data["repassword"] ) {
+                throw new Excp("两次输入密码不一致", 500, [ 
+					"message" => "两次输入密码不一致",
+					"errors"=> ["password" => "两次输入密码不一致"]
+				]);
+            }
+        }
 
 
 		$user_id = $data['user_id'];

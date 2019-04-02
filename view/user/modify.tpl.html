@@ -185,8 +185,26 @@ use \Xpmse\T;
                         </div>   
                     </div>
                 </div>
-
                 <div class="form-group">
+                    <div class="col-xs-3">
+                        <div class="form-material">
+                            <input class="form-control" type="password" id="password" name="password" 
+                            value=""
+                            >
+                            <label for="tag">登录密码(不想修改请留空)</label>
+                            <div class="help-block text-right"></div>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="form-material">
+                            <input class="form-control" type="password" id="repassword" name="repassword" 
+                            value=""
+                            >
+                            <label for="tag">密码确认</label>
+                            <div class="help-block text-right"></div>
+                        </div>
+                    </div>
+               
                     <div class="col-xs-6">
                         <div class="form-material">
                             <input class="form-control" type="text" id="priority" name="priority" 
@@ -221,8 +239,7 @@ use \Xpmse\T;
                 </div>
                 <?php endforeach; ?>
                 <?php endif; ?>
-    
-
+                
 				<div class="form-group">
 					<div class="col-xs-12 push-10 push-15-t">
 						<h5 class="font-w400">

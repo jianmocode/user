@@ -227,9 +227,13 @@ class UserController extends \Xpmse\Loader\Controller {
 					"message" => $e->getMessage(),
 					"errors"=> $errors
 				]);
-			}
+            }
 
-			throw $e;
+            throw new Excp($e->getMessage(), 500, [ 
+                "message" => $e->getMessage(),
+                "extra"=> $e->getExtra()
+            ]);
+			// throw $e;
 		}
 
 		echo json_encode(['code'=>0, "message"=>"保存成功", "user_id"=>$user_id]);
