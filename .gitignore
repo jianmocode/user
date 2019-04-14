@@ -1,3 +1,4 @@
 ui/node_modules
 ui/.cache
 ui/.tmp
+.DS_Store
