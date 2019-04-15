@@ -690,8 +690,13 @@ class Usertask extends Model {
         ];
 
         // 标记为完成
+        
+        // 调试
+        (new Excp("标记任务状态完成 usertask_id={$usertask_id} process={$process}", 400 ))->log();
+
         if ( $process == $task["process"] ){
             $data["status"] = "completed";
+            (new Excp("标记任务状态完成 usertask_id={$usertask_id} status={$data["status"] }", 400 ))->log();
         }
 
         return $this->updateBy("usertask_id", $data );
