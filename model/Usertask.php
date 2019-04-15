@@ -64,7 +64,7 @@ class Usertask extends Model {
     private function accept( $task, $user_id, $force=false ) {
 
         // 打印log
-        (new Excp("接受任务 name={$task["name"]} user_id={$user_id} auto_accept={$task["auto_accept"]}", 404)) -> log();
+        // (new Excp("接受任务 name={$task["name"]} user_id={$user_id} auto_accept={$task["auto_accept"]}", 404)) -> log();
 
         // 自动接受任务 （忽略处理）
         if ( $task["auto_accept"] == 1 && $force === false) {

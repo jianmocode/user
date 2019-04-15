@@ -432,7 +432,8 @@ class User extends Model {
         // 自动接受任务
         $usertask = $task["usertask"];
 
-        $job->info("检查用户任务 usertask=". var_export( $usertask, true ) . " Task=" .  var_export( $task, true )  );
+        // 打印调试
+        // $job->info("检查用户任务 usertask=". var_export( $usertask, true ) . " Task=" .  var_export( $task, true )  );
 
 
         if( 
