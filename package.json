@@ -1,7 +1,7 @@
 {
     "org": "xpmsns",
     "name": "user",
-    "version": "1.5.5",
+    "version": "1.5.6",
     "cname": "简墨会员",
     "image": {
         "color":"/static/icons/app-color.svg",
