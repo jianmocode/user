@@ -138,9 +138,9 @@ class User extends Model {
 			 ->putColumn( 'bgimgurl', $this->type('text',  ["json"=>true]) )  // 用户中心图片地址
 
 			 // 常用字段
-			 ->putColumn( 'mobile', $this->type('string',  ['length'=>40]) )  // 手机号
+			 ->putColumn( 'mobile', $this->type('string',  ['length'=>40, "null"=>true]) )  // 手机号
 			 ->putColumn( 'mobile_nation', $this->type('string',  ['length'=>40, 'default'=>"86"]) )  // 手机号国别
-			 ->putColumn( 'mobile_full', $this->type('string',  ['length'=>40, 'unique'=>true]) )  // 完整的手机号码
+			 ->putColumn( 'mobile_full', $this->type('string',  ['length'=>40, 'unique'=>true, "null"=>true]) )  // 完整的手机号码
 			 ->putColumn( 'email', $this->type('string',  ['length'=>128, 'unique'=>true]) )  // 电邮地址
 			 ->putColumn( 'contact_name', $this->type('string',  ['length'=>256]) )  // 联系人
 			 ->putColumn( 'contact_tel',  $this->type('string',  ['length'=>40]) )   // 联系电话
@@ -166,8 +166,8 @@ class User extends Model {
 			// 扩展属性字段
 			->putColumn( 'extra', $this->type('text',  ['json'=>true]) )  // 扩展属性 JSON
 
-			// 用户状态 on/off/lock
-             ->putColumn( 'status', $this->type('string', ['length'=>10,'index'=>true, 'default'=>'on']) )
+			// 用户状态 on/off/lock/pending  on=正常 off=封禁 lock=锁定 pending=转化中
+            ->putColumn( 'status', $this->type('string', ['length'=>10,'index'=>true, 'default'=>'on']) )
             
             // 社会化数据
             ->putColumn( 'inviter', $this->type('string', ['length'=>128] ) ) // 邀请者 (user_id)
@@ -191,6 +191,10 @@ class User extends Model {
 
             // 追加
             ->putColumn( 'priority', $this->type('integer', ['length'=>1, "index"=>true, "default"=>99999] ) )  // 优先级
+
+            // 对接外部数据
+            ->putColumn( 'outerid', $this->type('string',  ['length'=>128, 'unique'=>true, "null"=>true]) )  // 外部账号ID
+            ->putColumn( 'origin', $this->type('string',  ['length'=>128, "null"=>true]) )   // 外部来源ID
 		;
 
 		// 微信公众号授权表		
