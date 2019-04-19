@@ -193,7 +193,7 @@ class User extends Model {
             ->putColumn( 'priority', $this->type('integer', ['length'=>1, "index"=>true, "default"=>99999] ) )  // 优先级
 
             // 对接外部数据
-            ->putColumn( 'outerid', $this->type('string',  ['length'=>128, 'unique'=>true, "null"=>true]) )  // 外部账号ID
+            ->putColumn( 'outer_id', $this->type('string',  ['length'=>128, 'unique'=>true, "null"=>true]) )  // 外部账号ID
             ->putColumn( 'origin', $this->type('string',  ['length'=>128, "null"=>true]) )   // 外部来源ID
 		;
 
